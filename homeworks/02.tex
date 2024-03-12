@@ -1,0 +1,292 @@
+\documentclass{homework}
+
+\title{02}
+\author{Taaniel Kraavi}
+\date{\DTMdate{2024-03-21}}
+
+%\usepackage{etoolbox}
+%\makeatletter
+%\preto{\@verbatim}{\topsep=0pt \partopsep=-2\parsep }
+%\makeatother
+
+\usepackage{crysymb}
+
+\usepackage{fancyvrb}
+\fvset{listparameters=\setlength{\topsep}{0pt}\setlength{\partopsep}{0pt}}
+
+\usepackage{listings}
+
+\lstset{
+basicstyle=\small\ttfamily,
+columns=flexible,
+breaklines=true
+}
+
+\begin{document}
+\maketitle
+
+\textbf{Reminders}
+
+\begin{itemize}
+  \item Include in your report approximately how long the homework took for you.
+  \item If you want feedback on Discord, include your username in your report.
+  \item Read through task descriptions carefully.
+  \item You may request deadline extensions until 17.03.24 23:59 EET.
+  \item Deadlines are strict: if you do not submit your assignment by the deadline, you fail it.
+  \item To pass the course you must pass all homework assignments.
+  \item Second chances:
+  \begin{itemize}
+    \item If I review your assignment before the deadline, I will \emph{always} give you a chance to fix it for the deadline (or with a slight extension).
+    Start early!
+    \item If I review your assignment after the deadline, I will give you an extension \emph{only} if you have explained what part of your code does not work, and what you did to attempt to fix it.
+    Ask questions when you are stuck to avoid risking it!
+    \item If I give you an extension, you must still fix your homework by the extended deadline to pass.
+    \item If your code does not work but you are not aware of it or have not explained your issues, you fail the homework (if I review it after the deadline).
+    Test your code!
+    \item If you fail your homework, you can appeal my decision within 3 days of receiving your grade (grade day + 3).
+    Write me an email or message me on Discord.
+    I will then organise an oral defence for you.
+  \end{itemize}
+  \item You may share hints with each-other, but no answers/code.
+  \item You may ask me questions (I prefer Discord to Moodle/email).
+  If your code does not work and you have not asked me any questions, you will have a hard time arguing that you actually tried solving it!
+  \item If I catch you plagiarising/copying, I will report you to the faculty and fail you for the course.
+\end{itemize}
+
+\newpage
+
+\begin{center}
+  Theory tasks
+\end{center}
+
+\textbf{Additional instructions}
+
+\begin{itemize}
+  \item Submit as a PDF file called \texttt{studentid-02.pdf} where `studentid' is your 6 letter student ID/username (`takraa') for me.
+  \item Submit it on Moodle as a standalone file (not as part of the code ZIP).
+\end{itemize}
+
+\begin{task}{ECIES}
+  The Elliptic Curve Integrated Encryption Scheme (ECIES) is a hybrid cryptosystem framework: it combines a \emph{key encapsulation mechanism} (KEM) with a \emph{data encapsulation mechanism} (DEM) that is also \emph{authenticated}.
+
+  As a rough overview, the following can be parametrised:
+  \begin{itemize}
+    \item the key derivation function (KDF), e.g. KDF2;
+    \item the hash function, e.g. SHA-512;
+    \item the scheme for authenticating the encryption, e.g. HMAC-SHA-512;
+    \item the symmetric encryption scheme, e.g. AES-256-CBC;
+  \end{itemize}
+  on top of different elliptic curve domain parameters.
+  Some implementations even allow to change the key-agreement protocol (variations of DH).
+  Combinations are also possible.
+  For example, when using XChaCha20-Poly1305, a separate message-authentication scheme is no longer needed.
+
+  Standards and implementations limit the allowed values for each of these parameters, which helps against misuse (e.g. picking weak options) but complicates interoperability.
+  For example, no implementation can comply with all ECIES-defining standards.
+  Furthermore, not all options and/or combinations provide equivalent security.
+  Picking `strong' parameters while maintaining interoperability is therefore quite tricky. 
+
+  For this task, find three standards where ECIES is defined.
+  Then, highlight (preferably in a table) which parameters/algorithms are supported by all three standards (if any).
+\end{task}
+
+\begin{task}{Password switcheroo}
+  Oh no, you mistakenly encrypted your newly generated secret key with a really weak password (or even worse, you did not password protect it).
+  Write down the OpenSSL command that you would use to change the password of your asymmetric secret key.
+
+  If you want to check whether your command works, I have uploaded to Moodle the encrypted RSA private key file \texttt{demokey.pem} that is encrypted with the password \texttt{changeme}.
+\end{task}
+
+\begin{task}{ROCA}
+  Read \href{https://crocs.fi.muni.cz/public/papers/rsa_ccs17}{\emph{this blog post}} by the researchers who discovered ROCA.
+  More than 750 000 Estonian ID cards were impacted by this vulnerability.
+
+  Summarise the discovery (what, why, how to fix) in no more than five sentences.
+  Then succinctly answer the following:
+  \begin{itemize}
+    \item Did the researchers completely break 2048-bit RSA?
+    \item Are ECC keys generated on the affected chips vulnerable?
+    \item How can you detect if your keys are vulnerable?
+    \item What is the worst-case price for factorising a 2048-bit impacted key?
+    \item Name three mitigation strategies if your hardware is impacted.
+  \end{itemize}
+\end{task}
+
+\begin{task}{Common attacks against RSA}
+  Do some digging, then name a technique (with a source) for cracking RSA when:
+  \begin{itemize}
+    \item $p$ and $q$ are very close,
+    \item the modulus $n$ is re-used with different private keys,
+    \item the private exponent is small,
+    \item the public exponent is small and OAEP is not used.
+  \end{itemize}
+
+  Give three examples why OAEP padding is important.
+\end{task}
+
+\begin{task}{Leaky ElGamal}
+  Recall that for some secret $x\getsu\ZZ_q$ and generator $g$, the ElGamal public key is $\PK\gets g^x$.
+  Encryption is then carried out with:
+  \[
+    r \getsu \ZZ_q, \ENC_\PK(m; r) = \bigl(g^r, m \cdot \PK^r\bigr) = (u, v) = c
+  \]
+  where $r$ is the randomness which makes ElGamal a probabilistic encryption scheme.
+
+  Suppose now that $r$ is leaked meaning that you know the $r$ used during the encryption.
+  Are you then able to recover $m$ from $c$ without the secret key?
+  If so, how to do it?
+
+  Can you also decrypt other messages (without gaining access to new values of $r$)?
+\end{task}
+
+\newpage
+\setcounter{task}{0}
+
+\begin{center}
+  Practical tasks
+\end{center}
+
+\textbf{Additional instructions}
+
+\begin{itemize}
+  \item I must be able to run your program with Python 3.12 and OpenSSL v3.2.1\footnotemark{}.
+  \footnotetext{You may use older versions of Python and OpenSSL as long as you do not use deprecated functionality.}
+  \item Do not import any 3\textsuperscript{rd} party module\footnotemark{} not specified in the template files.
+  \footnotetext{You may change \texttt{Crypto} to \texttt{Cryptodome} if needed.}
+  You are free to import any built-in module.
+  If you feel the need to import some other 3\textsuperscript{rd} party module, please check with me beforehand!
+  \item Your program must not have any unhandled errors (print a message and exit with an error code without printing the trace) except for file-based errors, e.g. file read/write errors.
+  \item Submit on Moodle as a ZIP file called \texttt{code.zip}.
+  \item Your Python files must have the same name as the template files but without the \texttt{template} suffix, e.g. \texttt{interop\_template.py} becomes \texttt{interop.py}.
+  \item You may change everything in the template files as long as I can run your program with the CLI arguments specified in the templates.
+  \item Your ZIP must have the following structure/contents:
+  \begin{Verbatim}
+code/
+├── interop.py
+└── homomorphic.py
+  \end{Verbatim}
+\begin{Verbatim}
+  
+\end{Verbatim}
+\end{itemize}
+
+\begin{task}{RSA interop}
+  Homework template file: \texttt{interop\_template.py}
+
+  Create a Python3 program that performs RSA-OAEP\footnote{\url{https://en.wikipedia.org/wiki/Optimal_asymmetric_encryption_padding}} encryption/decryption.
+  Recall from the lecture that OAEP padding is required for probabilistic encryption, and to prevent some subtle attacks.
+
+  Your program must provide three separate tools:
+  \begin{itemize}
+    \item \texttt{genpkey} --- generate an RSA private key
+
+    Depending on the parameter, your program must generate a $3072$-bit RSA private key either with OpenSSL or with PyCryptodome and export it into a file in PEM format.
+
+    When generating a private key with OpenSSL, your program \emph{must not} print the key-generation progress bar to the console.
+
+    The private key must be password protected, and encrypted with AES-256 in CBC mode in the PKCS\#8 format.
+    \begin{itemize}
+      \item For PyCryptodome, you should use \texttt{PBKDF2WithHMAC-SHA512AndAES256-CBC} with an iteration count of $210 000$ when setting up the private key encryption.
+      Why these parameters?
+      They are in the documentation and are fairly sensible.
+      \item New versions of OpenSSL (> 3.0) should use PKCS\#8 by default if you export an encrypted private key in PEM, but do not allow for such a fine-grained control with \texttt{genpkey} as PyCryptodome.
+      
+      If you want more control, you can check out \href{https://www.openssl.org/docs/man3.2/man1/openssl-pkcs8.html}{\texttt{openssl-pkcs8}}.
+    \end{itemize}
+
+    If you are unsure whether your exported private key is in PKCS\#8 format and do not want to read through \href{https://datatracker.ietf.org/doc/html/rfc5208}{RFC 5208}, you can simply dump the ASN.1 structure of both your private key and of the example private key given on Moodle.
+    If both seem to have a similar structure, your key is using PKCS\#8.
+
+    Example invocation:
+    \begin{Verbatim}
+python3 interop.py genpkey --openssl \
+    --out key.pem --pass secret
+    \end{Verbatim}
+
+    \item \texttt{pkey} --- file encryption
+    
+    Your program must extract the public key from a private key with either PyCryptodome or with OpenSSL depending on the parameter.
+
+    Example invocation:
+    \begin{Verbatim}
+python3 interop.py pkey --openssl \
+    --in key.pem --out pub.pem --pass secret
+    \end{Verbatim}
+
+    \item \texttt{pkeyutl} --- file decryption
+    
+    Your program must read either the private or public key from the specified file, a plaintext or ciphertext from the specified file, and output the encryption or decryption to the specified file.
+
+    Depending on the parameter, your program must use either PyCryptodome or OpenSSL for the encryption/decryption.
+
+    Example invocation for encryption:
+    \begin{Verbatim}
+python3 interop.py pkeyutl --openssl --encrypt \
+    --inkey pub.pem --in message.txt --out data.enc
+    \end{Verbatim}
+
+    Example invocation for decryption:
+    \begin{Verbatim}
+python3 interop.py pkeyutl --openssl --decrypt \
+    --inkey key.pem --in data.enc --out data.enc \
+    --pass secret
+    \end{Verbatim}
+  \end{itemize}
+
+  Make sure to handle errors by printing an informational message and exiting (\texttt{sys.exit()}) with an error code without printing the exception trace.
+  Your program must not crash if missing parameters are provided, the wrong password is provided, OpenSSL fails, etc.
+  Some error handling and hints are part of the template, but not all of it.
+
+  You do not however have to (but you may) check for file I/O errors, i.e. you may assume that if you provide a filename, then that filename does exist or can be written to.
+
+  The password provided on the command line must be treated as an UTF-8 string.
+  Remember to wrap the password in quotes if you want to include spaces!
+
+  \begin{tcolorbox}[title=Note]
+    In practice, providing secrets (e.g. keys, passwords, etc.) directly on the CLI as an argument to a program is a terrible idea, since they typically get logged into your terminal history!
+  \end{tcolorbox}
+
+  You can check whether your code is functional with the script \texttt{interop\_check.py}.
+  This script does not test for error handling, so do not consider it as the definitive validator.
+  I have not included the error handling checks in this script since it would give away the edge cases and I want you to think about them yourself.
+\end{task}
+
+\begin{task}{256-bit RSA}
+  The following data represents a 256-bit RSA public key.
+  \begin{Verbatim}
+-----BEGIN PUBLIC KEY-----
+MDwwDQYJKoZIhvcNAQEBBQADKwAwKAIhAITRpRf+PNWruknCVkz+bCvD+09P84Gf
+CBSO7oyM87qHAgMBAAE=
+-----END PUBLIC KEY-----
+  \end{Verbatim}
+  Find the two RSA primes used for obtaining this key and include them in your report.
+  Show how you obtained the primes (preferably with a screenshot of reasonable resolution) and include any applicable links.
+\end{task}
+
+\begin{task}{Homomorphism and semiprimes}
+  Homework template file: \texttt{homomorphic\_template.py}
+
+  The template contains a hard-coded ElGamal public key, an ElGamal encryption function (\texttt{pk.encrypt()}) and a ciphertext product function (\texttt{pk.multiply()}).
+  Recall that an ElGamal ciphertext $c$ is comprised of two parts: $c = (u, v) = \bigl(g^r, m\cdot\PK^r\bigr)$.
+
+  Your program must accept an ElGamal ciphertext as two integers on the command line (see the parsed arguments in the template).
+  Your program must produce a ciphertext that decrypts to the same value as the challenge ciphertext.
+  However, your ciphertext may not be the same as the provided challenge ciphertext, i.e. $(u, v)$ must be different.
+
+  Your program should print this ciphertext: $u$ as a base10 integer and $v$ as a base10 integer on the next line.
+  E.g.
+  \begin{Verbatim}
+python3 homomorphic.py 157928...613543 296738...721947
+1058509285116...9238765983746
+6819523011802...1625917583932
+  \end{Verbatim}
+  without the dots in the middle.
+  
+  Your task succeeds if:
+  \begin{itemize}
+    \item $\DEC_\SK\bigl((u_\mathit{challenge}, v_\mathit{challenge})\bigr) = \DEC_\SK\bigl((u_\mathit{you}, v_\mathit{you})\bigr)$, and
+    \item $(u_\mathit{challenge}, v_\mathit{challenge}) \neq (u_\mathit{you}, v_\mathit{you})$.
+  \end{itemize}
+\end{task}
+
+\end{document}
