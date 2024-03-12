@@ -1,0 +1,244 @@
+\usetheme{Shamir}
+
+\usepackage{graphicx}
+
+\usepackage{csquotes}
+\setquotestyle{british}
+
+\definecolor{oxfordblue}{RGB}{4,30,66}
+
+\iffalse
+\setbeamertemplate{headline}
+{%
+    \begin{picture}(0,0)
+        \put(314,-50){%
+            Owo?
+        }
+        \put(20,-55){%
+            \rule{320pt}{0.4pt}
+        }
+    \end{picture}
+}
+\fi
+
+\iffalse
+\setbeamertemplate{footline}
+{%
+    \begin{picture}(0,0)
+        \put(20,30){%
+            \rule{320pt}{0.4pt}
+        }
+        \put(20,14){%
+            Hihi
+        }
+        \put(100,14){%
+            \color{oxfordblue}\insertshortdate
+        }
+        \put(160,14){%
+            \color{oxfordblue}\insertshorttitle
+        }
+        \put(337,14){%
+            \color{oxfordblue}\insertpagenumber/\inserttotalframenumber
+        }
+    \end{picture}%
+}
+\fi
+
+\title[Short version of title]{ICS0026 Cryptography}
+\subtitle{Course organisation}
+\author%
+{%
+    \sc{Taaniel Kraavi}\\
+    \textit{\footnotesize Guest Lecturer}
+}
+\institute%
+{%
+    \textit{IT College}\\
+    \textit{Tallinn University of Technology}
+}
+
+\begin{document}
+\begin{frame}[plain]
+  \titlepage
+\end{frame}
+
+\begin{frame}
+  \frametitle{Course aim}
+
+  \begin{columns}[T]
+    \begin{column}{.4\textwidth}
+      \textbf{Prerequisites:}
+      \begin{itemize}[<+->]
+        \pause
+        \item Know basic programming
+        \begin{itemize}
+          \item C \& python3
+        \end{itemize}
+        \item Notions in:
+        \begin{itemize}
+          \item Discrete mathematics
+          \item Binary data representation
+          \item Group theory (bonus)
+        \end{itemize}
+      \end{itemize}
+    \end{column}
+
+    \pause
+    \begin{column}{.4\textwidth}
+      \textbf{Approach:}
+      \begin{itemize}[<+->]
+        \item Common terminology
+        \item Cryptographic primitives as a black-box API
+        \item Pitfalls
+        \item DYOR: due diligence
+      \end{itemize}
+    \end{column}
+  \end{columns}
+
+  \vspace*{2em}
+
+  \pause
+  ITC8240 (master's course) for mathematical cryptography.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Schedule}
+
+  \textbf{Lectures}
+
+  Tuesdays: 14:00--15:30 room ICO-316
+
+  \vspace*{1em}
+
+  \pause
+  \textbf{Practices}
+
+  Thursdays: 14:00--15:30 room ICO-319
+
+  \vspace*{1em}
+
+  \pause
+  Mandatory to attend at least 8 lectures and 8 practices.
+
+  \pause
+  Valid exceptions:
+  \begin{itemize}
+    \item work
+    \item scheduling conflicts
+  \end{itemize}
+
+  \pause
+  Exceptions $\implies$ 20min oral exam.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Grading}
+
+  The course is pass/fail.
+
+  \vspace*{1em}
+
+  \pause
+  \textbf{Homework}
+  \begin{itemize}[<+->]
+    \item Up to 8 mandatory assignments
+    \item 2 weeks to complete
+    \item Theoretical part (research) \& practical part (programming)
+    \item Best-effort:
+    \begin{itemize}
+      \item Important to try
+      \item Explain your issues
+    \end{itemize}
+    \item Semi-random defences
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Grading}
+
+  The course is pass/fail.
+
+  \vspace*{1em}
+
+  \textbf{Exam}
+  \begin{itemize}[<+->]
+    \item Mandatory
+    \item Pre-report ($\le$1 page) on knowledge gaps
+    \item 5--10min oral assessment:
+    \begin{itemize}
+      \item questions about basic concepts (closed book)
+      \item report discussion
+    \end{itemize}
+    \item +10min if you skipped classes
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Grading}
+
+  The course is pass/fail.
+
+  \vspace*{1em}
+
+  \textbf{Summary}
+  \begin{itemize}
+    \item All homework mandatory ($\le$8)
+    \item $\ge$50\% attendance a bonus
+    \item Report ($\le$1 page) on knowledge gaps
+    \item 5--10min closed-book oral assessment
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  Not hard to pass so please do not offload homework to LLMs.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Syllabus}
+
+  \begin{columns}[t]
+    \begin{column}{.4\textwidth}
+      \begin{enumerate}
+        \item Introduction
+        \item Symmetric cryptography
+        \item Symmetric cryptography (cont.)
+        \item Public-key cryptography
+        \item Public-key cryptography (cont.)
+        \item Hash functions
+        \item MACs \& digital signatures
+        \item Public-key infrastructure
+      \end{enumerate}
+    \end{column}
+
+    \begin{column}{.4\textwidth}
+      \begin{enumerate}\setcounter{enumi}{8}
+        \item Authentication \& commitments
+        \item TLS, HTTPS, SSH
+        \item Secure programming \& hardware
+        \item Zero-knowledge proofs
+        \item Secret sharing \& MPC
+        \item Internet voting
+        \item Post-quantum cryptography
+        \item Review
+      \end{enumerate}
+    \end{column}
+  \end{columns}
+
+  \vspace*{2em}
+
+  \pause
+  Topics might not be cleanly split by week.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Reading materials}
+
+  The book \enquote{The Joy of Cryptography} by Mike Rosulek is freely available at \url{https://joyofcryptography.com} and covers many of the topics in this course.
+
+  \vspace*{1em}
+
+  The book is more mathematical than this course, but may hence provide you with valuable insight and a stronger understanding of the same concepts. 
+\end{frame}
+
+\end{document}

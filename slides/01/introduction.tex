@@ -1,0 +1,289 @@
+\usetheme{Shamir}
+
+\usepackage{crysymb}
+
+\usepackage{graphicx}
+
+\usepackage{soul}
+
+\usepackage{csquotes}
+\setquotestyle{british}
+
+\usepackage{fontspec}
+\usepackage{unicode-math}
+\usepackage{microtype}
+
+\title[Short version of title]{ICS0026 Cryptography}
+\subtitle{Introduction to cryptography}
+\author%
+{%
+    \sc{Taaniel Kraavi}\\
+    \textit{\footnotesize Guest Lecturer}
+}
+\institute%
+{%
+    \textit{IT College}\\
+    \textit{Tallinn University of Technology}
+}
+
+\begin{document}
+\begin{frame}[plain]
+  \titlepage
+\end{frame}
+
+\begin{frame}
+  \frametitle{What's in a name?}
+
+  \pause
+  \begin{itemize}[<+->]
+    \item Historically: the art of codes
+    \item Cornerstone of computer and information security
+    \item Replace a hard problem with mathematics
+    \item Cryptography $\neq$ cryptocurrency / blockchain
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{CIA and cryptography}
+
+  \pause
+  \begin{itemize}
+    \item Confidentiality
+    \item Integrity
+    \item \st{Availability}
+    \pause
+    \item Authenticity
+    \item Non-repudiation
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Ladder of abstraction}
+
+  \pause
+  \begin{itemize}
+    \item \textbf{Many levels of building blocks}
+    \pause
+    \begin{itemize}
+      \item Mathematical foundations
+      \item Cryptographic primitives
+      \item Cryptographic protocols
+    \end{itemize}
+
+    \vspace*{1em}
+
+    \pause
+    \item \textbf{Implementation details obscure security}
+    \pause
+    \begin{itemize}
+      \item Abstractions highlight desirable properties.
+      \item Some properties are \enquote{relevant} for security.
+      \item Security is formally defined through these properties.
+    \end{itemize}
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  Implementation security is an additional layer.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Defining security}
+
+  \pause
+  \begin{itemize}
+    \item \textbf{Two approaches to security}
+    \begin{itemize}
+      \pause
+      \item Heuristic security / best-effort design
+      \pause
+      \item Provable security
+    \end{itemize}
+
+    \vspace*{1em}
+
+    \pause
+    \item \textbf{Two types of security}
+    \begin{itemize}
+      \item Conditional
+      \item Unconditional\textsuperscript{*}
+    \end{itemize}
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  \textbf{Caveat:} Even unconditional security is conditional.
+  \pause
+  \begin{itemize}
+    \item A \emph{trust model} must be specified.
+    \pause
+    \item Proper procedure must be followed.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Kerckhoff's principle}
+
+  \pause
+  \textbf{Definition.}
+  A cryptographic system should be secure even if everything about the system, except the key, is public knowledge.
+
+  \vspace*{1em}
+
+  \pause
+  \textbf{Interpretation.}
+  A system's security should depend on the secrecy of its usage parameters, not of its algorithms.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Intractability}
+
+  \begin{itemize}
+    \item \textbf{Cryptographic constructions are rarely provably secure.}
+    \pause
+    \begin{itemize}[<+->]
+      \item There is an unavoidable gap between theory and practice.
+      \item Practical security is based on \emph{intractability}.
+      \item It is \emph{infeasible} in practice to solve a problem.
+    \end{itemize}
+
+    \vspace*{1em}
+
+    \pause
+    \item In the physical world, we must obey the laws of physics.
+    \begin{itemize}
+      \item Humans keep pushing what is feasible.
+      \item Dedicated tooling improves attack success.
+    \end{itemize}
+    
+    \vspace*{1em}
+
+    \pause
+    \item Never assume secure parameters: verify with experts.
+    \begin{itemize}[<+->]
+      \item Recommendations by ANSSI, BSI, NIST\textsuperscript{*}.
+      \item Independent opinions of respected cryptographers.
+      \item Err on the side of caution.
+      \item What is safe today may not be safe soon.
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Cryptosystems}
+  \framesubtitle{Informal introduction}
+
+  \pause
+  Let $m$ be some message called the \emph{plaintext}.
+
+  \vspace*{1em}
+
+  \pause
+  A cryptosystem is a triple of algorithms $(\GEN,\ENC,\DEC)$ where
+  \begin{itemize}
+    \item $\GEN$ is a key generation algorithm
+    \item $\ENC$ is an encryption algorithm: $\ENC(m)=c$
+    \item $\DEC$ is a decryption algorithm: $\DEC(c)=m$
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  The output of the encryption $c = \ENC(m)$ is called the \emph{ciphertext}.
+
+  \vspace*{1em}
+
+  \pause
+  The cryptosystem is functional if $\DEC(\ENC(m))=m$.
+\end{frame}
+
+\begin{frame}[c]
+  \centering
+  What makes a cryptosystem secure?
+\end{frame}
+
+\begin{frame}
+  \frametitle{Attack types}
+
+  \pause
+  \begin{itemize}
+    \item Ciphertext-only attack
+    \begin{itemize}
+      \item You only know a ciphertext.
+    \end{itemize}
+    \pause
+    \item Known-plaintext attack (KPA)
+    \begin{itemize}
+      \item You are given a ciphertext--plaintext pair.
+    \end{itemize}
+    \pause
+    \item Chosen-plaintext attack (CPA)
+    \begin{itemize}
+      \item You are given ciphertexts for plaintexts you provide.
+    \end{itemize}
+    \pause
+    \item Chosen-ciphertext attack (CCA)
+    \begin{itemize}
+      \item You are given plaintexts for ciphertexts you provide.
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Simple ciphers}
+
+  \pause
+  \begin{itemize}
+    \item Substitution ciphers (monoalphabetic)
+    \begin{itemize}
+      \item shift cipher
+      \item substitution cipher
+    \end{itemize}
+    \pause
+    \item Substitution ciphers (polyalphabetic)
+    \begin{itemize}
+      \item Vigenère cipher
+    \end{itemize}
+    \pause
+    \item Transposition ciphers
+    \begin{itemize}
+      \item permutation cipher
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Security properties}
+
+  \pause
+  \begin{itemize}
+    \item Defined by \emph{Claude Shannon}.
+    
+    \vspace*{1em}
+
+    \pause
+    \item \textbf{Confusion}
+    \begin{itemize}
+      \item Obfuscates the relation between ciphertext \& key.
+      \item Difficulty to extract key even with CCA.
+    \end{itemize}
+
+    \vspace*{1em}
+
+    \pause
+    \item \textbf{Diffusion}
+    \begin{itemize}
+      \item Obfuscates the relation between plaintext \& ciphertext.
+      \item Difficulty to conduct meaningful ciphertext-only attacks.
+    \end{itemize}
+
+    \vspace*{1em}
+
+    \pause
+    \item A good cryptosystem should use both.
+  \end{itemize}
+\end{frame}
+
+\end{document}
