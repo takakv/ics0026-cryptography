@@ -1,0 +1,612 @@
+\usetheme[numbering=fraction]{metropolis}
+
+\metroset{block=fill}
+
+\usepackage{booktabs}
+
+\usepackage{csquotes}
+\setquotestyle{british}
+
+\usepackage{graphicx}
+\graphicspath{ {../../images/} }
+
+\usepackage{pgfplots}
+\usetikzlibrary{positioning,calc,external}
+%\tikzexternalize[prefix=figures/] 
+
+\usepackage{crysymb}
+
+\renewcommand*{\arraystretch}{1.2}
+
+\usepackage{soul}
+
+\usetikzlibrary{positioning,calc}
+\graphicspath{ {../../images/} }
+
+\title[Short version of title]{ICS0026 Cryptography}
+\subtitle{DL, DH \& ECC}
+\author%
+{%
+    {Taaniel Kraavi}\\
+    \textit{\footnotesize Guest Lecturer}
+}
+\institute%
+{%
+    \textit{IT College}\\
+    \textit{Tallinn University of Technology}
+}
+
+\begin{document}
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Sets}
+  A \emph{set} is a collection of mathematical objects.
+  \begin{itemize}[<+(1)->]
+    \item No duplicate elements
+    \item $x\in S$: element $x$ is a member of $S$ (belongs to)
+    \item $x\notin S$: element $x$ is not a member of $S$ (does not belong to)
+  \end{itemize}
+
+  \pause
+  Sets you must know:
+  \begin{itemize}[<+(1)->]
+    \item Integers without $0$: $\ZZ\setminus\{0\}=\ZZ^*=\{\dots, -2, -1, 1, 2, 3, \dots\}$
+    \item Integers modulo $n$: $\ZZ/n\ZZ = \ZZ_n = \{0, 1, 2, \dots, n-1\}$
+    \item Invertible integers modulo $n$: $(\ZZ/n\ZZ)^\times = \ZZ_n^*$
+    \item $n$-bit bitstrings: $\{0, 1\}^n$
+    \item All bitstrings: $\{0, 1\}^*$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Binary operations}
+  A \emph{binary operation} is a rule which for any two set elements, gives another set element.
+  \begin{itemize}[<+(1)->]
+    \item The set is \emph{closed} under the operation
+    \item E.g. $\ZZ$ is closed under addition and multiplication
+    \item E.g. $\NN$ is not closed under subtraction
+  \end{itemize}
+
+  \pause
+  A binary operation $\circ$ is a \emph{mapping} of elements:
+  \[
+    \circ: S \times S \to S
+  \]
+
+  \pause
+  $\circ$ denotes some arbitrary operation (alternatively $\star, \ast, \diamond$, \dots)
+\end{frame}
+
+\begin{frame}{Commutativity \& associativity}
+  Let $S$ be a set and $\circ$ a binary operation on $S$.
+
+  \pause
+  $\circ$ is \emph{commutative} if for all $a, b\in S$,
+  \[
+      a \circ b = b \circ a\ .
+  \]
+
+  \pause
+  $\circ$ is \emph{associative} if for all $a, b, c\in S$,
+  \[
+    a \circ (b \circ c) = (a \circ b) \circ c\ .
+  \]
+
+  \pause
+  Questions:
+  \begin{itemize}[<+(1)->]
+    \item Addition and $\ZZ$?
+    \item Subtraction and $\ZZ$?
+    \item XOR ($\oplus$) and $\{0,1\}^*$?
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Groups}
+  A \emph{group} is a set $\GG$ with a binary operation $\circ$ on $\GG$ for which the following properties hold:
+  \begin{enumerate}[<+(1)->]
+    \item Associativity: for all $a, b, c\in \GG$,
+    \[
+      a \circ (b \circ c) = (a \circ b) \circ c
+    \]
+    \item Identity element: there is an element $e\in \GG$ s.t. for all $a\in \GG$,
+    \[
+      a \circ e = e \circ a = a
+    \]
+    \item Inverse element: for each $a\in \GG$ there must exist $b\in \GG$ s.t.,
+    \[
+      a \circ b = b \circ a = e
+    \]
+  \end{enumerate}
+  \vspace*{-1em}
+  \pause
+  A group is \emph{abelian} (or commutative) if commutativity also holds for all elements.
+\end{frame}
+
+\begin{frame}{Examples and bamboozles}
+  Questions:
+  \begin{itemize}[<+(1)->]
+    \item Is $(\NN, +)$ a group?
+    \item Is $(\ZZ, +)$ a group?
+    \item Is $(\RR^*, \cdot)$ a group?
+  \end{itemize}
+
+  \pause
+  What we know as division on $\RR^*$ is simply the multiplicative inverse:
+  \[
+    a \cdot b = 1 \iff b = a^{-1} = \frac{1}{a}
+  \]
+
+  \pause
+  Division seemingly makes no sense in $\ZZ_n^*$ hence we define multiplicative inverses through
+  \[
+    a\cdot a^{-1} \equiv 1 \pmod{n}.
+  \]
+\end{frame}
+
+\begin{frame}{Additive and multiplicative notation}
+  \begin{center}
+  \begin{tabular}{@{}l c c c c@{}}
+    \toprule
+    Convention & Operation & Identity & \enquote{Powers} & Inverse\\
+    \cmidrule{1-5}
+    Additive & $x + y$ & $0$ & $nx$ & $-x$\\
+    \cmidrule{1-5}
+    Multiplicative & $x\cdot y$ or $xy$ & $1$ & $x^n$ & $x^{-1}$\\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+
+  \pause
+  E.g. in $\ZZ_n^*$:
+
+  \begin{tabular}{r l}
+    \pause $ab$     & $(a \cdot b) \bmod{n}$\\
+    \pause $a+b$    & $(a + b) \bmod{n}$\\
+    \pause $a^b$    & $a^b \bmod{n}$\\
+    \pause $a^{-1}$ & $b$ s.t. $ab \equiv 1 \pmod{n}$
+  \end{tabular}
+\end{frame}
+
+\begin{frame}{Cyclic groups}
+  \pause
+  Let $\GG$ be a group, and let $g$ be an element of $\GG$.
+
+  $g$ is a \emph{generator} of $\GG$ denoted $\langle g\rangle$ if:
+  \[
+    \GG = \{g^n:n\in\ZZ\} = \{\dots, g^{-1}, 1, g, g^2, g^3, \dots\}
+  \]
+
+  \pause
+  Example: $\ZZ_7^* = \langle 3\rangle$.
+  \pause
+  \begin{columns}
+    \begin{column}{0.3\textwidth}
+      \begin{itemize}
+        \item $3^0 \bmod{7} = 1$
+        \item $3^1 \bmod{7} = 3$
+        \item $3^2 \bmod{7} = 2$
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.3\textwidth}
+      \begin{itemize}
+        \item $3^3 \bmod{7} = 6$
+        \item $3^4 \bmod{7} = 4$
+        \item $3^5 \bmod{7} = 5$
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Safe primes}
+  A \emph{safe} prime is a prime $p$ such that $p = 2q + 1$ with $q$ prime.
+  \begin{itemize}[<+(1)->]
+    \item Highly important in cryptography
+    \item Resilient to some special-purpose algorithms
+    \item $\ZZ_p^*$ has $p-1$ elements
+    \item $\ZZ_p^*$ has a subgroup of $q$ elements (subgroup of prime order)
+    \item Security for the discrete logarithm problem (DLP)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Discrete logarithm problem (DLP)}
+  \begin{itemize}[<+(1)->]
+    \item Let $p$ be a (large) safe prime such that $p = 2q + 1$ with $q$ prime.
+    \item Fix a generator $g$ s.t. $g^2 \neq 1$ and define $\GG = \langle g \rangle = \{g^i :0 \le i < q\}$.
+    \begin{itemize}
+      \item E.g. subgroup of quadratic residues
+    \end{itemize}
+    \item Solving the following discrete logarithm is then considered \emph{intractable}:
+    \[
+      \forall y\in\GG: \log(y) = x \iff g^x \equiv y \pmod{p}\ .
+    \]
+  \end{itemize}
+
+  \pause
+  No longer intractable when quantum computers enter the market.
+\end{frame}
+
+\begin{frame}{DLP security}
+  The DLP exists in other groups:
+  \begin{itemize}[<+(1)->]
+    \item Abstraction to multiplicative groups
+    \item Not guaranteed to be hard in a \enquote{generic} group.
+    \item Always research whether the DLP is intractable in a chosen group!
+  \end{itemize}
+
+  \pause
+  \enquote{Standard} primes for non-EC groups defined in \href{https://datatracker.ietf.org/doc/html/rfc3526}{RFC 3526}.
+
+  \pause
+  Some DLP \enquote{records}: \url{https://en.wikipedia.org/wiki/Discrete_logarithm_records}
+\end{frame}
+
+\begin{frame}{Weak DLP group}
+  Consider the group $(\ZZ_n, +)$.
+  \begin{itemize}[<+(1)->]
+    \item Not multiplicative, but great for intuition.
+    \item DLP (cursed definition): $\log(y) = x \iff xg \equiv y \pmod{p}$.
+    \item It follows that $x \equiv yg^{-1} \pmod{p}$.
+    \item This is not hard to compute.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Diffie-Hellman key exchange (DHKE)}
+  Diffie-Hellman key exchange (DHKE) was the first known key-agreement protocol:
+  \begin{itemize}[<+(1)->]
+    \item Finite field DH is the \enquote{simplest}: \href{https://datatracker.ietf.org/doc/html/rfc7919}{RFC 7919} (DLP security)
+    \item \enquote{Standard} groups in \href{https://datatracker.ietf.org/doc/html/rfc3526}{RFC 3526}.
+    \item Different variants exists, e.g. ECDH on elliptic curves
+    \item Basis for more complex schemes
+    \item \href{https://csrc.nist.gov/pubs/sp/800/56/a/r3/final}{NIST SP 800-56A Rev. 3}
+  \end{itemize}
+
+  \pause
+  Easy to shoot yourself in the foot: a jumbled mess of choices. (my opinion)
+\end{frame}
+
+\begin{frame}{Finite field DH}
+  \begin{center}
+    \begin{tikzpicture}
+      \node (bob)   at (0,0)     {\includegraphics[height=80px]{bob}};
+      \node (alice) at (8, 0)    {\includegraphics[height=80px]{alice}};
+      \node (eve)   at (4, -2.1) {\includegraphics[height=80px]{eve}};
+
+      \node (btop) at (bob.east) [yshift=10px] {};
+      \node (atop) at (alice.west) [yshift=10px] {};
+
+      \draw[->,thick] (btop) -- (atop);
+
+      \node (bbot) at (bob.east) [yshift=-10px] {};
+      \node (abot) at (alice.west) [yshift=-10px] {};
+  
+      \draw[<-,thick] (bbot) -- (abot);
+
+      \path let \p1 = (btop) in node (gxt) at (4,\y1) [yshift=7px] {$g^x$};
+      \path let \p1 = (bbot) in node (gyt) at (4,\y1) [yshift=7px] {$g^y$};
+
+      \path let \p1 = (btop) in node (circ1) at (2,\y1) {};
+      \path let \p1 = (bbot) in node (circ2) at (6,\y1) {};
+      
+      \draw[->,thick] (circ1.center) |- (eve.west);
+      \draw[->,thick] (circ2.center) |- (eve.east);
+
+      \node[anchor=center,draw,circle,fill=white,thick,minimum size = 4px, inner sep=0pt] at (circ1) {};
+      \node[anchor=center,draw,circle,fill=white,thick,minimum size = 4px, inner sep=0pt] at (circ2) {};
+
+      \node (gx) at (eve.west) [xshift=-10px, yshift=10px] {$g^x$};
+      \node (gy) at (eve.east) [xshift=10px, yshift=10px] {$g^y$};
+
+      \node[anchor=east] (m) at (-0.5, 0.25) {$x\gets\ZZ_q$};
+      \node[anchor=east] (enc) at (-0.5, -0.25) {$g^{xy}\gets\bigl(g^y\bigr)^x$};
+      \node[anchor=west] (m) at (8.8, 0.25) {$y\gets\ZZ_q$};
+      \node[anchor=west] (enc) at (8.8, -0.25) {$g^{xy}\gets\bigl(g^x\bigr)^y$};
+
+      \node (enc) at (eve.south) [yshift=-10px] {$g^{xy}$?};
+    \end{tikzpicture}
+  \end{center}
+
+  \pause
+  How to convert the common secret $g^{xy}$ to a valid secret key $\SK\in\{0, 1\}^n$?
+\end{frame}
+
+\begin{frame}{DH colours example}
+  \begin{center}
+    \includegraphics[height=200px]{dhex}
+  \end{center}
+\end{frame}
+
+\begin{frame}{DH shortcomings}
+  \begin{itemize}[<+(1)->]
+    \item By default, DHKE is anonymous (no authentication)
+    \item Secure against sniffing/eavesdropping, but not against MITM
+    \item Easy to pick a weak group (cool \href{https://weakdh.org/imperfect-forward-secrecy-ccs15.pdf}{\textit{article}})
+    \item Susceptible to precomputation attacks: predefined groups/primes
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Perfect forward secrecy (PFS)}
+  \begin{itemize}[<+->]
+    \item Use \emph{ephemeral} keys: ephemeral Diffie-Hellman (DHE) or ECDH
+    \item Generate short-term \emph{session} keys (vs. using long-term \emph{static} keys)
+    \item New ephemeral key for each session/transaction
+    \item Prevents decryption of past and future sessions if the session key is compromised
+    \item Prevents decryption of past sessions if the long-term key is compromised
+    \begin{itemize}
+      \item Long-term key still used for setting up the DHE/ECDH
+    \end{itemize}
+  \end{itemize}
+
+  \pause
+  We will cover PFS in more detail during the TLS lecture.
+\end{frame}
+
+\iffalse
+\begin{frame}{Flavours of secrecy}
+  \pause
+  Forward secrecy (FS):
+  \begin{itemize}[<+(1)->]
+    \item Subsequent communications are secure post-corruption
+    \item Old \enquote{users} cannot read new data (after leaving)
+  \end{itemize}
+
+  \pause
+  Backward secrecy (future secrecy):
+  \begin{itemize}[<+(1)->]
+    \item Past communications are secure post-corruption
+    \item New \enquote{users} cannot read prior data (before joining)    
+  \end{itemize}
+
+  \pause
+  Forward secrecy is sometimes called perfect forward secrecy.
+  \begin{itemize}
+    \item I like to distinguish between the two
+    \item Terminology can get confusing
+  \end{itemize} 
+\end{frame}
+
+\begin{frame}{Perfect forward secrecy}
+  The terminology is confusing.
+
+  \begin{itemize}
+  \item \emph{Ephemeral} keys: ephemeral DH
+  \item Generate short-term \enquote{session} keys (v.s. long-term \emph{static} keys)
+  \end{itemize}
+
+  \pause
+  No absolute protection against future cryptanalysis.
+\end{frame}
+\fi
+
+\begin{frame}{ElGamal}
+  ElGamal is a probabilistic public-key encryption scheme based on the DLP.
+
+  \pause
+  Let $p$ be a safe prime with $p = 2q + 1$, and $\GG_q$ a subgroup of order $q$ with generator $g$. 
+  $(p, q, \GG_q, g)$ are then the public parameters.
+
+  \pause
+  Key generation:
+  \begin{itemize}[<+(1)->]
+    \item $x \getsu \ZZ_q$
+    \item $h \gets g^x \bmod{p}$
+    \item $\SK \gets x$
+    \item $\PK \gets h$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{ElGamal}
+  Encryption:
+  \begin{itemize}[<+(1)->]
+    \item $m\in\GG_q$
+    \item $r\getsu\ZZ_q$
+    \item $\ENC_\PK(m; r) = (g^r, m\cdot \PK^r) = (u, v) = c$
+  \end{itemize}
+
+  \vspace*{2em}
+
+  \pause
+  Decryption:
+  \begin{itemize}
+    \item $\DEC_\SK(c) = \DEC_\SK((u, v)) = v \cdot u^{-\SK}$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{ElGamal's usefulness}
+  \begin{itemize}[<+(1)->]
+    \item Semantically secure (IND-CPA) in a proper group
+    \item ElGamal signature scheme exists
+    \item Convenient for threshold cryptography
+    \item Multiplicatively homomorphic
+    \item \enquote{Lifted} ElGamal has additive properties (e-voting)
+    \item Elliptic curve version exists
+  \end{itemize}
+
+  \pause
+  Way too many variations: \url{https://ibm.github.io/system-security-research-updates/2021/07/20/insecurity-elgamal-pt1}
+\end{frame}
+
+\begin{frame}{Homomorphisms of ElGamal}
+  \pause
+  Multiplicative homomorphism:
+  \begin{itemize}
+    \item $\ENC_\PK(m_1; r_1) \cdot \ENC_\PK(m_2; r_2) = \ENC_\PK(m_1m_2; r_1 + r_2)$
+  \end{itemize}
+
+  \pause
+  Re-randomisation:
+  \begin{itemize}
+    \item $\ENC_\PK(m_1; r_1) \cdot \ENC_\PK(1; r_2) = \ENC_\PK(m_1; r_1 + r_2)$
+  \end{itemize}
+
+  \pause
+  Additive in the exponent:
+  \begin{itemize}[<+(1)->]
+    \item Encrypt $g^m$ instead of $m$: $\ENC^*_\PK(m; r) = \bigl(g^r, g^m \cdot \PK^r\bigr)$
+    \item $\ENC^*_\PK(m_1; r_1) \cdot \ENC^*_\PK(m_2; r_2) = \ENC^*_\PK(m_1 + m_2; r_1 + r_2)$
+    \item Recover $m$ by full inspection (message space must be small)
+    \begin{itemize}
+      \item Essentially DL brute-force (pre-computable)
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Homomorphic encryption}
+  Perform meaningful operations on the ciphertexts without the secret key.
+
+  \vspace*{1em}
+
+  \pause
+  If a cryptosystem is homomorphic for the relation $\circ$, then:
+  \begin{itemize}[<+(1)->]
+    \item $c_1 \circ c_2 = \ENC_\PK(m_1) \circ \ENC_\PK(m_2) = \ENC_\PK(m_1 \circ m_2) = c_3$
+    \item $\DEC_\SK(c_3) = m_1 \circ m_2$
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  Types of homomorphisms:
+  \begin{itemize}[<+(1)->]
+    \item Partially homomorphic: perform certain operations
+    \item Fully homomorphic: perform any computable operation
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Elliptic curve cryptography}
+  $y^2 = x^3 + ax + b$
+  \vspace*{-2em}
+  \begin{center}
+    \begin{tikzpicture}
+    \begin{axis}[
+            xmin=-5,
+            xmax=5,
+            ymin=-5,
+            ymax=5,
+            ticks=none,
+            scale only axis,
+            axis lines=middle,
+            domain=-2.279018:3,      
+            samples=201,
+            smooth,   
+            clip=false,
+            % use same unit vectors on the axis
+            axis equal image=true,
+            axis line style=thick
+        ]
+    
+    \addplot[blue,thick] {sqrt(x^3-3*x+5)} node[right] {};
+    \addplot[blue,thick] {-sqrt(x^3-3*x+5)};
+    \end{axis}
+    \end{tikzpicture}
+  \end{center}
+\end{frame}
+
+\begin{frame}{ECDL}
+  Elliptic curve discrete logarithm problem:
+  \begin{center}
+    find $x$ given $\underbrace{P + P + \dots + P}_{x \text{ times}} = x\cdot P = T$
+  \end{center}
+\end{frame}
+
+\iffalse
+\begin{frame}{Elliptic curve cryptography}
+  \begin{tikzpicture}
+    \begin{axis}[
+            xmin=-4,
+            xmax=5,
+            ymin=-5,
+            ymax=5,
+            xlabel={$x$},
+            ylabel={$y$},
+            scale only axis,
+            axis lines=middle,
+            domain=-2.279018:3,      
+            samples=201,
+            smooth,   
+            clip=false,
+            % use same unit vectors on the axis
+            axis equal image=true,
+        ]
+    
+    \addplot[blue] {sqrt(x^3-3*x+5)} node[right] {$E$};
+    \addplot[blue] {-sqrt(x^3-3*x+5)};
+    \addplot[red] {2.621+0.251*(x+1.2)};
+    
+    
+    %\begin{scriptsize}
+        %== P ==
+        \draw [fill=black] (axis cs:-1.2,2.6) circle (2pt);
+        \draw[color=black] (axis cs:-1.4,2.7) node [left]{$P$};
+    %\end{scriptsize}
+    \end{axis}
+    \end{tikzpicture}
+\end{frame}
+\fi
+
+\begin{frame}{Why elliptic curves}
+  Equivalent security with better performance
+  \begin{itemize}[<+(1)->]
+    \item Large key-sizes for integer factorisation/DLP based trapdoors
+    \item Best known algorithms against EC trapdoors are less efficient
+    \item More efficient computations and optimisations
+    \item The Internet loves them (TLS)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Why not elliptic curves}
+  Complex structure
+  \begin{itemize}
+    \item Higher bar of expertise
+    \item Supporting encryption is sus
+    \item Questionable parameter generation: are there backdoors?
+    \item Different side-channel concerns
+    \item Patents, patents, and patents
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{DualEC\_DRBG}
+  Did the NSA backdoor the DualEC\_DRBG ECC-based CSPRNG?
+  \begin{itemize}[<+(1)->]
+    \item Standardised by NIST
+    \item Pushed and promoted by the NSA
+    \item Thankfully retired in 2014
+  \end{itemize}
+
+  \pause
+  Some links:
+  \begin{itemize}
+    \item \url{https://blog.cryptographyengineering.com/2015/01/14/hopefully-last-post-ill-ever-write-on/}
+    \item \url{https://www.schneier.com/blog/archives/2007/11/the_strange_sto.html}
+    \item \url{https://youtu.be/nybVFJVXbww?si=_fn6J-TD7HnvfPtA}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Well-known curves}
+  Some popular curves include:
+  \begin{itemize}[<+(1)->]
+    \item \textbf{Curve25519} (D. J. Bernstein): good default choice
+    \item \textbf{P-256}, P-384, P-521 (NIST): FIPS-approved
+    \begin{itemize}
+      \item secp256r1, secp384r1, secp521r1 
+    \end{itemize}
+    \item Curve448: if Curve25519 is not enough
+    \item \href{https://hackmd.io/@benjaminion/bls12-381}{BLS12-381}: for fancy crypto (e.g. ZK-SNARKs)
+    \item Brainpool Curves (\href{https://datatracker.ietf.org/doc/html/rfc5639}{RFC 5639}): German compliance or NIST paranoia
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Resources}
+  Some resources:
+  \begin{itemize}[<+(1)->]
+    \item NIST-approved curves: \href{https://csrc.nist.gov/pubs/sp/800/186/final}{\textit{NIST SP 800-186}}.
+    \item Bernstein's \href{https://safecurves.cr.yp.to}{\emph{SafeCurves}} guide (arguably biased and a bit outdated).
+    \item \href{https://www.keylength.com/en/}{\textit{keylength.com}}
+    \item \href{https://cryptobook.nakov.com/asymmetric-key-ciphers/elliptic-curve-cryptography-ecc}{\textit{Nakov's ECC for developers}} (a high-level explanation for devs)
+  \end{itemize}
+
+  \pause
+  A nice \href{https://crypto.stackexchange.com/questions/93519/why-are-nist-curves-still-used}{\textit{post}} on Crypto Stack Exchange about NIST curves.
+\end{frame}
+
+\end{document}

@@ -1,0 +1,457 @@
+\usetheme[numbering=fraction]{metropolis}
+
+\metroset{block=fill}
+
+\usepackage{csquotes}
+\setquotestyle{british}
+
+\usepackage{graphicx}
+\graphicspath{ {../../images/} }
+
+\usetikzlibrary{positioning,calc,external}
+%\tikzexternalize[prefix=figures/] 
+
+\usepackage{crysymb}
+
+\usepackage{soul}
+
+\usetikzlibrary{positioning,calc}
+\graphicspath{ {../../images/} }
+
+\title[Short version of title]{ICS0026 Cryptography}
+\subtitle{Public-key cryptography \& RSA}
+\author%
+{%
+    {Taaniel Kraavi}\\
+    \textit{\footnotesize Guest Lecturer}
+}
+\institute%
+{%
+    \textit{IT College}\\
+    \textit{Tallinn University of Technology}
+}
+
+\begin{document}
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Public-key cryptosystem}
+  A \emph{public-key encryption scheme} is a triple of algorithms:
+  \begin{itemize}[<+(1)->]
+    \pause\item $\GEN$ is a randomised \emph{key generation algorithm}: $(\PK,\SK)\gets\GEN$
+    \pause\item $\ENC$ is a (possibly randomised) \emph{encryption algorithm}: $c\gets\ENC_\PK(m)$
+    \pause\item $\DEC$ is a \emph{decryption algorithm}: $m\gets\DEC_\SK(c)$.
+  \end{itemize}
+
+  \pause
+  There are two keys:
+  \begin{itemize}[<+(1)->]
+    \item $\SK$ is the \emph{secret key}, also called \emph{private key}
+    \item $\PK$ is the \emph{public key}
+    \item $\PK$ is derived from the $\SK$
+    \item It should be \emph{infeasible} to derive $\SK$ from the $\PK$
+  \end{itemize}
+
+  \pause
+  The cryptosystem is \emph{functional} if $\DEC_\SK(\ENC_\PK(m))=m$.
+\end{frame}
+
+\begin{frame}{Public-key cryptosystem}
+  \begin{center}
+    \begin{tikzpicture}
+      \node (alice) at (0,0)      {\includegraphics[height=80px]{alice}};
+      \node (bob)   at (8, 0)     {\includegraphics[height=80px]{bob}};
+      \node (eve)   at (4, -2.1)  {\includegraphics[height=80px]{eve}};
+  
+      \draw[->,thick] (alice.east) -- (bob.west);
+      
+      \node[anchor=east] (gen) at (11, 2) {$(\PK,\SK)\gets\GEN$};
+      \draw[<-,dashed,thick] (alice.north) |- (gen.west);
+
+      \node (el) at (eve.north) [xshift=-5px] {};
+      \node (er) at (eve.north) [xshift=5px] {};
+
+      \path let \p1 = (el) in node (circ1) at (\x1,2) {};
+      \path let \p1 = (er) in node (circ2) at (\x1,0) {};
+
+      \node[anchor=west] (m) at (-3, 0.25) {$m\gets\MMM$};
+      \node[anchor=west] (enc) at (-3, -0.25) {$c\gets\ENC_\PK(m)$};
+      \node[anchor=east] (dec) at (11, 0) {$m\gets\DEC_\SK(c)$};
+      
+      \node (c) at (circ2.north) [yshift=5px] {$c$};
+
+      \draw[->,dashed,thick] (circ1) -- (el);
+      \draw[->,thick] (circ2.center) -- (er);
+
+      \node[anchor=center,draw,circle,fill=white,thick,minimum size = 2px, inner sep=0pt] at (circ1) {};
+      \node[anchor=center,draw,circle,fill=white,thick,minimum size = 2px, inner sep=0pt] at (circ2) {};
+  
+      \node (ska) at (circ1.north) [yshift=5px] {$\PK$};
+    \end{tikzpicture}
+  \end{center}
+
+  \pause
+  The public key $\PK$ should be known to everyone.
+\end{frame}
+
+\begin{frame}{Security of PK systems}
+  \begin{itemize}[<+(1)->]
+    \item `Provable' rather than heuristic/best-effort
+    \item Relies on the \emph{hardness} of problems (mathematical and/or computational)
+    \begin{itemize}
+      \item Integer factorisation
+      \item Discrete logarithm problem (DLP)
+      \item Lattice problems
+    \end{itemize}
+    \item Public key derived from secret key: mathematical link
+    \item Anyone can encrypt with the public key
+    \begin{itemize}
+      \item No need for \emph{encryption oracles}
+      \item CPA becomes trivial
+      \item \emph{Key exchange} no longer a security problem\textsuperscript{*}
+    \end{itemize}
+    \item Easy to overlook timing side-channels in implementations!
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Modular arithmetic}
+  \begin{itemize}[<+->]
+    \item `Secures' most of classical public-key cryptography
+    \begin{itemize}
+      \item Integer factorisation
+      \item Discrete logarithm problem (DLP)
+    \end{itemize}
+    \item Intractability of some operations given numbers large enough
+    \begin{itemize}
+      \item Intractable for classical computers
+      \item Solvable (eventually) by quantum computers (Shor's algorithm)
+      \item 48-bit factorisation claimed by Yan et al. (Dec. 2022)
+    \end{itemize}
+    \item `Clock arithmetic'
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Terminology refresher}
+  Two integers are \alert{congruent} modulo $n$ if
+  \[
+    a \equiv b \pmod{n},
+  \]
+  \pause
+  that is, if $n \mid a - b$ (read as: $n$ divides $a-b$).
+
+  \vspace*{1em}
+
+  \pause
+  You will often see the notation
+  \[
+    a \bmod n = b
+  \]
+  due to its familiarity among programmers:
+  \begin{center}
+    \texttt{b = a \% n}.
+  \end{center}
+\end{frame}
+
+\begin{frame}{Terminology refresher}
+  In both
+  \begin{itemize}
+    \item $a \equiv b \pmod{n}$ 
+    \item $a \bmod n = b$,
+  \end{itemize}
+  $n$ is called the \alert{modulus}.
+
+  Some terminology you might encounter:
+  \begin{itemize}[<+(1)->]
+    \item $\ZZ_n$: \emph{ring} of integers modulo $n$
+    \begin{itemize}
+      \item Essentially just the set of values $\{0, 1, \dots, n-1\}$ (a bit simplified)
+    \end{itemize}
+    \item $\ZZ_n^*$: integers modulo $n$ with modular multiplicative inverses
+    \begin{itemize}
+      \item The \emph{multiplicative group} of integers modulo $n$
+      \item Integers for which there exists $a^{-1}$ such that $a\cdot a^{-1} \equiv 1 \pmod{n}$
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Modulo bias}
+  How should we generate $n$-bit numbers in a range?
+
+  \pause
+  Naive approach:
+  \begin{itemize}[<+(1)->]
+    \item Generate a random $n$-bit number
+    \item Take the number modulo the upper limit
+  \end{itemize}
+
+  \pause
+  This approach introduces bias!
+\end{frame}
+
+\begin{frame}{Modulo bias}
+  \begin{figure}
+    \includegraphics[height=200px]{bias}
+  \end{figure}
+\end{frame}
+
+\begin{frame}{Modulo bias}
+  \pause
+  We must use \alert{rejection sampling} instead!
+
+  \vspace*{1em}
+
+  \pause
+  Example from the GO standard library:
+  \url{https://go.dev/src/crypto/rand/util.go}
+
+  \vspace*{1em}
+
+  \pause
+  Other examples (not an endorsement):
+  \url{https://www.pcg-random.org/posts/bounded-rands.html}
+\end{frame}
+
+\begin{frame}{Integer factorisation}
+  \pause
+  \begin{block}{Fundamental theorem of arithmetic}
+    Every integer greater than $1$ has a unique prime factorisation.
+  \end{block}
+
+  \pause
+  Testing for primality is efficient (polynomial time)
+  \pause
+  \begin{itemize}
+    \item For large numbers, tests are typically probabilistic
+  \end{itemize}
+  
+  \pause
+  Efficient factorisation is unsolved on classical computers
+  \begin{itemize}[<+(1)->]
+    \item No polynomial time algorithm
+    \item Shor's algorithm for quantum computers
+    \item Special purpose algorithms exist
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{RSA Numbers}
+  \pause
+  \begin{block}{Semiprime}
+    A number with exactly two prime factors.
+  \end{block}
+  
+  \begin{itemize}[<+(1)->]
+    \item RSA Factoring Challenge (1991)
+    \item RSA numbers: published semiprimes
+    \item Discontinued in 2007
+  \end{itemize}
+
+  \pause
+  Largest RSA number factored to date:
+  \begin{itemize}[<+(1)->]
+    \item RSA-250: 829-bit (Feb. 2020)
+    \item $\sim$2700 CPU core-years
+    \item 2.1 GHz Intel Xeon Gold 6130 CPU
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{RSA cryptosystem}
+  Public-key cryptosystem by Rivest, Shamir \& Adleman (1977).
+  
+  \begin{enumerate}[<+(1)->]
+    \item Generate two secret large primes $p,q$ (caveats apply)
+    \item Compute $n=pq$, and $\phi(n)=(p-1)(q-1)$
+    \item $e \getsu \ZZ_{\phi(n)}^*$ and set $d = e^{-1} \bmod \phi(n)$
+    \item $\SK=(p,q,e,d)$ and $\PK = (n,e)$
+  \end{enumerate}
+
+  \pause
+  Variants exist:
+  \begin{itemize}[<+(1)->]
+    \item Carmichael's totient $\lambda$ over Euler's totient $\phi$ (e.g. \href{https://csrc.nist.gov/pubs/fips/186-5/final}{FIPS 186-5})
+    \item Originally: pick $d$, compute $e$ (optimises decryption)
+    \item More caveats: do not implement RSA yourself!
+    \item DYOR when choosing an implementation
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{RSA cryptosystem}
+  Encryption:
+  \pause
+  \begin{itemize}
+    \item $c \equiv m^e \pmod{n}$
+  \end{itemize}
+
+  \pause
+  Decryption:
+  \pause
+  \begin{itemize}
+    \item $c^d \equiv \bigl(m^e\bigr)^d \equiv m \pmod{n}$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Modular exponentiation}
+  Naive exponentiation $m^e \bmod n$ is wasteful.
+
+  \pause
+  Modular exponentiation is a technique to improve this computation.
+
+  \pause
+  \[
+    a^b \bmod c = \Bigl((a \bmod c)^b\Bigr) \bmod c
+  \]
+
+  \pause
+  Fast modular exponentiation
+  \begin{itemize}[<+(1)->]
+    \item Exponentiation by squaring
+    \item Nice intro on this \href{https://dev-notes.eu/2019/12/Fast-Modular-Exponentiation/}{blog}
+  \end{itemize}
+
+  \pause
+  \begin{block}{Warning!}
+    Very vulnerable to timing-based side channels!
+  \end{block}
+  
+\end{frame}
+
+\begin{frame}{Issues with `textbook' RSA}
+  Textbook RSA is:
+  \begin{itemize}[<+(1)->]
+    \item Deterministic (not IND-CPA)
+    \item Vulnerable to small-exponent attacks
+    \begin{itemize}
+      \item Coppersmith's attack (small public key)
+      \item Wiener's attack (small private key)
+    \end{itemize}
+    \item Malleable (not IND-CCA)
+  \end{itemize}
+
+  \pause
+  Padding schemes can improve these issues somewhat.
+
+  \pause
+  Padding schemes do not protect against fatal mistakes, e.g.
+  \begin{itemize}[<+(1)->]
+    \item re-using primes with different keys
+    \item using weak or small primes (\href{https://cybersec.ee/2017/10/18/rsa-2048-bit-keys-in-estonian-id-cards-issued-after-october-2014-are-factorizable/}{Estonian example})
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{RSA padding schemes}
+  \pause
+  PKCS \#1:
+  \begin{itemize}[<+(1)->]
+    \item \texttt{RSAES-PKCS1-v1\_5} vulnerable!
+    \item \texttt{RSAES-OAEP} (PKCS \#1 v2.0)
+    \item \href{https://datatracker.ietf.org/doc/html/rfc2437}{RFC 2437}
+  \end{itemize}
+
+  \pause
+  OAEP --- Optimal Asymmetric Encryption Padding
+  \begin{itemize}[<+(1)->]
+    \item Provides randomness (probabilistic encryption)
+    \item Prevents partial decryption
+    \item IND-CCA1 (non-adaptive)
+    \item Not IND-CCA2 (adaptive)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Security level}
+  PK cryptography typically requires larger keys to achieve the same security level as symmetric cryptosystems.
+
+  \pause
+  Some shaky explanations:
+  \begin{itemize}[<+(1)->]
+    \item Brute force is `easier'
+    \item Not all keys in the bit-space are valid
+    \item Mathematical problems with various algorithms to attempt to solve them
+    \item Relationship between public and secret key
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Security level}
+  Estimates defined in NIST SP 800-57 REV. 5
+
+  \pause
+  \begin{center}
+  \begin{tabular}{|c|c|c|}
+    Security Strength & Symmetric & RSA\\
+    128 & AES-128 & $k = 3072$\\
+    192 & AES-192 & $k = 7680$\\
+    256 & AES-256 & $k = 15360$
+  \end{tabular}
+  \end{center}
+
+  \pause
+  \url{https://csrc.nist.gov/pubs/sp/800/57/pt1/r5/final}
+
+  \pause
+  Other recommendations:
+  \begin{itemize}
+    \item ANSSI: \href{https://cyber.gouv.fr/le-referentiel-general-de-securite-version-20-les-documents}{RGS v2.0 annex B1}
+    \item BSI: \href{https://www.bsi.bund.de/DE/Themen/Unternehmen-und-Organisationen/Standards-und-Zertifizierung/Technische-Richtlinien/TR-nach-Thema-sortiert/tr02102/tr02102_node.html}{TR-02102-1}
+    \item NCSC (NL): \href{https://english.ncsc.nl/publications/publications/2021/january/19/it-security-guidelines-for-transport-layer-security-2.1}{IT Security Guidelines for
+    Transport Layer Security (TLS)\textsuperscript{*}}
+    \item \url{https://www.keylength.com/en/compare/}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Hybrid encryption}
+  Public-key cryptosystems are slow, but `solve' the key exchange problem\textsuperscript{*}.
+
+  \pause
+  Hybrid cryptosystem:
+  \begin{itemize}[<+(1)->]
+    \item \emph{key encapsulation mechanism} (KEM)
+    \item \emph{data encapsulation scheme}
+  \end{itemize}
+
+  \pause
+  Key encapsulation mechanisms:
+  \begin{itemize}[<+(1)->]
+    \item Not simply PK encryption: there are changes
+    \item Key derivation functions (KDF) often used
+    \item Example: RSA-KEM (\href{https://datatracker.ietf.org/doc/html/rfc5990}{RFC 5990})
+  \end{itemize}
+
+  \pause
+  We will talk about key exchange algorithms next week.
+\end{frame}
+
+\begin{frame}{Signature scheme pitfall}
+  \pause
+  \begin{block}{Common misconception}
+    By `encrypting' with a secret key and `decrypting' with a public key, a public-key encryption scheme becomes a signature scheme.
+  \end{block}
+
+  \begin{itemize}[<+(1)->]
+    \item Under no circumstance shall you do this!
+    \item Generally it does not even work (formatting issues)
+    \item Different security requirements
+    \item Use separate signing keys
+    \item Subtleties that you do not even know exist!
+  \end{itemize}
+
+  \pause
+  \textbf{Use the right tool for the right task. Never assume!}
+\end{frame}
+
+\begin{frame}{ASN.1}
+  Abstract Syntax Notation One
+  \begin{itemize}[<+(1)->]
+    \item Many encoding rules
+    \item Distinguished Encoding Rules (DER)
+    \item DER often used in cryptography: unequivocal
+  \end{itemize}
+
+  \pause
+  Some tools:
+  \begin{itemize}[<+(1)->]
+    \item \url{https://asn1.io/asn1playground/}
+    \item \url{https://lapo.it/asn1js/}
+    \item \texttt{dumpasn1} (CLI)
+  \end{itemize}
+\end{frame}
+
+\end{document}
