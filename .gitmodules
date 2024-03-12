@@ -1,0 +1,3 @@
+[submodule "homeworks/solutions"]
+	path = homeworks/solutions
+	url = git@github.com:takakv/ics0026-hw-solutions.git
