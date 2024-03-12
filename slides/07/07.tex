@@ -1,0 +1,527 @@
+\usetheme[numbering=fraction]{metropolis}
+
+\metroset{block=fill}
+
+\usepackage[dvipsnames]{xcolor}
+
+\usepackage{booktabs}
+
+\usepackage{fancyvrb}
+\fvset{listparameters=\setlength{\topsep}{0pt}\setlength{\partopsep}{0pt}}
+
+\usepackage{csquotes}
+\setquotestyle{british}
+
+\usepackage{graphicx}
+\graphicspath{ {../../images/} }
+
+\usepackage{pgfplots}
+\usetikzlibrary{positioning,calc,external}
+%\tikzexternalize[prefix=figures/] 
+
+\usepackage{crysymb}
+
+\renewcommand*{\arraystretch}{1.2}
+
+\usepackage{soul}
+\usepackage[en-GB]{datetime2}
+\DTMlangsetup[en-GB]{ord=omit}
+
+\usetikzlibrary{positioning,calc}
+\graphicspath{ {../../images/} }
+
+\title{ICS0026 Cryptography}
+\subtitle{Digital signatures \& PKI}
+\date{\DTMdate{2024-03-12}}
+\author%
+{%
+    {Taaniel Kraavi}\\
+    \textit{\footnotesize Guest Lecturer}
+}
+\institute%
+{%
+    \textit{IT College}\\
+    \textit{Tallinn University of Technology}
+}
+
+\begin{document}
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Authenticity of data}
+  Authenticity:
+  \begin{itemize}[<+(1)->]
+    \item Asserts data integrity: not modified in transit
+    \item Authenticates the data source: sent by someone we know\textsuperscript{*}
+    \item Does not guarantee authorisation!
+  \end{itemize}
+
+  \pause
+  Symmetric setting:
+  \begin{itemize}[<+(1)->]
+    \item Message authentication codes (MAC)
+    \item Issuing \& verification with the same key
+    \item Secret knowledge and/or possession
+    \item Key exchange problem
+    \item \emph{Repudiation} problem
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Digital signatures}
+  Digital signatures:
+  \begin{itemize}[<+(1)->]
+    \item asymmetric / public-key scheme
+    \begin{itemize}
+      \item a public \emph{verification key} known to others
+      \item a secret \emph{signing key} known to the signer
+    \end{itemize}
+    \item publicly verifiable: signatures are \emph{transferable}
+    \item identification becomes possible\textsuperscript{\ast}
+    \begin{itemize}
+      \item keys are personal
+      \item verification for a specific signer
+      \item signatures are \emph{non-interactive} identification schemes\textsuperscript{*}
+    \end{itemize}
+    \item \emph{non-repudiation}: cannot reject your signature
+    \item how to tie identity with information?
+    \begin{itemize}
+      \item legal identification vs tracing
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Digital signature scheme}
+  A \emph{digital signature scheme} is a triple of PPT algorithms:
+  \begin{itemize}[<+(1)->]
+    \item $\GEN$ is a \emph{key generation algorithm}: $(\PK, \SK)\gets\GEN$
+    \item $\SIGN$ is a \emph{signing algorithm}: $\sigma\gets\SIGN_\SK(m)$
+    \item $\VERIF$ is a deterministic \emph{verification algorithm}: $b\gets\VERIF_\PK(m, \sigma)$
+  \end{itemize}
+
+  \pause
+  Notation and terms:
+  \begin{itemize}[<+(1)->]
+    \item $\SK$ is the private/secret key also called the \emph{signing key}
+    \item $\PK$ is the public key also called the \emph{verification key}
+    \item $b$ is the verification result (bit): $1$ meaning valid, $0$ meaning invalid
+    \item $\sigma$ is a valid \emph{signature} on $m$ if $b = 1$
+  \end{itemize}
+
+  \pause
+  The signature scheme is \emph{functional} if $\VERIF_\PK(m, \SIGN_\SK(m)) = 1$.
+\end{frame}
+
+\begin{frame}{Digital signature scheme}
+  \pause
+  \begin{center}
+    \begin{tikzpicture}
+      \node (alice) at (0,0)  {\includegraphics[height=80px]{alice}};
+      \node (bob)   at (8, 0) {\includegraphics[height=80px]{bob}};
+      \node (eve)   at (4, 0) {\includegraphics[height=80px]{eve}};
+
+      \draw[<-, thick] (eve.east) -- node[above] {$(m, \sigma$)} (bob.west);
+      \draw[<-, thick] (alice.east) -- node[above] {$(\overline{m}, \overline{\sigma}$)} (eve.west);
+      
+      \node[anchor=east] (gen) at (11, 2.5) {$(\PK,\SK)\gets\GEN$};
+      \draw[<-,dashed,thick] (alice.north) |- (gen.west);
+
+      \node (el) at (eve.north) [xshift=-5px] {};
+
+      \path let \p1 = (el) in node (circ) at (\x1,2.5) {};
+      \node at (circ.north) [yshift=5px] {$\PK$};
+
+      \node[anchor=west]  at (8.5, 0.25)  {$m\gets\MMM$};
+      \node[anchor=west]  at (8.5, -0.25) {$\sigma\gets\SIGN_\SK(m)$};
+      \node[anchor=north] at (alice.south) {$\VERIF_\PK(\overline{m},\overline{\sigma})\iseq 1$};
+
+      \draw[->,dashed,thick] (circ) -- (el);
+      \node[anchor=center,draw,circle,fill=white,thick,minimum size = 2px, inner sep=0pt] at (circ) {};
+    \end{tikzpicture}
+  \end{center}
+
+  \pause
+  Mallory should not be able to \emph{forge} a valid signature.
+\end{frame}
+
+\begin{frame}{Security definitions}
+  Attack scenarios
+  \begin{itemize}[<+(1)->]
+    \item \emph{Key only attack.}
+    The adversary has access only to the public key $\PK$.
+    \item \emph{Chosen-message attack.}
+    Besides having $\PK$, the adversary can query a list of valid signatures $(m_1, \sigma_1), \dots, (m_n, \sigma_n)$.
+  \end{itemize}
+
+  \pause
+  Attack types
+  \begin{itemize}[<+(1)->]
+    \item \emph{Universal forgery.}
+    Create a valid signature for a prescribed message $m$.
+    \item \emph{Existential forgery.}
+    Create a valid signature for some message $m$.
+  \end{itemize}
+
+  \pause
+  A \emph{secure} scheme is secure against the \emph{one-more signature attack}:
+  \begin{itemize}[<+(1)->]
+    \item chosen-message attack + existential forgery
+    \item existentially unforgeable under an adaptive chosen-message attack
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{How to sign?}
+  Hints:
+  \begin{itemize}[<+(1)->]
+    \item Messages can be large
+    \item PK systems do not operate on arbitrary size data
+    \item Different messages: different signatures
+  \end{itemize}
+
+  \pause
+  Common approach:
+  \begin{itemize}[<+(1)->]
+    \item cryptographic hash: message representative
+    \item hash and sign the hash (hash used in the algorithm)
+    \item how do you verify? (message not recoverable from the signature)
+  \end{itemize}
+
+  \pause
+  Other approaches exist
+\end{frame}
+
+\begin{frame}{RSA signatures}
+  \pause
+  PKCS \#1:
+  \begin{itemize}[<+(1)->]
+    \item \texttt{RSASSA-PKCS1-v1\_5} no known weakness, but lacks formal proofs
+    \item \texttt{RSASSA-PSS} (introduced in PKCS \#1 v2.1)
+    \item \href{https://datatracker.ietf.org/doc/html/rfc8017}{\texttt{RFC 8017}}
+  \end{itemize}
+
+  \pause
+  PSS --- Probabilistic Signature Scheme
+  \begin{itemize}[<+(1)->]
+    \item Renders signatures probabilistic
+    \item Digest cannot be extracted from the signature
+    \item Parameters must be known before signature verification
+    \item Has a security analysis: provably reducible to the RSA problem
+    \item Uses SHA1 by default: if possible, parametrise with a SHA2 variant
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Determinism vs. nondeterminisim}
+  \pause
+  Unlike for encryption, non-determinism is not crucial per se:
+  \begin{itemize}[<+(1)->]
+    \item no message to hide
+  \end{itemize}
+
+  \pause
+  Nonces protect the key in many constructions:
+  \begin{itemize}[<+(1)->]
+    \item nonce leak allows secret recovery
+    \item nonce reuse allows secret recovery
+    \item conclusion: nonces must be unique and hard to find
+    \item (secrecy over nondeterminism)
+  \end{itemize}
+
+  \pause
+  Poor randomness is catastrophic in many schemes!
+\end{frame}
+
+\begin{frame}{Randomness pros and cons}
+  \pause
+  Issues with randomness:
+  \begin{itemize}[<+(1)->]
+    \item Cryptographic randomness required (real-world security issue)
+    \item Covert channel attacks (e.g. physical crypto wallets)
+  \end{itemize}
+
+  \pause
+  Pros of randomness:
+  \begin{itemize}[<+(1)->]
+    \item Typically less reliance on the security of primitives
+    \item Easier to prove secure
+    \item `More robust' against partial breakage
+  \end{itemize}
+
+  \pause
+  Deterministic signatures more and more common (e.g. blockchains).
+  \begin{itemize}[<+(1)->]
+    \item Proofs and standards for deterministic schemes
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{DSA \& ECDSA}
+  \pause
+  Digital Signature Algorithm (DSA):
+  \begin{itemize}[<+(1)->]
+    \item DL-based (variant of Schnorr \& ElGamal)
+    \item Part of DSS versions 1--4
+    \item Removed from DSS version 5 (\href{https://csrc.nist.gov/pubs/fips/186-5/final}{FIPS 168-5} finalised in 2023)
+    \item ECDSA: Elliptic Curve DSA
+    \item \href{https://datatracker.ietf.org/doc/html/rfc6979}{\texttt{RFC 6979}}: deterministic DSA \& ECDSA
+  \end{itemize}
+
+  \pause
+  Sony 2013 PS3 attack:
+  \begin{itemize}
+    \item ECDSA software signing-key recovered
+    \item Caused by nonce-reuse (Sony implementation issue)
+  \end{itemize}
+
+  \pause
+  ECDSA not yet deprecated, but better to use EdDSA.
+\end{frame}
+
+\begin{frame}{EdDSA}
+  Edwards-curve Digital Signature Algorithm (\href{https://datatracker.ietf.org/doc/html/rfc8032}{\texttt{RFC 8032}}):
+  \begin{itemize}[<+(1)->]
+    \item Not to be confused with DSA \& ECDSA: different algorithm entirely
+    \item Designed by \alert{Bernstein} et al.
+    \item Based on twisted Edwards Curves (a model of ECs)
+    \item High performance
+    \item Designed with side-channel safety in mind
+    \item Ed25519 (Curve25519 with SHA512) \& Ed448 (Curve448 with SHAKE256)
+    \item Deterministically chosen nonce
+  \end{itemize}
+
+  \pause
+  Unless you have a good reason not to, use EdDSA!
+\end{frame}
+
+\begin{frame}{DSS}
+  Digital Signature Standard (\href{https://csrc.nist.gov/pubs/fips/186-5/final}{FIPS 168-5}):
+  \begin{itemize}[<+(1)->]
+    \item No longer allows DSA for issuing signatures
+    \begin{itemize}
+      \item Prior signature verification still allowed
+    \end{itemize}
+    \item ECDSA is allowed
+    \begin{itemize}
+      \item Forbidden to use it for non-signing purposes (e.g. key establishment)
+      \item Deterministic \& nondeterministic variants
+    \end{itemize}
+    \item Deterministic EdDSA is allowed
+    \begin{itemize}
+      \item Both Ed25519 and Ed448 variants
+      \item Variants differ a bit from the RFC
+    \end{itemize}
+    \item RSA as defined in PKCS \#1 v2.2 is allowed
+    \begin{itemize}
+      \item Additional restrictions apply
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Long term signatures}
+  How to archive digitally signed documents?
+  \begin{itemize}[<+(1)->]
+    \item In 20 years, how to check if a signature was valid today?
+    \item Long-term validation (LTV)
+    \item We will see formats and legality next week
+  \end{itemize}
+
+  \pause
+  Re-signing over a document:
+  \begin{itemize}[<+(1)->]
+    \item Sign it with a new scheme before the old one is broken
+    \item Timestamp the new signature for temporal order
+    \item Extend your signature lifetime
+  \end{itemize}
+
+  \pause
+  We will see timestamping also next week.
+\end{frame}
+
+\begin{frame}{PQ signatures}
+  Post-quantum safe signature schemes chosen by NIST:
+  \begin{itemize}[<+(1)->]
+    \item CRYSTALS-Dilithium (lattices)
+    \item Falcon (lattices)
+    \item SPHINCS+ (hashes)
+  \end{itemize}
+
+  \vspace*{0.5em}
+
+  \pause
+  `Hybrid mode': combination of PQ and pre-quantum schemes.
+  \begin{itemize}[<+(1)->]
+    \item separate signatures vs. composite mode?
+  \end{itemize}
+
+  \vspace*{0.5em}
+
+  \pause
+  PQ schemes are not yet widely used
+  \begin{itemize}
+    \item long keys and signatures
+    \item slower than classical counterparts
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Hash-based singature schemes}
+  \pause
+  Cryptographic hash functions are usually PQ resistant.
+  \begin{itemize}
+    \item Can we build a signature scheme out of them?
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  At the source: Lamport's one-time signatures
+  \begin{itemize}[<+(1)->]
+    \item Based on one-way functions (not only CHFs)
+    \item One key per signature
+    \item Optimisations exist, e.g. with PQ CSPRNGs
+    \item Keys can be combined using structures, e.g. Merkle trees
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Cool constructions}
+  \pause
+  Group signatures:
+  \begin{itemize}[<+(1)->]
+    \item Anonymously sign on behalf of a group
+    \item The public cannot learn who this is
+    \item The group `manager' can (unforgeably) trace and de-anonymise a signer
+    \item Signatures are unlinkable (multiple signatures by the same issuer?)
+  \end{itemize}
+
+  \pause
+  Ring signatures:
+  \begin{itemize}[<+(1)->]
+    \item Group signatures without a manager/trusted setup
+    \item Traceable/linkable variants exist
+  \end{itemize}
+
+  \pause
+  Blind signatures
+  \begin{itemize}[<+(1)->]
+    \item Sign some data without knowing the exact contents
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Cool constructions}
+  \pause
+  Threshold signatures:
+  \begin{itemize}[<+(1)->]
+    \item Can only produce a valid signature in a quorum
+    \item We will cover threshold cryptography in more depth in some weeks
+  \end{itemize}
+
+  \pause
+  Multisignatures:
+  \begin{itemize}[<+(1)->]
+    \item Combine multiple signatures into a single succinct signature
+    \item All signatories are evident from the multisignature
+  \end{itemize}
+
+  \pause
+  Identity escrow:
+  \begin{itemize}[<+(1)->]
+    \item Party $A$ gives information to party $B$
+    \item This information does not allow $B$ to identify $A$
+    \item A 3\textsuperscript{rd} party $C$ can use this info to identify $A$
+    \item $B$ receives a guarantee that $C$ can identify $A$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Trust models}
+  How do we establish trust?
+  \begin{itemize}[<+(1)->]
+    \item Hierarchical trust (CAs)
+    \item Web of trust (WoT)
+    \item Trust on First Use (TOFU)
+    \item Dual control model
+    \item \dots
+  \end{itemize}
+
+  \pause
+  Someone somewhere has to trust something sometime.
+\end{frame}
+
+\begin{frame}{Public Key Infrastructure (PKI)}
+  A public key infrastructure consists of a:
+  \begin{itemize}[<+(1)->]
+    \item certificate authority (CA): stores, issues \& signs certificates
+    \item registration authority (RA): verifies the identity of certificate requesters
+    \item central directory: indexing of keys
+  \end{itemize}
+
+  \pause
+  Entities need not all be separate, e.g. CA \& RA could be one.
+  \begin{itemize}
+    \item The term \emph{trusted third party} (TTP) often used
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{PKI (extended)}
+  \pause
+  There is also usually a:
+  \begin{itemize}[<+(1)->]
+    \item certificate policy: defines parties' roles and procedures
+    \item certificate management system
+  \end{itemize}
+
+  \pause
+  These are less critical for understanding how the PKI works.
+\end{frame}
+
+\begin{frame}{Digital certificates}
+  A \emph{certificate} binds keys to an entity's attributes (e.g. name, email).
+  \begin{itemize}[<+(1)->]
+    \item An entity lists their attributes and public key (entity signature)
+    \item A third party confirms the attributes (3\textsuperscript{rd} party's signature)
+  \end{itemize}
+
+  \pause
+  Ideally, the 3\textsuperscript{rd} party is like a digital notary.
+  \begin{itemize}[<+(1)->]
+    \item You simply trust the notary
+    \item Only need to verify the notary's signature on certificates\textsuperscript{*}
+    \item Verification requirements vary (national eID vs. git commit)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{PKI (CA-based)}
+  \pause
+  Root CAs:
+  \begin{itemize}[<+(1)->]
+    \item Root CAs who certify lower level CA's
+    \item Root CA certificates are bundled with the OS
+    \item Root CA certs can be added to a device's root certificate store
+  \end{itemize}
+
+  \pause
+  Tree model:
+  \begin{itemize}[<+(1)->]
+    \item Root CAs determine the powers of lower level CAs
+    \item Lower level CAs might be able to name even lower level CAs etc.
+    \item Chain of certification
+    \item To verify a certificate, recursively verify until the root
+  \end{itemize}
+
+  \pause
+  How much to verify?
+\end{frame}
+
+\begin{frame}{Web of Trust}
+  Some key points:
+  \begin{itemize}[<+(1)->]
+    \item Popular with PGP
+    \item Not centralised unlike CA-based systems (PKIs in general)
+    \item LinkedIn for public keys
+    \item Upload your keys to key-servers on the web (no deletion possible usually)
+    \item You \emph{vet} a user by signing their keys
+    \item Other who trust you can then trust the keys you have signed
+    \item You can assign a trust level to keys
+  \end{itemize}
+
+  \pause
+  It's a mess, especially the key management.
+\end{frame}
+
+\end{document}
