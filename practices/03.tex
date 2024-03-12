@@ -1,0 +1,97 @@
+\documentclass{practice}
+
+\usepackage{listings}
+
+\lstset{
+basicstyle=\small\ttfamily,
+columns=flexible,
+breaklines=true
+}
+
+\begin{document}
+\begin{center}
+Practice session 3 --- 15.02.24
+\end{center}
+
+\textbf{Task 1 --- OpenSSL}
+
+OpenSSL\footnote{\url{https://www.openssl.org}} is a popular cryptographic tool/library which is perhaps best known in the context of TLS.
+It offers a wide variety of functionalities and is used not only by cryptographers, but also developers and sysadmins.
+
+OpenSSL has however had its fair share of weaknesses, and I personally do not like it very much: it can be fairly tricky to use and it is easy to make mistakes.
+As such, I typically prefer other tools (many of which are derived from OpenSSL), but you definitely need to know that OpenSSL exists.
+
+For this task, install OpenSSL.
+
+\textbf{Task 2 --- Concatenation and padding}
+
+For this task, implement the three non-deprecated padding schemes that we saw in class.
+Split a long byte string into blocks, and pad it if necessary.
+
+\textbf{Task 3 --- AES in Python}
+
+For this task, create a python program which uses AES-CBC to encrypt and decrypt files on the disk. Make sure that the IV is randomly generated when not explicitly provided.
+Make sure that block sizes are consistent: pad messages when needed.
+
+I personally like PyCryptodome\footnote{\url{https://www.pycryptodome.org}} but there are some other good libraries as well.
+
+Some useful links:
+\begin{itemize}
+  \item \url{https://www.pycryptodome.org/src/cipher/aes}
+  \item \url{https://www.pycryptodome.org/src/util/util}
+\end{itemize}
+
+\textbf{Task 4 --- AES test vectors}
+
+During the lectures, we learnt that AES is standardised by NIST.
+
+NIST has a program called the `Cryptographic Algorithm Validation Program' (CAVP) and part of it are testing specifications and \emph{test vectors} for block ciphers.
+
+Fetch some test vectors from their website, and use them to test the AES implementation.
+
+\url{https://csrc.nist.gov/projects/cryptographic-algorithm-validation-program/block-ciphers}
+
+\textbf{Task 5 --- Testing with OpenSSL}
+
+With OpenSSL, you can encrypt using 128-bit AES-CBC with the command:
+\begin{verbatim}
+openssl enc -aes-128-cbc -K <keyhex> \
+    -in <infile> -out <outfile> -iv <ivhex>
+\end{verbatim}
+and decrypt with:
+\begin{verbatim}
+openssl enc -d -aes-128-cbc -K <keyhex> \
+    -in <infile> -out <outfile> -iv <ivhex>
+\end{verbatim}
+
+Use the \texttt{-nopad} option if needed.
+
+Test the AES implementation with OpenSSL.
+
+\textbf{Task 6 --- Error propagation \& modes of operation}
+
+Try to see what happens to the ciphertext when you modify different parts of the plaintext, e.g. how does the ciphertext change when you change a single bit in the second plaintext block CBC mode? What about changing a bit in the first plaintext block in ECB mode?
+
+What happens with decryption when you make a change in a ciphertext block?
+What happens if you drop/lose a ciphertext block in AES-CBC?
+
+Try to reason first using the diagram and then confirm in code.
+
+\textbf{Task 7 --- Key reuse, IV reuse}
+
+Try out the following scenarios and compare the outputs.
+\begin{enumerate}
+  \item Encrypt the same data twice with the same key and same IV.
+  \item Encrypt the same data twice with the same key and different IV.
+  \item Encrypt the same data twice with a different key but the same IV.
+\end{enumerate}
+
+Try this with different modes of operation.
+Would you be able to write a distinguisher?
+
+\textbf{Task 8 --- The cursed task}
+
+Hopefully by now you have a solid understanding of CBC mode.
+By using a library implementation of AES-ECB, build AES-CBC from it.
+
+\end{document}

@@ -1,0 +1,145 @@
+\documentclass{practice}
+
+\usepackage{listings}
+
+\lstset{
+basicstyle=\small\ttfamily,
+columns=flexible,
+breaklines=true
+}
+
+\begin{document}
+\begin{center}
+Practice session 2 --- 08.02.23
+\end{center}
+
+\textbf{Task 1 --- Random view}
+
+Observe the live flow of your computer's \texttt{/dev/urandom}.
+Observe then the live flow of \texttt{/dev/random}.
+Does there seem to be a difference in speed?
+What does you OS's documentation say on the difference between the two?
+
+Does your OS have a \texttt{/dev/hw\_random}?
+If so, what does it look like?
+
+Are you running a virtual machine?
+If so, do you think that the quality of VM-internal randomness is affected in any way?
+Why are there so many questions?
+What is the meaning of life?
+
+\textbf{Task 2 --- Testing randomness}
+
+During the lecture we learnt that true randomness is provably unprovable, that is, it has been proven that we cannot prove whether something is truly random.
+
+Since most, if not all of cryptographic security relies on quality randomness, the difficulty of evaluating whether something is truly random should not be overlooked.
+Thankfully, while they are not perfect, various test suites exist to statistically evaluate whether some data seems random enough.
+
+As such, we should keep in mind the following two points:
+\begin{enumerate}
+    \item If something does not seem random, that does not prove that it is not random.
+    For example, it is possible from time to time for randomness acquired from quality sources to not pass some statistical test.
+
+    \item If something seems random enough, i.e. passes most or all statistical tests, that does not yet prove that it is indeed truly random.
+\end{enumerate}
+
+The first point illustrates why test suites are typically used instead of single tests to evaluate random sequences: the fewer (diverse) tests the data fails, the more likely it is that the data is random.
+
+Sometimes, however, randomness tends towards the unlikely: surely most of us have experiences where the probability of something happening seemed absurd.
+In cases where we doubt the randomness, or where the randomness seems `weak' for whatever purpose (e.g. you credit card gets the CVC 123), it is often okay to regenerate values.
+Note however that this should not be the norm: the more you reject values based on non-random criteria, the more you introduce bias which could be exploited.
+
+The second point illustrates what cryptographic pseudo-random number generators (and plenty of other cryptographic tools) aim to achieve: it should not be feasible for an observer to distinguish between a `truly random' and a cryptographically pseudo-random dataset.
+
+One convenient suite of test tools for evaluating randomness is \texttt{dieharder}\footnotemark{}.
+Install the tool and evaluate your computer's current contents of \texttt{/dev/urandom} with it.
+\footnotetext{\url{https://webhome.phy.duke.edu/~rgb/General/dieharder.php}}
+
+\textbf{Task 3 --- Playing the cryptanalyst}
+
+Most programming languages offer as part of their standard libraries some function(s) for generating (pseudo-)random numbers.
+Good documentation should always mention whether a method is suitable for collecting randomness of cryptographic quality.
+The rule of thumb is: if there is no mention of cryptography, assume that it is not suitable for cryptographic purposes.
+
+For Python3, `regular' (pseudo-)random numbers can be generated using the \texttt{random}\footnotemark{} module, e.g. with \texttt{random.randbytes()}.%
+\footnotetext{\url{https://docs.python.org/3/library/random.html}}
+Under the hood this uses the \emph{Mersenne-Twister} construction\footnotemark{}, which is quite well-regarded as far as non-cryptographic PRNGs go (neat statistical properties), but should definitely not be used for cryptographic purposes.
+If you are interested in the why, then you have some heavy reading ahead!
+\footnotetext{\url{https://en.wikipedia.org/wiki/Mersenne_Twister}}
+
+Most modern programming languages thankfully also provide functionality for obtaining cryptographically secure random or pseudo-random numbers.
+Any such functionality must be clearly labelled as such, and even then you should do your research and take the claims with a grain of salt.
+
+For Python3, cryptographically strong random numbers can be generated with the \texttt{secrets}\footnotemark{} module, e.g. with the \texttt{secrets.token\_bytes()} function.%
+\footnotetext{\url{https://docs.python.org/3/library/secrets.html}}
+Do read the documentation before you use it!
+
+In class we also introduced the concept of cryptographic games, i.e. situations where an adversary/cryptanalyst/distinguisher must guess which of the two scenarios they are in.
+If the adversary has a better success rate than by random guessing---i.e. more than (or less than) $1/2$---we say that the adversary has an \emph{advantage} against the scheme.
+The greater the adversary's advantage, the weaker the scheme.
+
+Your task is to write a program which randomly picks either the CS(P)RNG or the PRNG for generating a random number, and a distinguisher which uses \texttt{dieharder} to guess which of the two was used.
+The program should do $10$ iterations, i.e. call the distinguisher 10 times with a new input each time, and should succeed at least $8$ times in guessing correctly.
+
+Clearly, if your program can correctly guess eight out of ten times which of the two generators was used, it has a significant advantage, and you now have empirical proof why you should take care when choosing your tooling.
+
+TIP: there seem to be some python implementations of the Dieharder test suite, but I recommend that you simply offload the testing to the CLI tool using the \texttt{subprocess}\footnotemark{} module.
+\footnotetext{\url{https://docs.python.org/3/library/subprocess.html}}
+
+\textbf{Task 4 --- Two-time pad}
+
+We learnt that the OTP provides information theoretic security, i.e. perfect secrecy, if the key is perfectly random, at least as long as the message, and used only once.
+
+Below are two OTP ciphertexts (in hex) which were both encrypted with the same key:
+\begin{center}
+    \texttt{3C8550F0E566}\hspace*{5em}\texttt{2A925DF2ED74}
+\end{center}
+
+Both ciphertexts contain a single word of the English dictionary.
+Can you recover the two words and determine the original message: a concatenation of both words?
+Do you think that your recovered words and/or order are/is correct?
+Can you explain why or why not?
+
+TIP: search for a wordlist online, i.e. a list containing common English words.
+
+If you want to check your answers, here is the solution `encrypted' with ROT13 (shift cipher with key 13):
+
+Gur gjb jbeqf ner lryybj naq benatr, ohg V qb abg rira erzrzore jurgure gur beqre jnf lryybjbenatr be benatrlryybj. Va snpg, vg vf vzcbffvoyr gb erpbire gur beqre bs gur gjb jbeqf (jrer gurl pbapngrangrq va gur pvcuregrkg) fvapr KBE vf pbzzhgngvir, naq obgu pbybhef pbhyq or zrnavatshy. Vg zvtug nyfb or gung gurer rkvfg bgure Ratyvfu jbeqf, be ng yrnfg pbzovangvbaf bs nycunorg yrggref juvpu fngvfsl gur KBE. Fb, juvyr er-hfvat gur xrl oebxr gur cresrpg frperpl, guvf rknzcyr fgvyy cnegyl uvtuyvtugf ubj jryy gur BGC uvqrf vasbezngvba: nyy nafjref juvpu svg ner cbffvoyr.
+
+\textbf{Task 5 --- Misuse of a secure cipher}
+
+During the first week I mentioned that it is one thing for a cryptosystem to be secure, but it is another to use it securely in practice.
+Security depends on a lot of conditions, and it should not come as a surprise that using a good key is paramount to the security of a cipher.
+
+Key exchange is complicated, so my friend and I use the following system:
+\begin{enumerate}
+    \item We use the UNIX Epoch (without milliseconds) of the message sending time as a seed for our PRNG (\texttt{random.seed()}).
+    \item We use the PRNG to generate however many bytes of key material are needed by the cryptosystem (\texttt{random.randbytes()})
+    \item We begin every message with `Hey!'.
+\end{enumerate}
+
+I received the following message from him on the 8\textsuperscript{th} of February 2024 at 13:15:29 GMT+02:00:
+\begin{lstlisting}
+HpHgjwKlYLpxzAdIk8/rYxyVy9/NkNuBJVsk0kOhpuTGq++hjAI90bWeQduo5OOXQY34HF7aOek6GgedJd2npLhhezDO29RF5zzijA==
+\end{lstlisting}
+
+Knowing that the message was encrypted with ChaCha20 and the nonce: \texttt{dyYyL8OUw1g=}, what does the message say?
+
+TIP: use the PyCryptodome library.
+
+TIP2: the ciphertext and seed are base64 encoded.
+
+TIP3: read the documentation.
+
+TIP4: it may have taken a few seconds for me to receive the message.
+
+P.S. This task is really ridiculous, but if you ever participate in some CTF, this might be the type of nonsense they have you solve.
+Still, there are things to learn from such tasks and hopefully they are also a little fun.
+
+\textbf{Note}
+
+If you are pedantic about language, you will notice that I use the term `random numbers' quite loosely.
+In general, when the context is computers, I mean pseudo-random numbers (or bits, bytes, whatever data).
+I also use the term `generate', which makes sense with PRNs, but for TRNs the term `collect' would likely be more appropriate.
+Therefore, the rule of thumb is that when I talk about randomness without specifying context I mean cryptographic quality pseudo-randomness.
+\end{document}

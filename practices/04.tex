@@ -1,0 +1,304 @@
+\documentclass{practice}
+
+\title{4}
+\date{\today}
+
+%\usepackage{etoolbox}
+%\makeatletter
+%\preto{\@verbatim}{\topsep=0pt \partopsep=-2\parsep }
+%\makeatother
+
+\usepackage{fancyvrb}
+\fvset{listparameters=\setlength{\topsep}{0pt}\setlength{\partopsep}{0pt}}
+
+\newcommand*{\getsu}{\gets_{\scriptscriptstyle \hspace*{-0.65em} u\hspace*{0.0em}}}
+\newcommand*{\ZZ}{\mathbb{Z}}
+
+\usepackage{listings}
+
+\lstset{
+basicstyle=\small\ttfamily,
+columns=flexible,
+breaklines=true
+}
+
+\begin{document}
+\maketitle
+
+\begin{task}{Modulo bias}
+  \textit{Preface.}
+  A common task in programming and especially in public-key cryptography is to generate a random number in a range.
+
+  In cryptography, it is crucial that random numbers are sampled uniformly at random, meaning that the probability of picking any number from a set/range of distinct elements is the same.
+  For example, by sampling uniformly at random from the set $\{0, 1, 2, 3, 4\}$, i.e. $x\getsu\{0, 1, 2, 3, 4\}$, the probability distribution should be the following:
+  \begin{center}
+    \begin{tabular}{l r r r r r}
+      \hline
+      $x$ & $0$ & $1$ & $2$ & $3$ & $4$\\
+      \hline
+      $\Pr$ & $0.2$ & $0.2$ & $0.2$ & $0.2$ & $0.2$\\
+      \hline
+    \end{tabular}
+  \end{center}
+
+  During week 2, we saw that we could get roughly those results by querying random bytes from the CSPRNG.
+  However, querying even a single byte of `randomness' would give us an integer in the range $0$--$255$.
+
+  \iffalse
+  In general, getting a random number in the range $[0, 2^n - 1]$ is `easy' since then we could just bit-mask the bytes gotten from the CSPRNG.
+  For example, if we want a random number in the range $[0, 7]$, we simply need to isolate the first three bits of a random byte: \texttt{0b111} is $7$.
+  \fi
+
+  So, how could we get a number in the range $[0, 4]$?
+  The naive approach is to make use of the \emph{modulo} operator: $a \bmod n$ gives us a result in the set $\{0, 1, \dots, n-1\}$ for two integers $a, n$.
+  However, this approach can actually skew the probability distribution.
+  The following table shows the number of occurrences of numbers $0$--$5$ for $a \bmod n$ where each $a\in\{0, \dots, 255\}$ is picked once and $n = 5$:
+  \begin{center}
+    \begin{tabular}{l r r r r r}
+      \hline
+      $a \bmod 5$ & $0$ & $1$ & $2$ & $3$ & $4$\\
+      \hline
+      Num. of occ. & $52$ & $51$ & $51$ & $51$ & $51$\\
+      \hline
+    \end{tabular}
+  \end{center}
+
+  We see that the outcome $0$ occurs one more time than the other values, which may not seem like much, but clearly indicates that the outcome distribution is no longer uniform.
+
+  \textit{Task.}
+  Your task is to generate ten million random $\bigl(10^7\bigr)$ $8$-bit integers (using the \texttt{secrets} module) and generate and plot (as a bar chart) the frequency distributions for the following modulus values: $100$, $150$, $200$.
+  Observe how the bias shifts.
+
+  Now do the same, except generate the random values within the ranges defined by the three moduli using simple rejection sampling (regenerate values until they fit in the range).
+  Do the distributions look better?
+
+  You could use Matplotlib\footnote{\url{https://matplotlib.org}} and pandas\footnote{\url{https://pandas.pydata.org}} for generating the charts/visualisations.
+
+  \begin{tcolorbox}[title=Good practice]
+    In practice, to get cryptographic random numbers in a range, you should use the functions provided by a reliable cryptographic library instead of implementing your own functionality.
+    \tcblower
+    For Python, you could use 
+    \href{https://docs.python.org/3/library/secrets.html#secrets.randbelow}{\texttt{secrets.randbelow()}}.
+  \end{tcolorbox}
+\end{task}
+
+\begin{task}{MP arithmetic}
+  \textit{Preface.}
+  If you have programming background in strongly typed languages (e.g. C/C++, Java/C\#) you likely know that you are typically limited to $64$-bit integers (though $128$-bit integer support is becoming more common in C/C++) for built-in types.
+  Without getting into the specifics of how processors work, we can consider the following simplification: a $64$-bit CPU implements operations (addition, multiplication, etc.) for $64$-bit numbers.
+
+  In class we saw that to get $128$-bits of security against classical computers (i.e. not quantum computers), we should use $3072$-bit RSA, that is, the RSA modulus (semiprime) should be a $3072$-bit integer.
+  So how can we perform mathematical operations on such numbers if they do not fit into our CPU registers, and the operations are not provided by the processor?
+  The answer is to use software-implementations, that is, we emulate the storage and computation in software.
+  This is typically known as \emph{arbitrary-precision} or \emph{multiple-precision (MP) arithmetic}.
+
+  Python is not a strongly typed language, and takes care of implementing MP arithmetic for us.
+  This is why we typically need not worry about overflow in Python when working with numbers.
+  While it is not surprising that MP arithmetic is slower than `hardware arithmetic', then not all MP implementations are created equal.
+  That is, when doing heavy number crunching, we may want better performance than what Python provides us by default.
+
+  One of the most popular and performant general purpose MP libraries is the GNU Multiple Precision library (GMP)\footnote{\url{https://gmplib.org}}.
+  To get enhanced performance for MP computations in Python, the \href{https://pypi.org/project/gmpy2/}{\texttt{gmpy2}} module is a neat pick.
+  Depending on your setup (mainly the OS) it might be slightly tricky to get it to work.
+  If you cannot get it to work on Windows, I recommend attempting the tasks on a Linux VM unless you feel comfortable troubleshooting the issues yourself.
+
+  GMP offers way more than simply enhanced performance.
+  For example, it implements different primality testing algorithms and other functions that make working with primes more convenient for us in a learning setting.
+
+  \textit{Task.}
+  Your task is to generate three $3072$-bit numbers and then perform the modular exponentiation $a^b \bmod c$ such that $a < b < c$, with $c$ odd.
+
+  Perform this exponentiation $10$ times with Python's built-in \href{https://docs.python.org/3/library/functions.html#pow}{\texttt{pow()}} function, $10$ times with the \href{https://gmpy2.readthedocs.io/en/latest/mpz.html#gmpy2.powmod}{\texttt{gmpy2.powmod()}} function, and $10$ times with the \href{https://gmpy2.readthedocs.io/en/latest/mpz.html#gmpy2.powmod_sec}{\texttt{gmpy2.powmod\_sec()}} function.
+  Note that \texttt{powmod\_sec()} requires the modulus to be odd (can you think of a reason?).
+  What do you think about the relative speed of these functions?
+
+  Measure the time it takes for each of the $10$ loops and compare the results, e.g. with \href{https://docs.python.org/3/library/time.html#time.perf_counter}{\texttt{time.perf\_counter()}}.
+  Are the results consistent with your guess?
+
+  Finally, try the naive implementation, i.e. \texttt{a ** b \% c}.
+  Let it run for a few seconds, then abort the program execution---you have a life to live.
+
+  \begin{tcolorbox}[title=Warning]
+    General purpose MP libraries are not designed with cryptography in mind, rather they are meant to be as efficient as possible.
+    This means that they are riddled with different side-channel leaks (among other issues) and are not suited for cryptographic uses where side-channel resistance is needed (e.g. decryption).
+    \tcblower
+    While GMP does provide functions with some side-channel protections\footnote{GMP developers' secure corner: \url{https://gmplib.org/devel/sec}}, you should not consider these as a substitution for cryptographic libraries.
+  \end{tcolorbox}
+\end{task}
+
+\begin{task}{`Generating' random primes}
+  \textit{Preface.}
+  Primes and primality testing are awesome and intriguing topics.
+  However, they are also quite mathematically involved, so we will not go into the details in this course.
+  Still, there are some things you should know about primality testing.
+
+  There are various \emph{primality testing algorithms} to test whether a generated number is prime.
+  For large numbers, primality tests are typically \emph{probabilistic}: if a number is found to be composite, then it is so, and if not, the number is likely a prime, but not provably so.
+  In general, for robust primality testing, either or both of the following approaches are used:
+  \begin{itemize}
+    \item Run multiple iterations of a `quality' primality test.
+    Intuitively, the more iterations a number passes, the more likely it is for the number to be prime.
+    \item Combine different primality tests.
+  \end{itemize}
+
+  Perhaps the most widely used probabilistic primality testing algorithm is the \emph{Miller-Rabin}\footnote{\url{https://en.wikipedia.org/wiki/Miller–Rabin_primality_test}} test.
+  
+  The question then is: how to pick the number of iterations for the Miller-Rabin test?
+  The rule of thumb is that Miller-Rabin gives a `security level' of $128$-bits for $64$ iterations, but there are different methods to select the number of `optimal' iterations.
+  For example, OpenSSL uses the Miller-Rabin test with $128$ iterations for integers larger than $2048$ bits\footnote{\url{https://github.com/openssl/openssl/blob/master/crypto/bn/bn_prime.c\#L94}}.
+
+  There are different approaches for generating (finding) random primes, but the two most intuitive ones are:
+  \begin{enumerate}
+    \item \emph{Random search}: keep selecting a random $n$-bit number until it passes some primality test.
+    \item \emph{Incremental search}: instead of rejection sampling, keep incrementing the generated number by $2$ until it passes some primality test.
+  \end{enumerate}
+
+  If it seems to you that the second method is `less secure', your intuition is quite good: indeed the latter method introduces some bias not present with the first method.
+  However, currently no (publicly) known method can help an attacker abuse this bias.
+
+  \textit{Task.}
+  Generate two $1536$-bit primes using \emph{random search}.
+  Benchmark the time it took to find the two primes.
+  Now, count the number of bits in the product of these numbers.
+  Is it $3072$?
+
+  Next, use a library function for finding two $1536$-bit primes using \emph{incremental search} and benchmark the time taken.
+  Likewise, count the number of bits in the semiprime.
+
+  Compare the performance of both methods.
+
+  The following functions are likely to help you:
+  \begin{itemize}
+    \item \href{https://gmpy2.readthedocs.io/en/latest/mpz.html#gmpy2.mpz.is_probab_prime}{\texttt{gmpy2.is\_probab\_prime()}}
+    \item \href{https://gmpy2.readthedocs.io/en/latest/mpz.html#gmpy2.next_prime}{\texttt{gmpy2.next\_prime()}}
+    \item \href{https://gmpy2.readthedocs.io/en/latest/mpz.html#gmpy2.bit_length}{\texttt{gmpy2.bit\_length()}}
+  \end{itemize}
+
+  Check out also gmpy2's docs on \href{https://gmpy2.readthedocs.io/en/latest/advmpz.html#advanced-number-theory-functions}{`Advanced Number Theory Functions'} for more granular control on primality testing.
+
+  \begin{tcolorbox}[title=Warning]
+    The methods we use here are for learning purposes/convenience only.
+    There are many parameters that go into picking cryptographic primes which we have not covered and will not cover.
+    You must not attempt to roll your own cryptography/generate your own keys this way.
+    \tcblower
+    If you want to get an idea of the complexity of picking suitable primes, read appendix \href{https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.186-5.pdf#page=42}{A.1} of \href{https://csrc.nist.gov/pubs/fips/186-5/final}{FIPS 186-5}.
+  \end{tcolorbox}
+\end{task}
+
+\begin{task}{Sage RSA}
+  SageMath\footnote{https://www.sagemath.org} is a computer algebra system (CAS) which can be programmed in with a Python-based language.
+  It is free and open-source as opposed to Wolfram Mathematica and MATLAB, and is very powerful.
+  As such, it is quite popular among cryptographers for some quick computations/prototyping, and is also popular for cryptography tasks in CTFs (Capture The Flag exercises).
+
+  Check out also Sage's \href{https://doc.sagemath.org/html/en/reference/cryptography/index.html}{`cryptography reference'}.
+
+  \textit{Task.}
+  Given the following RSA public key:
+  \begin{itemize}
+    \item $e = 65537$
+    \item $n = 230624063920680065513680711198246109591$,
+  \end{itemize}
+  decipher the RSA ciphertext $c = 161670843286605628968182075437059446607$.
+
+  Note that the RSA modulus is $128$ bits long, so `naively' brute forcing either prime is not a good approach.
+  Can you think of a more efficient approach?
+  
+  \textit{Hint 1.}
+  RSA-100 ($330$ bits) was \emph{factored} way back in 1991.
+
+  \textit{Hint 2.}
+  Recovering the message takes less than a second on my laptop with the proper Sage tools.
+
+  \textit{Addendum.}
+  Check out the RsaCtfTool\footnote{\url{https://github.com/RsaCtfTool/RsaCtfTool}}.
+  Can you solve the task using the tool?
+\end{task}
+
+\begin{task}{RSA in Python}
+  \textit{Task.}
+  Use a reliable 3\textsuperscript{rd} party library to implement RSA key generation, encryption, and decryption.
+  Encryption should use OAEP padding, and the key-size should provide $128$-bits of security.
+
+  Can you find test vectors similar to the NIST AES test vectors anywhere to test the library?
+\end{task}
+
+\begin{task}{OpenSSL \& PEM}
+  \textit{Preface.}
+  Last week we learnt a bit about OpenSSL and we used it for AES encryption and decryption.
+  OpenSSL has a ton of functionality, and among this functionality is the capability to generate RSA keys and perform RSA encryption/decryption.
+
+  When generating RSA keys with OpenSSL, you may notice that by default, the key material is base64-encoded and sandwiched between the header and footer:
+  \begin{Verbatim}
+-----BEGIN PRIVATE KEY-----
+...
+-----END PRIVATE KEY-----
+  \end{Verbatim}
+  or
+  \begin{Verbatim}
+-----BEGIN PUBLIC KEY-----
+...
+-----END PUBLIC KEY-----
+  \end{Verbatim}
+  This format is called the PEM (Privacy-Enhanced Mail) format\footnote{\url{https://en.wikipedia.org/wiki/Privacy-Enhanced_Mail}} and the convention for key-files to have the extension \texttt{.pem} or \texttt{.key}.
+  We will see other headers and usages of PEM during future classes/practices.
+
+  There are three primary OpenSSL tools for working with RSA:
+  \begin{itemize}
+    \item \href{https://www.openssl.org/docs/man1.0.2/man1/genrsa.html}{\texttt{genrsa}}: RSA private key generation
+    \item \href{https://www.openssl.org/docs/man1.1.1/man1/rsa.html}{\texttt{rsa}}: commands to `process' RSA keys, e.g. change their format (PEM vs DER) or their passphrase
+    \item \href{https://www.openssl.org/docs/man1.0.2/man1/rsautl.html}{\texttt{rsautl}}: the utility for encrypting, decrypting, signing, and verifying signatures
+  \end{itemize}
+
+  \textit{Task.}
+  Generate a $3072$-bit RSA private key using OpenSSL:
+  \begin{Verbatim}
+openssl genrsa 3072 > {path_private_pem}
+  \end{Verbatim}
+
+  \begin{tcolorbox}[title=Warning]
+    By generating a key using this command, the key is \emph{not} protected by a passphrase, meaning that anyone with access to the key-file/key can simply use it for decryption.
+    \tcblower
+    Password protecting keyfiles is good practice (e.g. SSH or PGP keys).
+    The following command generates and encrypts the RSA private key with AES-128 using the user-provided passphrase:
+    \begin{Verbatim}
+openssl genrsa -aes128 3072
+    \end{Verbatim}
+  \end{tcolorbox}
+
+  Next, generate the RSA public key corresponding to the private key:
+  \begin{Verbatim}
+openssl rsa -pubout -in {path_private_pem}
+  \end{Verbatim}
+
+  Finally, attempt to encrypt and decrypt files using the generated keys.
+  Is there a limit to the file-sizes?
+
+  For encryption:
+  \begin{Verbatim}
+openssl rsautl -encrypt -inkey {path_public_pem} -pubin \
+    -in {pt_in} -out {ct_out}
+  \end{Verbatim}
+
+  For decryption:
+  \begin{Verbatim}
+openssl rsautl -decrypt -inkey {path_private_pem} \
+    -in {ct_in} -out {pt_out}  
+  \end{Verbatim}
+
+  The extension \texttt{.enc} is often used to denote encrypted files.
+\end{task}
+
+\begin{task}{ASN.1}
+  \textit{Preface.}
+  The base64 encoding is an encoding of the ASN.1 DER format which we briefly saw in class.
+  A great CLI tool for visualising ASN.1 data structures is \texttt{dumpasn1}.
+
+  \textit{Task.}
+  Install \texttt{dumpasn1} and try to visualise what the key files really contain.
+  Note that you must strip the PEM header and decode the base64 data before \texttt{dumpasn1} can parse the ASN.1 bytes.
+
+  Now try to figure out how to use OpenSSL's \href{https://www.openssl.org/docs/man1.1.1/man1/openssl-asn1parse.html}{\texttt{asn1parse}} tool to do the same thing.
+  Which output do you prefer?
+\end{task}
+
+\end{document}
