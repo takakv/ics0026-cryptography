@@ -1,0 +1,172 @@
+\documentclass{practice}
+
+\title{7}
+\date{\today}
+
+%\usepackage{etoolbox}
+%\makeatletter
+%\preto{\@verbatim}{\topsep=0pt \partopsep=-2\parsep }
+%\makeatother
+
+\usepackage{crysymb}
+
+\usepackage{booktabs}
+
+\usepackage{fancyvrb}
+\fvset{listparameters=\setlength{\topsep}{0pt}\setlength{\partopsep}{0pt}}
+
+\usepackage{listings}
+
+\lstset{
+basicstyle=\small\ttfamily,
+columns=flexible,
+breaklines=true
+}
+
+\begin{document}
+\maketitle
+
+\begin{task}{PKCS v1.5 vs. PSS}
+  \textit{Task.}
+  For this task, use PyCryptodome to generate two RSA signatures in PKCS v1.5 mode on the same message, and compare the two signatures.
+  Next, generate two signatures on the same message in PSS mode and compare the signatures.
+  
+  Do your observations correspond with what we learnt in class?
+\end{task}
+
+\begin{task}{RSA implementations}
+  \textit{Task.}
+  Check out \href{https://nvd.nist.gov/vuln/detail/CVE-2016-1494}{CVE-2016-1494} which is about using the \href{https://www.darkreading.com/cyberattacks-data-breaches/-berserk-bug-uncovered-in-mozilla-nss-crypto-library-impacts-firefox-chrome}{\textit{BERserk}} attack against the \href{https://github.com/sybrenstuvel/python-rsa}{\texttt{rsa}} Python library to forge signatures.
+  If you are interested, you can read more about it in the corresponding \href{https://words.filippo.io/bleichenbacher-06-signature-forgery-in-python-rsa/}{\textit{blog post}}.
+
+  In class, I mentioned that RSA PKCS v1.5 signatures have no known weaknesses.
+  So how come this attack exists?\footnote{The attack is feasible because of an implementation error, not a crypto-theoretical error.
+  Nevertheless, it highlights why you should prefer PSS padding.} 
+
+  Search to see whether PyCryptodome has had any RSA-related vulnerabilities reported in the past.
+
+  \begin{tcolorbox}[title=Warning]
+    Even though the BERserk vulnerability is Python-RSA is now \href{https://github.com/sybrenstuvel/python-rsa/commit/ab5d21c3b554f926d51ff3ad9c794bcf32e95b3c}{\textit{fixed}}, there are still other issues with it such as side-channel vulnerabilities\footnote{\url{https://github.com/sybrenstuvel/python-rsa/issues/169}}\footnote{\url{https://github.com/sybrenstuvel/python-rsa/issues/165}} caused by it being a pure-python implementation.
+    It also does not support PKCS \#1 v2.0 and later.
+    \tcblower
+    Do not use Python-RSA if alternatives are available.
+    In general, do not use pure-python crypto implementations.
+  \end{tcolorbox}
+\end{task}
+
+\begin{task}{PyNaCl}
+  \textit{Preface.}
+  Enough of the PyCryptodome package, time to use other tools too!
+  \href{https://pynacl.readthedocs.io/en/latest/}{\emph{PyNaCl}} is a Python module that provides bindings to \href{https://doc.libsodium.org}{\emph{libsodium}} (called \emph{Sodium}), a neat and fairly lightweight cryptographic library.
+  
+  Sodium is based on the \href{http://nacl.cr.yp.to}{\emph{NaCl: Networking and Cryptography library}} (called `salt' in spoken language) developed by Bernstein et al.
+  While Sodium is still compatible with the NaCl API, it has also implemented new algorithms that are not available in NaCl.
+  These days, you should prefer Sodium unless you have a good reason to use NaCl.
+
+  Sodium is also an opinionated library, meaning that it makes some decisions\footnote{\url{https://doc.libsodium.org/internals\#security-first}} to avoid letting users shoot themselves in the foot, even if it impacts speed.
+  However, it cannot of course protect against every possible mistake one could make, so you must still take care when using it.
+
+  \textit{Task.}
+  For this task, generate an Ed25519 signing key with \href{https://pynacl.readthedocs.io/en/latest/signing/#}{\texttt{pynacl}}.
+  Next, sign some messages and verify their signatures.
+  Try also verifying signatures for wrong messages.
+
+  Finally, benchmark the time it takes to generate $1000$ signatures for the same message.
+\end{task}
+
+\begin{task}{Meet your peers}
+  \textit{Preface.}
+  Generating and verifying signatures for keys you have generated on your own becomes boring really fast.
+  In the real world, usually someone else verifies your signature,
+  or you have to verify someone else's signature.
+
+  While it was important to introduce PyNaCl with the previous task, it does not offer convenient key management like PyCryptodome does.
+
+  Note that EdDSA offers two `modes' (not comparable with block cipher modes):
+  \begin{itemize}
+    \item PureEdDSA (Ed25519, Ed448): the message is fed to the signing algorithm directly.
+    \item HashEdDSA (Ed25519ph, Ed448ph): the message is pre-hashed and the hash is fed to the signing algorithm.
+    
+    This has some advantages (e.g. for memory constrained devices) but also disadvantages, such as reduced collision resistance.
+  \end{itemize}
+  You should always use PureEdDSA over HashEdDSA unless you have a very good reason to use the latter one.
+
+  \textit{Task.}
+  Using \href{https://pycryptodome.readthedocs.io/en/latest/src/signature/eddsa.html}{\texttt{pycryptodome}}, generate an Ed448 keypair.
+  Exchange your public key and a signed message (you can try to cheat) with your neighbour or another classmate of your choice.
+  Finally, verify their signature on their message.
+  Did they give you the correct message/signature?
+\end{task}
+
+\begin{task}{SPHINCS+}
+  \textit{Preface.}
+  NIST has picked SPHINCS\textsuperscript{+} as one of the three post-quantum signature algorithms that it will standardise as part of the move towards PQC.
+  Out of these three algorithms, SPHINCS\textsuperscript{+} is the only hash-based one.
+  The other two are lattice-based.
+
+  In turn, SPHINCS+ is divided into three schemes:
+  \begin{itemize}
+    \item SPHINCS\textsuperscript{+}-SHAKE256
+    \item SPHINCS\textsuperscript{+}-SHA-256
+    \item SPHINCS\textsuperscript{+}-Haraka
+  \end{itemize}
+  which differ in the hash function the scheme is instantiated with.
+
+  Furthermore, the schemes are split into the \texttt{f} and \texttt{s} versions, which can roughly be summarised as:
+  \begin{itemize}
+    \item \texttt{f}: fast signing but large signatures,
+    \item \texttt{s}: smaller signatures, but slower signing.
+  \end{itemize}
+
+  Finally, SPHINCS\textsuperscript{+} offers three different security levels:
+  \begin{center}
+    \begin{tabular}{@{}l r r r r@{}}
+      \toprule
+      Algorithm & bits of security & $\PK$ bytes & $\SK$ bytes & $\sigma$ bytes\\
+      \midrule
+      \texttt{SPHINCS\textsuperscript{+}-128s} & 133 & 32 &  64 &  7 856\\
+      \texttt{SPHINCS\textsuperscript{+}-128f} & 128 & 32 &  64 & 17 088\\
+      \texttt{SPHINCS\textsuperscript{+}-192s} & 193 & 48 &  96 & 16 224\\
+      \texttt{SPHINCS\textsuperscript{+}-192f} & 194 & 48 &  96 & 35 664\\
+      \texttt{SPHINCS\textsuperscript{+}-256s} & 255 & 64 & 128 & 29 792\\
+      \texttt{SPHINCS\textsuperscript{+}-256f} & 255 & 64 & 128 & 49 856\\
+      \bottomrule
+    \end{tabular}
+  \end{center}
+  These values are taken from the reference implementation's GitHub \href{https://github.com/sphincs/sphincsplus}{\textit{repo}}.
+  A nice article (nice tables) on the parameter sets and performance is ePrint \href{https://eprint.iacr.org/2022/1725}{\texttt{2022/1725}}.
+
+  The `official' SPHINCS\textsuperscript{+} signature library is provided by the Python module \href{https://github.com/sphincs/pyspx}{\texttt{pyspx}}.
+  That is, it provides bindings to the reference C implementation of SPHINCS\textsuperscript{+}.
+
+  \textit{Task.}
+  For this task, generate a \texttt{SPHINCS\textsuperscript{+}-128f} signature with the SHAKE256 hash algorithm.
+  How long did signing take?
+
+  Then, generate a signature with the \texttt{s} version.
+  How long did signing take now?
+
+  Next, benchmark the time needed to generate $1000$ signatures with the \texttt{f} version.
+  Compare this time with the time taken for $1000$ Ed25519 signatures.
+  How could you make the comparison `fairer'?
+\end{task}
+
+\begin{task}{EdDSA with OpenSSL}
+  \textit{Preface.}
+  At this point, you should have some familiarity with OpenSSL.
+  The \href{https://www.openssl.org/docs/man3.0/man1/openssl-dgst.html}{\texttt{dgst}} tool is typically used for signing (with pre-hashing) and for verifying signatures.
+  However, the \texttt{dgst} tool does not support EdDSA signing.
+  Instead, you should use the \href{https://www.openssl.org/docs/man3.0/man1/openssl-pkeyutl.html}{\texttt{pkeyutl}} tool.
+
+  \textit{Task.}
+  For this task, familiarise yourself with the OpenSSL documentation.
+  Then, generate an Ed25519 keypair with OpenSSL and try to sign and verify a signature from the command line.
+
+  Verify the signature with some other tool (e.g. in Python).
+  Did OpenSSL use PureEdDSA?
+
+  This task is cursed and will prove to you that OpenSSL (and especially its documentation) is horrible.
+  This task will likely be part of the homework as well ;).
+\end{task}
+
+\end{document}
