@@ -1,0 +1,433 @@
+\usetheme[numbering=fraction]{metropolis}
+
+\metroset{block=fill}
+
+\usepackage[dvipsnames]{xcolor}
+
+\usepackage{booktabs}
+
+\usepackage{fancyvrb}
+\fvset{listparameters=\setlength{\topsep}{0pt}\setlength{\partopsep}{0pt}}
+
+\usepackage{csquotes}
+\setquotestyle{british}
+
+\usepackage{graphicx}
+\graphicspath{ {../../images/} }
+
+\usepackage{pgfplots}
+\usetikzlibrary{positioning,calc,external}
+%\tikzexternalize[prefix=figures/] 
+
+\usepackage{crysymb}
+
+\renewcommand*{\arraystretch}{1.2}
+
+\usepackage{soul}
+\usepackage[en-GB]{datetime2}
+\DTMlangsetup[en-GB]{ord=omit}
+
+\usetikzlibrary{positioning,calc}
+\graphicspath{ {../../images/} }
+
+\title{ICS0026 Cryptography}
+\subtitle{Hardware security \& side channels}
+\date{\DTMdate{2024-04-02}}
+\author{Taaniel Kraavi}
+\institute%
+{%
+  \textit{IT College}\\
+  \textit{Tallinn University of Technology}
+}
+
+\begin{document}
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{A need for physical security}
+  Access is the bane of security
+  \begin{itemize}[<+(1)->]
+    \item Client-side tampering
+    \item Malicious access
+    \item Data exfiltration / leakage
+    \item \dots
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  Physical measures provide some tamper resistance.
+  \begin{itemize}[<+(1)->]
+    \item Trusted components in a BYOD world
+    \item Trusted hardware $\neq$ trusted perimeter
+    \item Not invulnerable to attack
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Secure cryptoprocessors}
+  Processors for cryptographic operations with physical security measures.
+  \begin{itemize}[<+(1)->]
+    \item Hardware security modules (HSM)
+    \item Trusted platform modules (TPM)
+    \item Smart cards (e.g. bank card, EstEID)
+    \item Security tokens (e.g. Yubikey)
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  Varying degree of physical security.
+  \begin{itemize}[<+(1)->]
+    \item E.g. smartcards typically more vulnerable than HSMs
+    \item Uneven difficulty of reverse engineering/probing the chip
+    \item What attacks does the device protect against?
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Trusted Platform Module (TPM)}
+  \pause
+  The Trusted Platform Module (TPM) is a standard\dots
+  \begin{itemize}[<+(1)->]
+    \item Maintained \& published by the Trusted Computing Group
+    \item TPM Main Specification Version 1.2 (2009)
+    \item TPM Library Specification Version 2.0 (2014)
+    \begin{itemize}
+      \item Latest version available \href{https://trustedcomputinggroup.org/resource/tpm-library-specification/}{\textit{here}}
+    \end{itemize}
+    \item Official standard: ISO/IEC 11889:2015
+  \end{itemize}
+
+  \pause
+  \dots{}but chips implementing it are also called TPMs.
+  \begin{itemize}
+    \item Reference implementation: {\small\url{https://github.com/Microsoft/ms-tpm-20-ref}}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{What's in a TPM?}
+  The TPM provides:
+  \begin{itemize}[<+(1)->]
+    \item Hardware RNG
+    \item Cryptographic key generation, binding/wrapping, and sealing
+    \item Remote attestation \& other trusted computing (TC) functionality
+  \end{itemize}
+
+  \pause
+  Example use-cases:
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}[<+(1)->]
+        \item Platform integrity \& secure boot
+        \item Disk encryption
+        \item Virtual smart cards\\(e.g. Windows Hello)
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}[<+(1)->]
+        \item Digital rights management (DRM)
+        \item Kernel-level anti cheat
+        \item Anti-hammering\\(brute force protection)
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{TPM implementation security}
+  \begin{center}
+    \href{https://trustedcomputinggroup.org/wp-content/uploads/TPM-2.0-A-Brief-Introduction.pdf}{TCG's introduction to TPM 2.0}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Trusted Execution Environment (TEE)}
+  A Trusted Execution Environment is a secure area (an `enclave') of a CPU.
+  \begin{itemize}[<+(1)->]
+    \item Code and data is protected: confidentiality \& integrity
+    \item Encrypted (and isolated) memory regions (VM approach exists)
+    \item Code runs within these regions
+    \item Computation result returned to the calling process
+    \item Remote verification can enable TEE in the cloud (predefined hardware attestation)
+  \end{itemize}
+
+  \pause
+  Some tech:
+  \begin{itemize}[<+(1)->]
+    \item AMD Platform Security Processor (PSP)
+    \item Intel Software Guard Extensions (SGX)
+    \item ARM TrustZone
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Hardware Security Module (HSM)}
+  Hardware Security Modules (HSM)
+  \begin{itemize}[<+(1)->]
+    \item physical devices
+    \item attach to computers/servers
+    \item safeguard keys and perform cryptographic/confidential operations
+    \item may contain multiple cryptoprocessor chips (e.g. specialised + general purpose)
+  \end{itemize}
+
+  \pause
+  Fancy HSMs (e.g. banking, CAs):
+  \begin{itemize}[<+(1)->]
+    \item tamper resistance \& responsiveness (e.g. sleep or destruction)
+    \item high performance (e.g. live certificate signing)
+    \item high availability modes (e.g. failover mechanisms)
+    \item certified (e.g. Common Criteria, FIPS)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Smart cards \& EMV}
+  Smart cards:
+  \begin{itemize}[<+(1)->]
+    \item Cards with an integrated circuit chip
+    \item Can be used for cryptographic operations (e.g. EstEID, SIM cards)
+    \item Complex cards may have additional components (e.g. display, buttons)
+    \item NFC for contactless: operation still performed by microchip
+    \item Java Card technology: `applets' written in Java
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  EMV:
+  \begin{itemize}[<+(1)->]
+    \item Europay MasterCard Visa
+    \item Smart payment cards \& terminals
+    \item Enables cryptographic validations
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Certification}
+  Hardware security is often closed source.
+  \begin{itemize}[<+(1)->]
+    \item Backdoors?
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  Common Criteria (CC) certification:
+  \begin{itemize}[<+(1)->]
+    \item Certification bodies (e.g. ANSSI, BSI) and testing labs must be approved
+    \item Evaluation Assurance Level (EAL): 1--7 + augmentation
+    \item Target of Evaluation (TOE): product being evaluated
+    \item Security Target (ST): security properties of the TOE
+    \item Protection Profile (PP): security requirements for a device class
+    \begin{itemize}
+      \item Often a template for the ST
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Yubikeys}
+  Yubikeys are hardware authentication devices.
+  \begin{itemize}[<+(1)->]
+    \item Not the only ones, but a popular choice
+    \item FIDO2, Personal Identity Verification (PIV) and OpenPGP
+    \item FIDO2 support: resident \& non-resident SSH keys
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  If you work in security, you should have at least two.
+  \begin{itemize}[<+(1)->]
+    \item Can be another reputable brand
+    \item At least two, with one as a backup (all 2FA is not equal)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Side channels}
+  Side channels leaks are leaks of information through the non-primary communication channel, i.e. the \emph{side channel}.
+  \begin{itemize}[<+(1)->]
+    \item E.g. fat envelope for uni admittance, slim envelope for rejection
+    \item Unintentional leak of `physical' information
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  Side channels are the bane of implementation.
+  \begin{itemize}[<+(1)->]
+    \item `unknown unknowns'
+    \item Software \& hardware problem
+    \item Broken implementations of theoretically secure primitives
+    \item Can be considered during theoretical design
+    \begin{itemize}
+      \item Easier/harder to implement in a side-channel mitigating way
+      \item Point out which parts must be side-channel resistant
+      \item E.g. \href{https://ed25519.cr.yp.to/ed25519-20110926.pdf}{EdDSA}
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Side channel classes}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.5\textwidth}
+      \pause
+      Logical:
+      \begin{itemize}[<+(1)->]
+        \item Timing analysis
+        \item Behavioural patterns (e.g. size)
+      \end{itemize}
+
+      \pause
+      Processor shenanigans:
+      \begin{itemize}[<+(1)->]
+        \item Power analysis
+        \item Fault analysis/injection (active)
+        \item Cache-based (access, timing)
+        \item Frequency analysis (\href{https://www.hertzbleed.com}{Hertzbleed})
+      \end{itemize}
+      \end{column}
+    \begin{column}{0.5\textwidth}
+      \pause
+      Electromagnetic:
+      \begin{itemize}[<+(1)->]
+        \item Power \& signal cable leakage
+        \item RF radiation
+      \end{itemize}
+
+      \pause
+      Environmental:
+      \begin{itemize}[<+(1)->]
+        \item Acoustic, optical
+      \end{itemize}
+
+      \pause
+      Social side channels:
+      \begin{itemize}[<+(1)->]
+        \item Human bias
+        \item `The Pizza Meter'
+      \end{itemize}
+    \end{column}
+  \end{columns}
+
+  \vspace*{2em}
+
+  \pause
+  The list is not exhaustive\dots
+\end{frame}
+
+\begin{frame}{Examples}
+  Some cool \& scary examples\dots
+  \begin{itemize}[<+(1)->]
+    \item {\small\url{http://people.csail.mit.edu/mrub/VisualMic/}} (and that was a while ago...)
+    \item {\small\url{https://youtu.be/BpNP9b3aIfY}}
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  \dots{}and names you should know
+  \begin{itemize}[<+(1)->]
+    \item Meltdown and Spectre: {\small\url{https://meltdownattack.com}}
+    \item Hertzbleed: {\small\url{https://hertzbleed.com}}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{What can be done?}
+  Some approaches:
+  \begin{itemize}[<+(1)->]
+    \item General chip design with side-channels in mind
+    \item Dedicated hardware implementations (e.g. some cryptoprocessors)
+    \item Electromagnetic and/or acoustic shielding
+    \item Randomisation of operations (masking and noise)
+    \item Design algorithms with side-channels in mind
+    \item Constant time operations
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  Side-channel protection can likely never be absolute.
+  \begin{itemize}[<+(1)->]
+    \item Protect multiple levels: transistor, program, algorithm, and protocol level
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Intel's recommendations}
+  Intel offers some guidance:
+  \begin{itemize}
+    \item \href{https://www.intel.com/content/www/us/en/developer/articles/technical/software-security-guidance/secure-coding/security-best-practices-side-channel-resistance.html}{\textit{Security Best Practices for Side Channel Resistance}}
+    \item \href{https://www.intel.com/content/www/us/en/developer/articles/technical/software-security-guidance/secure-coding/mitigate-timing-side-channel-crypto-implementation.html}{\textit{Guidelines for Mitigating Timing Side Channels Against Cryptographic Implementations}}
+  \end{itemize}
+  
+  \pause
+  What do general purpose libraries do?
+  \begin{itemize}[<+(1)->]
+    \item Libraries cannot usually rely on secure hardware
+    \item Attempt to mitigate timing and access issues in software
+    \item Some examples:
+    \begin{itemize}
+    \item Botan: {\small\url{https://botan.randombit.net/handbook/side_channels.html}}
+    \item BearSSL: {\small\url{https://www.bearssl.org/constanttime.html}}
+    \item ML-KEM in Rust: {\small\url{https://cryspen.com/post/ml-kem-implementation/}}
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Constant time cryptography}
+  \pause
+  Execution should not depend on secret data:
+  \begin{itemize}[<+(1)->]
+    \item No branching on secret data
+    \item No memory access based on secret data
+    \item No variable time instructions with secret data (e.g. DIV on x86)
+  \end{itemize}
+  
+  \pause
+  Cryptographer's will $\neq$ compiler's will.
+  \begin{itemize}[<+(1)->]
+    \item The compiler may optimise away constant time algorithmic
+    \item Constant time languages/compilers attempted
+    \item Speculative constant time? (Spectre)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Issue of unknowns}
+  Constant time crypto is easier for fixed parameters.
+  \begin{itemize}[<+(1)->]
+    \item Constant-time optimised operations for known values (e.g. fixed finite fields)
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  What if parameters are variable?
+  \begin{itemize}[<+(1)->]
+    \item New RSA modulus for each keypair
+    \item Constant time RSA is error prone
+    \item One of the reasons why RSA is not recommended
+    \item \emph{Blinding} is typically used with RSA as an additional measure
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Constant-timeness verification tools}
+  \begin{center}
+    \url{https://crocs-muni.github.io/ct-tools/}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Key takeaways}
+  \begin{itemize}[<+(1)->]
+    \item Do not roll your own cryptography
+    \item Knowing the mathematics is not enough
+    \item General purpose math and bignum libraries are not crypto-safe
+    \item Even professionals can mess up (e.g. ROCA)
+    \item Certification is not foolproof, but is better than nothing
+    \item Tools exist to help you validate others' work
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  Additional reading:
+  \begin{itemize}
+    \item \url{https://timing.attacks.cr.yp.to/programming.html}
+    \item Additional references at the bottom
+  \end{itemize}
+\end{frame}
+
+\end{document}
