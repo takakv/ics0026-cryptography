@@ -1,0 +1,418 @@
+\usetheme[numbering=fraction]{metropolis}
+
+\metroset{block=fill}
+
+\usepackage[dvipsnames]{xcolor}
+
+\usepackage{booktabs}
+
+\usepackage{fancyvrb}
+\fvset{listparameters=\setlength{\topsep}{0pt}\setlength{\partopsep}{0pt}}
+
+\usepackage{csquotes}
+\setquotestyle{british}
+
+\usepackage{graphicx}
+\graphicspath{ {../../images/} }
+
+\usepackage{pgfplots}
+\usetikzlibrary{positioning,calc,external}
+%\tikzexternalize[prefix=figures/] 
+
+\usepackage{crysymb}
+
+\renewcommand*{\arraystretch}{1.2}
+
+\usepackage{soul}
+\usepackage[en-GB]{datetime2}
+\DTMlangsetup[en-GB]{ord=omit}
+
+\usetikzlibrary{positioning,calc}
+\graphicspath{ {../../images/} }
+
+\title{ICS0026 Cryptography}
+\subtitle{Commitments \& identification}
+\date{\DTMdate{2024-04-09}}
+\author{Taaniel Kraavi}
+\institute%
+{%
+  \textit{IT College}\\
+  \textit{Tallinn University of Technology}
+}
+
+\begin{document}
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Remote coin flip ver. 1}
+  How can Alice \& Bob remotely decide an outcome via a coin flip?
+  \begin{enumerate}[<+(1)->]
+    \item Alice \enquote{calls} the result
+    \item Bob flips the coin
+    \item Alice wins if she guessed correctly, else Bob wins
+  \end{enumerate}
+
+  \vspace*{1em}
+
+  \pause
+  How can Alice fix a value without immediately revealing it? 
+  \begin{itemize}[<+(1)->]
+    \item If Alice cheats, Bob must be able to catch it
+    \item Bob must not learn the value before Alice reveals it
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Remote coin flip ver. 2}
+  How can Alice and Bob jointly flip a coin remotely?
+  \begin{itemize}[<+(1)->]
+    \item Alice flips her coin and sends her result to Bob
+    \item Bob flips his coin and sends his result to Alice
+    \item Alice \& Bob XOR their results to obtain the same value
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  What additional challenges do you foresee?
+\end{frame}
+
+\begin{frame}{Commitment schemes}
+  A \emph{commitment} fixes a value but allows it to be revealed later.
+  \begin{itemize}[<+(1)->]
+    \item A committer and a receiver
+    \item The committer \emph{commits} their value
+    \item The committer \emph{opens} (reveals/decommits) the value later (not always)
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  Two essential properties of commitment schemes:
+  \begin{itemize}[<+(1)->]
+    \item \emph{Hiding}: the commitment alone does not reveal the committed value
+    \item \emph{Binding}: the committer cannot open the commitment to a different value
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Quantifying the properties}
+  Perfect security
+  \begin{itemize}
+    \item There is a zero chance that an unbounded adversary can break the property
+  \end{itemize}
+
+  \pause
+  Statistical security
+  \begin{itemize}
+    \item There is a negligible chance that an unbounded adversary can break the property
+  \end{itemize}
+
+  \pause
+  Computational security
+  \begin{itemize}
+    \item There is a negligible chance that a computationally bounded adversary can break the property
+  \end{itemize}
+
+  \pause
+  Commitments cannot be both perfectly hiding and perfectly binding.
+\end{frame}
+
+\begin{frame}{Cryptosystems as commitment schemes}
+  Any functional IND-CPA cryptosystem is hiding and perfectly binding.
+  \begin{itemize}[<+(1)->]
+    \item Intuitively, why is it perfectly binding?
+    \item Why is it hiding?
+    \item Why is it not perfectly hiding?
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  E.g. ElGamal encryption can be used as a commitment scheme.
+  \begin{itemize}[<+(1)->]
+    \item ElGamal commitments may refer to both classic and lifted ElGamal
+    \item We can create public ElGamal parameters without knowing the secret key
+    \item If the secret key is known, the scheme becomes \emph{extractable}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Two additional properties}
+  Extractability
+  \begin{itemize}[<+(1)->]
+    \item Knowing a secret value, the message can be extracted from the commitment
+    \item Public parameters are indistinguishable in both settings
+  \end{itemize}
+
+  \pause
+  Equivocability
+  \begin{itemize}[<+(1)->]
+    \item \enquote{Fake} commitments are indistinguishable from real commitments
+    \item the fake commitments can be opened to arbitrary values
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  Some commitments therefore require a trusted setup.
+\end{frame}
+
+\begin{frame}{Pedersen commitment}
+  Let $q$ be prime and let $\GG = \langle g \rangle$ be a $q$-element DL-group.\\
+  Choose $h$ uniformly from $\GG\setminus\{1\}$ and set $\PK \gets (g, h)$.
+
+  \vfill
+
+  \pause
+  To commit $m \in \ZZ_q$, choose $r \getsu \ZZ_q$ and output
+  \[
+    \begin{cases}
+      c \gets g^m h^r\ ,\\
+      d \gets (m, r)\ .
+    \end{cases}
+  \]
+
+  \vfill
+
+  \pause
+  A tuple $(c, m, r)$ is a valid decommitment for $m$ if $c = g^m h^r$.
+\end{frame}
+
+\begin{frame}{Pedersen commitment}
+  Pedersen commitments are
+  \begin{itemize}[<+(1)->]
+    \item Perfectly hiding
+    \item Computationally binding
+    \item Equivocable
+    \begin{itemize}
+      \item Hint: What happens if the relation between $g$ and $h$ is known?
+    \end{itemize}
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  Both Pedersen and ElGamal commitments are homomorphic.
+  \begin{itemize}
+    \item Only lifted ElGamal commitments are \enquote{interoperable} with Pedersen's.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Why do we need commitments?}
+  Commitments are an essential primitive in cryptography.
+  \begin{itemize}[<+(1)->]
+    \item Typically they are not used on their own (although they can)
+    \item It is possible to prove relations over committed values
+    \item Commitments are essential to many zero-knowledge protocols
+    \item More generally, many secure protocols rely on commitments
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  How would you use commitments in the remote coin flipping protocol?
+\end{frame}
+
+\begin{frame}{Identification protocols}
+  \pause
+  Identification protocols are generally based on one or more of:
+  \begin{itemize}[<+(1)->]
+    \item What you are (biometrics)
+    \item What you have
+    \item What you know
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  Cryptography works with the latter two.
+  \begin{itemize}[<+(1)->]
+    \item What you know: some secret
+    \item What you have: cryptographic hardware device (last week's topics)
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  Identification requires \emph{freshness}, but does not require \emph{non-repudiation}.
+\end{frame}
+
+\begin{frame}{Security assumptions}
+  \pause
+  We must assume a trusted registration protocol
+  \begin{itemize}[<+(1)->]
+    \item Digital identification is not possible without it
+    \item No legal identity without physical measures
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  We must assume an authenticated communication channel
+  \begin{itemize}[<+(1)->]
+    \item An adversary may otherwise MITM the protocol
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  We only consider cryptographic attacks
+  \begin{itemize}[<+(1)->]
+    \item Cryptography cannot defend against \enquote{non-math} attacks
+    \item Physical attacks against smart cards, credential exfiltration, \dots
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Challenge-response paradigm}
+  A prover must answer a verifier's challenge for identification.
+
+  \vspace*{1em}
+
+  \pause
+  Familiar approaches:
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}[<+(1)->]
+        \item Symmetric encryption
+        \begin{itemize}
+          \item KPA, CPA2
+        \end{itemize}
+        \item Symmetric authentication (HMAC)
+        \begin{itemize}
+          \item ROM
+        \end{itemize}
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}[<+(1)->]
+        \item Asymmetric encryption
+        \begin{itemize}
+          \item CPA, CCA2
+        \end{itemize}
+        \item Asymmetric authentication
+        \begin{itemize}
+          \item KMA, CCA2
+        \end{itemize}
+      \end{itemize}
+    \end{column}
+  \end{columns}
+
+  \vspace*{1.5em}
+
+  \pause
+  What about password-based authentication?
+  \begin{itemize}[<+(1)->]
+    \item The symmetric versions are only practical with proofs of knowledge
+    \item For proof of possession, asymmetric versions must be used
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Zero-knowledge identification}
+  IND-CCA2 is quite \enquote{expensive} in practice.
+  \begin{itemize}[<+(1)->]
+    \item Challenge-response protocols based on asymmetric schemes are therefore not necessarily efficient.
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  How can we prevent cheating verifier attacks with an \enquote{efficient} scheme?
+  \begin{itemize}[<+(1)->]
+    \item A cheating verifier must not get useful information from the prover
+    \item The protocol must be \emph{zero-knowledge}
+    \item The protocol must convince an honest verifier that an (honest) prover knows the secret
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Schnorr protocol}
+  Schnorr's protocol allows proving knowledge of a discrete logarithm.
+
+  \pause
+  \begin{center}
+    \begin{tikzpicture}
+      \node (alice) at (0,0) {\includegraphics[height=80px]{alice}};
+      \node (bob)   at (6,0) {\includegraphics[height=80px]{bob}};
+
+      \node(sk) at (alice.north) [yshift=10px] {$x \in \ZZ_q$};
+      \node(pk) at (bob.north)   [yshift=10px] {$h = g^x$};
+
+      \node (n1a) at (alice.east) [yshift=18px] {};
+      \node (n1b) at (bob.west)   [yshift=18px] {};
+      \node (n2a) at (alice.east) {};
+      \node (n2b) at (bob.west)   {};
+      \node (n3a) at (alice.east) [yshift=-18px] {};
+      \node (n3b) at (bob.west)   [yshift=-18px] {};
+
+      \node at (alice.west) [left,yshift=20px]  {$r \getsu \ZZ_q$};
+      \node at (bob.east)   [right,yshift=20px] {$c \getsu \ZZ_q$};
+
+      \draw[->,thick] (n1a) -- (n1b) node[above,midway] {$u = g^r$};
+      \draw[<-,thick] (n2a) -- (n2b) node[above,midway] {$c$};
+      \draw[->,thick] (n3a) -- (n3b) node[above,midway] {$z = r + cx$};
+
+      \node at (bob.south) [yshift=-10px] {$g^z = g^r g^{cx} \iseq u h^c$};
+    \end{tikzpicture}
+  \end{center}
+
+  The group $\GG = \langle g\rangle$ must be a DL group with a prime cardinality $q$.
+\end{frame}
+
+\begin{frame}{Sigma protocols}
+  \pause
+  $\Sigma$-protocols are efficiently computable three-move protocols that must be (special) honest verifier zero-knowledge.
+
+  \pause
+  \begin{center}
+    \newcommand*{\RRR}{\mathcal{R}}
+    \newcommand*{\VVV}{\mathcal{V}}
+    \begin{tikzpicture}
+      \node (alice) at (0,0) {\includegraphics[height=80px]{alice}};
+      \node (bob)   at (6,0) {\includegraphics[height=80px]{bob}};
+
+      \node(rand) at (alice.north) [yshift=10px] {$r \getsu \RRR$};
+      \node(chal) at (bob.north)   [yshift=10px] {$c \getsu \CCC$};
+
+      \node (n1a) at (alice.east) [yshift=18px] {};
+      \node (n1b) at (bob.west)   [yshift=18px] {};
+      \node (n2a) at (alice.east) {};
+      \node (n2b) at (bob.west)   {};
+      \node (n3a) at (alice.east) [yshift=-18px] {};
+      \node (n3b) at (bob.west)   [yshift=-18px] {};
+
+      \draw[->,thick] (n1a) -- (n1b) node[above,midway] {$u$};
+      \draw[<-,thick] (n2a) -- (n2b) node[above,midway] {$c$};
+      \draw[->,thick] (n3a) -- (n3b) node[above,midway] {$z = z_\SK(u,c)$};
+
+      \node at (alice.south) [yshift=-10px] {$\SK$};
+      \node at (bob.south)   [yshift=-10px] {$\VVV_\PK(u, c, z)$};
+    \end{tikzpicture}
+  \end{center}
+
+  \pause
+  In the \emph{transcript} $(u, c, v)$, $u$ is a commitment, $c$ is a (varying) challenge, and $z$ is a (consistent) response.
+\end{frame}
+
+\begin{frame}{Danger zone}
+  Sigma protocols \& zero-knowledge schemes are advanced cryptography.
+  \begin{itemize}[<+(1)->]
+    \item You should know that they exist
+    \item You should not use them directly
+    \item The complexity snowballs
+    \item Not comparable to popular and standardised schemes
+    \begin{itemize}
+      \item encryption \& signature schemes, KEMs, MACs, hash functions
+    \end{itemize}
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  These topics are a prime example of unknown unknowns.
+  \begin{itemize}[<+(1)->]
+    \item Reading a few blog posts to get an intuition to start using them is not enough
+    \item Extensive amounts of study required for even the \enquote{entry level}
+    \item Not gatekeeping:
+    you are more than welcome to spiral down the rabbit hole
+  \end{itemize}
+\end{frame}
+
+\end{document}
