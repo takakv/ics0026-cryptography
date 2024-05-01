@@ -1,0 +1,292 @@
+\usetheme[numbering=fraction]{metropolis}
+
+\metroset{block=fill}
+
+\usepackage[dvipsnames]{xcolor}
+
+\usepackage{booktabs}
+
+\usepackage{fancyvrb}
+\fvset{listparameters=\setlength{\topsep}{0pt}\setlength{\partopsep}{0pt}}
+
+\usepackage{csquotes}
+\setquotestyle{british}
+
+\usepackage{graphicx}
+\graphicspath{ {../../images/} }
+
+\usepackage{pgfplots}
+\usetikzlibrary{positioning,calc,external}
+%\tikzexternalize[prefix=figures/] 
+
+\usepackage{crysymb}
+
+\renewcommand*{\arraystretch}{1.2}
+
+\usepackage{soul}
+\usepackage[en-GB]{datetime2}
+\DTMlangsetup[en-GB]{ord=omit}
+
+\usetikzlibrary{positioning,calc}
+\graphicspath{ {../../images/} }
+
+\title{ICS0026 Cryptography}
+\subtitle{Proof systems \& zero-knowledge}
+\date{\DTMdate{2024-04-16}}
+\author{Taaniel Kraavi}
+\institute%
+{%
+  \textit{IT College}\\
+  \textit{Tallinn University of Technology}
+}
+
+\begin{document}
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Disclaimer}
+  \pause
+  This lecture introduces some informal notions.
+
+  \pause
+  The goal is to
+  \begin{itemize}[<+(1)->]
+    \item Introduce the concept of zero-knowledge
+    \item Develop some cryptographic intuition
+    \item Intuitively reason about about protocols
+  \end{itemize}
+
+  \vfill
+
+  \pause
+  We will not cover any of these topics formally in this course.
+\end{frame}
+
+\begin{frame}{Proving things}
+  What is a proof?
+  \begin{itemize}[<+(1)->]
+    \item Proofs in the mathematical sense (i.e. deterministic)
+    \begin{itemize}
+      \item Deductive argument for some statement
+      \item Combination of axioms, rules of inference, and proven statements
+    \end{itemize}
+    \item Probabilistic \enquote{proofs}: a more relaxed notion
+    \begin{itemize}
+      \item Approaches of the type \enquote{Alice convinces Bob}
+      \item Proof systems in computational complexity theory
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{(Interactive) proof systems}
+  An (interactive) proof system is comprised of two algorithms:
+  \begin{itemize}[<+(1)->]
+    \item An unbounded prover $\PPP$
+    \begin{itemize}
+      \item Potentially malicious
+    \end{itemize}
+    \item A PPT verifier $\VVV$
+    \begin{itemize}
+      \item Assumed to be honest
+    \end{itemize}
+  \end{itemize}
+
+  \vspace*{1em}
+  
+  \pause
+  If the prover is also PPT, we use the term \emph{argument} instead of \enquote{proof}.
+  \begin{itemize}[<+(1)->]
+    \item Often the two terms are used interchangeably (determine from context)
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  The prover and verifier exchange messages.
+  \begin{itemize}[<+(1)->]
+    \item Messages are exchanged until the verifier makes a decision
+    \item Exchanged messages form the \emph{transcript}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Statements and witnesses}
+  \pause
+  The goal of a proof is to prove or disprove the veracity of a \emph{statement}.
+  \begin{itemize}[<+(1)->]
+    \item W.l.o.g. we only consider proving the truth
+    \item The easiest way to prove something is to provide a \emph{witness} for the claim
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Statements and witnesses}
+  A bit more formally:
+  \begin{itemize}[<+(1)->]
+    \item Let $\Rel$ be a decidable binary relation
+    \item We call $w$ a witness for a statement $u$ if $(u, w) \in \Rel$
+    \item The language
+    \[
+      \LLL = \{u \mid \exists w : (u, w) \in \Rel\}
+    \]
+    is the set of statements $u$ that have a witness $w$ in the relation $\Rel$.
+  \end{itemize}
+
+  \vfill
+
+  \pause
+  To prove the truth of a statement $u$, the prover must show that it belongs to $\LLL$.
+  \begin{itemize}[<+(1)->]
+    \item The trivial approach is to reveal $w$, but this may not always be possible
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Proof system properties}
+  \pause
+  \emph{Completeness}
+  \begin{itemize}[<+(1)->]
+    \item An honest verifier should always accept a proof by an honest prover
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  \emph{Soundness}
+  \begin{itemize}[<+(1)->]
+    \item No prover should be able to produce an accepting proof for an invalid statement, except with some small probability
+    \item This probability is called the \emph{soundness error}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Zero-knowledge proof}
+  A \emph{zero-knowledge proof} should convince a verifier that a statement is true, without revealing any information beyond the statement's truth.
+
+  \vspace*{1em}
+
+  \pause
+  Classical introductory examples:
+  \begin{itemize}[<+(1)->]
+    \item Ali Baba's cave
+    \begin{itemize}
+      \item Soundness by repetition
+      \item Interactive \& non-transferable
+      \item How to make it transferable and what issues arise?
+    \end{itemize}
+    \item Where's Waldo
+    \begin{itemize}
+      \item Not perfectly zero-knowledge
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Properties of ZKPs}
+  A zero-knowledge proof must be:
+  \begin{itemize}[<+(1)->]
+    \item Complete
+    \item Sound
+    \item \emph{Zero-knowledge}
+    \begin{itemize}
+      \item No verifier must learn anything other than the truth of what is being proven
+      \item The verifier needs not be honest
+      \item The non-honesty is an important subtlety
+    \end{itemize}
+  \end{itemize}
+
+  \pause
+  Completeness and soundness follow from the requirements of a proof system.
+\end{frame}
+
+\begin{frame}{ZK proof of knowledge}
+  A ZKP does not require a prover to know a witness for the statement.
+  \begin{itemize}[<+(1)->]
+    \item In most cases ZKPs do imply/require knowledge of a witness
+    \item A ZKP is then called a zero-knowledge \emph{proof of knowledge}
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  How to model that a prover must know a witness to create an accepting proof?
+\end{frame}
+
+\begin{frame}{Knowledge-soundness}
+  The notion of \emph{knowledge-soundness} implies that a prover must know a witness.
+  \begin{itemize}[<+(1)->]
+    \item We show the existence of an efficient extractor that can recover the witness except with some small probability
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  Knowledge-soundness can be shown via \emph{special soundness}
+  \begin{itemize}[<+(1)->]
+    \item Often used for $\Sigma$-protocols
+    \item We show that a witness can be extracted from two accepting transcripts with identical initial commitments, but differing challenges
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Schnorr protocol}
+  Schnorr's protocol allows proving knowledge of a discrete logarithm.
+  \pause
+  \begin{center}
+    \begin{tikzpicture}
+      \node (alice) at (0,0) {\includegraphics[height=80px]{alice}};
+      \node (bob)   at (6,0) {\includegraphics[height=80px]{bob}};
+
+      \node(sk) at (alice.north) [yshift=10px] {$x \in \ZZ_q$};
+      \node(pk) at (bob.north)   [yshift=10px] {$h = g^x$};
+
+      \node (n1a) at (alice.east) [yshift=18px] {};
+      \node (n1b) at (bob.west)   [yshift=18px] {};
+      \node (n2a) at (alice.east) {};
+      \node (n2b) at (bob.west)   {};
+      \node (n3a) at (alice.east) [yshift=-18px] {};
+      \node (n3b) at (bob.west)   [yshift=-18px] {};
+
+      \node at (alice.west) [left,yshift=20px]  {$r \getsu \ZZ_q$};
+      \node at (bob.east)   [right,yshift=20px] {$c \getsu \ZZ_q$};
+
+      \draw[->,thick] (n1a) -- (n1b) node[above,midway] {$u = g^r$};
+      \draw[<-,thick] (n2a) -- (n2b) node[above,midway] {$c$};
+      \draw[->,thick] (n3a) -- (n3b) node[above,midway] {$z = r + cx$};
+
+      \node at (bob.south) [yshift=-10px] {$g^z = g^r g^{cx} \iseq u h^c$};
+    \end{tikzpicture}
+  \end{center}
+
+  The group $\GG = \langle g\rangle$ must be a DL-group with a prime cardinality $q$.
+\end{frame}
+
+\begin{frame}{Schnorr protocol analysis}
+  The analysis is done in class.
+\end{frame}
+
+\begin{frame}{Transferability}
+  Interactive ZKPoKs are not \emph{transferable}
+  \begin{itemize}
+    \item A verifier not involved in the interaction is not convinced given just the transcript
+    \item This follows from the potential non-randomness of challenges
+    \item How can we fix the challenge for transferability?
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  If all messages sent from the verifier to the prover are chosen uniformly at random and independently of the prover's messages, a protocol is called \emph{public coin}.
+\end{frame}
+
+\begin{frame}{Fiat-Shamir heuristic}
+  The Fiat-Shamir transform can be used to transform an interactive public coin protocol into a non-interactive one.
+  \begin{itemize}[<+(1)->]
+    \item The protocol is then provably secure only in the ROM
+    \item Compute the challenge as a random hash function on all previous messages and the statement
+    \item FS can be tricky to use: plenty of vulnerabilities have stemmed from not including the statement as an input to the hash function
+  \end{itemize}
+
+  \pause
+  In practice, the random hash function is instantiated with a strong cryptographic hash function.
+  \begin{itemize}[<+(1)->]
+    \item Security becomes heuristic
+  \end{itemize}
+\end{frame}
+
+\end{document}
