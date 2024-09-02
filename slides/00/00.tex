@@ -1,64 +1,25 @@
-\usetheme{Shamir}
+\usetheme[numbering=fraction]{metropolis}
 
 \usepackage{graphicx}
 
 \usepackage{csquotes}
 \setquotestyle{british}
 
-\definecolor{oxfordblue}{RGB}{4,30,66}
+\usepackage[en-GB]{datetime2}
+\DTMlangsetup[en-GB]{ord=omit}
 
-\iffalse
-\setbeamertemplate{headline}
-{%
-    \begin{picture}(0,0)
-        \put(314,-50){%
-            Owo?
-        }
-        \put(20,-55){%
-            \rule{320pt}{0.4pt}
-        }
-    \end{picture}
-}
-\fi
-
-\iffalse
-\setbeamertemplate{footline}
-{%
-    \begin{picture}(0,0)
-        \put(20,30){%
-            \rule{320pt}{0.4pt}
-        }
-        \put(20,14){%
-            Hihi
-        }
-        \put(100,14){%
-            \color{oxfordblue}\insertshortdate
-        }
-        \put(160,14){%
-            \color{oxfordblue}\insertshorttitle
-        }
-        \put(337,14){%
-            \color{oxfordblue}\insertpagenumber/\inserttotalframenumber
-        }
-    \end{picture}%
-}
-\fi
-
-\title[Short version of title]{ICS0026 Cryptography}
+\title{ICS0026 Cryptography}
 \subtitle{Course organisation}
-\author%
-{%
-    \sc{Taaniel Kraavi}\\
-    \textit{\footnotesize Guest Lecturer}
-}
+\date{\DTMdate{2024-09-03}}
+\author{Taaniel Kraavi}
 \institute%
 {%
-    \textit{IT College}\\
-    \textit{Tallinn University of Technology}
+  \textit{IT College}\\
+  \textit{Tallinn University of Technology}
 }
 
 \begin{document}
-\begin{frame}[plain]
+\begin{frame}
   \titlepage
 \end{frame}
 
@@ -66,7 +27,7 @@
   \frametitle{Course aim}
 
   \begin{columns}[T]
-    \begin{column}{.4\textwidth}
+    \begin{column}{.5\textwidth}
       \textbf{Prerequisites:}
       \begin{itemize}[<+->]
         \pause
@@ -106,29 +67,25 @@
 
   \textbf{Lectures}
 
-  Tuesdays: 14:00--15:30 room ICO-316
+  Tuesdays: 14:00--15:30 room ICO-217
 
   \vspace*{1em}
 
   \pause
   \textbf{Practices}
 
-  Thursdays: 14:00--15:30 room ICO-319
+  Thursdays: 16:00--17:30 room ICO-410
 
   \vspace*{1em}
 
   \pause
-  Mandatory to attend at least 8 lectures and 8 practices.
-
-  \pause
-  Valid exceptions:
-  \begin{itemize}
-    \item work
-    \item scheduling conflicts
+  \enquote{Mandatory} to attend at least 8 lectures and 8 practices.
+  \begin{itemize}[<+(1)->]
+    \item Miss required attendance $\implies$ pre-exam.
+    \item Goal: make sure you have kept up with the topics.
+    \item No retake: extra credit for missed attendance.
+    \item Choose wisely!
   \end{itemize}
-
-  \pause
-  Exceptions $\implies$ 20min oral exam.
 \end{frame}
 
 \begin{frame}
@@ -141,15 +98,15 @@
   \pause
   \textbf{Homework}
   \begin{itemize}[<+->]
-    \item Up to 8 mandatory assignments
+    \item Up to 7 mandatory assignments
     \item 2 weeks to complete
     \item Theoretical part (research) \& practical part (programming)
     \item Best-effort:
     \begin{itemize}
       \item Important to try
-      \item Explain your issues
+      \item Explain your issues and prove that you tried
     \end{itemize}
-    \item Semi-random defences
+    \item Incomplete homework with lazy tries $\implies$ failed homework
   \end{itemize}
 \end{frame}
 
@@ -163,13 +120,13 @@
   \textbf{Exam}
   \begin{itemize}[<+->]
     \item Mandatory
-    \item Pre-report ($\le$1 page) on knowledge gaps
-    \item 5--10min oral assessment:
-    \begin{itemize}
-      \item questions about basic concepts (closed book)
-      \item report discussion
+    \item 1h 30min
+    \item Closed book \& written
+    \begin{itemize}[<+(1)->]
+      \item You can bring a one-sided A4 of handwritten notes
+      \item You can chose a 20min oral exam instead (max 10 students)
     \end{itemize}
-    \item +10min if you skipped classes
+    \item Must pass all homework tasks and attendance/pre-exam to attend.
   \end{itemize}
 \end{frame}
 
@@ -181,41 +138,44 @@
   \vspace*{1em}
 
   \textbf{Summary}
-  \begin{itemize}
-    \item All homework mandatory ($\le$8)
-    \item $\ge$50\% attendance a bonus
-    \item Report ($\le$1 page) on knowledge gaps
-    \item 5--10min closed-book oral assessment
+  \begin{itemize}[<+(1)->]
+    \item All homework mandatory ($\le$7)
+    \item $\ge$50\% attendance or pre-exam
+    \item 90min written exam
   \end{itemize}
 
   \vspace*{1em}
 
   \pause
-  Not hard to pass so please do not offload homework to LLMs.
+  Not hard to pass, but requires consistent focus.
+  \begin{itemize}
+    \item LLMs allowed as a \emph{helper} for homework (but not recommended)
+    \item LLMs without understanding the subject: you will likely fail the exam
+  \end{itemize}
 \end{frame}
 
 \begin{frame}
   \frametitle{Syllabus}
 
   \begin{columns}[t]
-    \begin{column}{.4\textwidth}
+    \begin{column}{.5\textwidth}
       \begin{enumerate}
         \item Introduction
         \item Symmetric cryptography
         \item Symmetric cryptography (cont.)
         \item Public-key cryptography
         \item Public-key cryptography (cont.)
-        \item Hash functions
-        \item MACs \& digital signatures
-        \item Public-key infrastructure
+        \item Hash functions \& MACs
+        \item Digital signatures \& certificates
+        \item Public-key infrastructure \& eIDAS
       \end{enumerate}
     \end{column}
 
-    \begin{column}{.4\textwidth}
+    \begin{column}{.5\textwidth}
       \begin{enumerate}\setcounter{enumi}{8}
-        \item Authentication \& commitments
         \item TLS, HTTPS, SSH
         \item Secure programming \& hardware
+        \item Authentication \& commitments
         \item Zero-knowledge proofs
         \item Secret sharing \& MPC
         \item Internet voting
@@ -228,7 +188,7 @@
   \vspace*{2em}
 
   \pause
-  Topics might not be cleanly split by week.
+  Topics might not be cleanly split by week \& the order might change.
 \end{frame}
 
 \begin{frame}
