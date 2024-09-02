@@ -1,0 +1,69 @@
+\documentclass[usegeometry,parskip=half]{scrartcl}
+
+\usepackage[
+  a4paper,
+  top=25mm,
+  bottom=25mm,
+  left=30mm,
+  right=30mm,
+  footskip=10mm
+]{geometry}
+
+\usepackage[hidelinks]{hyperref}
+\pagenumbering{gobble}
+
+\usepackage{microtype}
+\usepackage{fontspec}
+\usepackage{unicode-math}
+
+\setmainfont{Stix Two Text}
+\setsansfont{TeX Gyre Heros}
+\setmathfont{Stix Two Math} 
+
+\begin{document}
+\textbf{ICS0026 Cryptography --- evaluation criteria}
+
+To pass, you must satisfy all three points:
+\begin{enumerate}
+  \item You must submit and pass each homework assignment.
+  \begin{itemize}
+    \item There will be at most $7$ homework assignments.
+    \item You will have at least $2$ weeks to submit each homework.
+    \item If you cannot meet the deadline, write to me no later than 4 days before the deadline with your reason.
+    No extensions granted if you miss the notice period.
+    \item When you are stuck:
+    \begin{itemize}
+      \item You may turn to me for help after classes/by email/by Discord.
+      \item You may give pointers to each other, but not share solutions.
+      \item If you cannot solve the practical part, it is enough to write about the technical issues you had, and show what approaches you tried.
+    \end{itemize}
+    \item Submitting an incomplete homework without explaining approaches you tried and asking me for tips $\implies$ failed homework $\implies$ failed course.
+    \item If I have doubts about your homework (e.g. suspect plagiarism), I will ask you extra questions as a second chance.
+  \end{itemize}
+  \item Attend 8 lectures and 8 practices OR pass the pre-exam.
+  \begin{itemize}
+    \item Pre-exam not required if you have attended at least 8 lectures and 8 practices.
+    \item 30min closed book with basic questions (easier than the exam) to make sure you have not ghosted the course.
+    \item If you fail: we can discuss the results to make up for some lost points, but there are no retakes.
+    Consider it potential extra credit for lost attendance points.
+  \end{itemize}
+  \item You must attend and pass the in-person written exam.
+  \begin{itemize}
+    \item 1h 30min closed book exam with a handwritten one-sided A4 cheat-sheet allowed.
+    \item Alternatively: 20min oral exam (max 10 students).
+    \item $1$ retake allowed.
+    \item I will publish an exam help/topics guide.
+    \item All previous assignments must be passed to attend.
+  \end{itemize}
+\end{enumerate}
+
+The reasons for the above criteria and for the closed book exam are explained in the intro lecture.
+
+\vspace*{\parskip}
+
+Violation of good academic practice:
+
+Copying someone's homework, plagiarism, etc.\footnotemark{}, fails you the course and I will report you.
+
+\footnotetext{Chapter 9 of TalTech's academic policies: \url{https://taltech.ee/en/academic-policies-taltech}}
+\end{document}
