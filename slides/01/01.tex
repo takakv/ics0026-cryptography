@@ -1,4 +1,4 @@
-\usetheme{Shamir}
+\usetheme[numbering=fraction]{metropolis}
 
 \usepackage{crysymb}
 
@@ -13,17 +13,17 @@
 \usepackage{unicode-math}
 \usepackage{microtype}
 
-\title[Short version of title]{ICS0026 Cryptography}
+\usepackage[en-GB]{datetime2}
+\DTMlangsetup[en-GB]{ord=omit}
+
+\title{ICS0026 Cryptography}
 \subtitle{Introduction to cryptography}
-\author%
-{%
-    \sc{Taaniel Kraavi}\\
-    \textit{\footnotesize Guest Lecturer}
-}
+\date{\DTMdate{2024-09-03}}
+\author{Taaniel Kraavi}
 \institute%
 {%
-    \textit{IT College}\\
-    \textit{Tallinn University of Technology}
+  \textit{IT College}\\
+  \textit{Tallinn University of Technology}
 }
 
 \begin{document}
@@ -47,7 +47,7 @@
   \frametitle{CIA and cryptography}
 
   \pause
-  \begin{itemize}
+  \begin{itemize}[<+(1)->]
     \item Confidentiality
     \item Integrity
     \item \st{Availability}
@@ -94,10 +94,8 @@
   \pause
   \begin{itemize}
     \item \textbf{Two approaches to security}
-    \begin{itemize}
-      \pause
+    \begin{itemize}[<+(1)->]
       \item Heuristic security / best-effort design
-      \pause
       \item Provable security
     \end{itemize}
 
@@ -105,7 +103,7 @@
 
     \pause
     \item \textbf{Two types of security}
-    \begin{itemize}
+    \begin{itemize}[<+(1)->]
       \item Conditional
       \item Unconditional\textsuperscript{*}
     \end{itemize}
@@ -143,7 +141,7 @@
   \begin{itemize}
     \item \textbf{Cryptographic constructions are rarely provably secure.}
     \pause
-    \begin{itemize}[<+->]
+    \begin{itemize}[<+(1)->]
       \item There is an unavoidable gap between theory and practice.
       \item Practical security is based on \emph{intractability}.
       \item It is \emph{infeasible} in practice to solve a problem.
@@ -153,7 +151,7 @@
 
     \pause
     \item In the physical world, we must obey the laws of physics.
-    \begin{itemize}
+    \begin{itemize}[<+(1)->]
       \item Humans keep pushing what is feasible.
       \item Dedicated tooling improves attack success.
     \end{itemize}
@@ -162,7 +160,7 @@
 
     \pause
     \item Never assume secure parameters: verify with experts.
-    \begin{itemize}[<+->]
+    \begin{itemize}[<+(1)->]
       \item Recommendations by ANSSI, BSI, NIST\textsuperscript{*}.
       \item Independent opinions of respected cryptographers.
       \item Err on the side of caution.
@@ -182,16 +180,16 @@
 
   \pause
   A cryptosystem is a triple of algorithms $(\GEN,\ENC,\DEC)$ where
-  \begin{itemize}
+  \begin{itemize}[<+(1)->]
     \item $\GEN$ is a key generation algorithm
-    \item $\ENC$ is an encryption algorithm: $\ENC(m)=c$
-    \item $\DEC$ is a decryption algorithm: $\DEC(c)=m$
+    \item $\ENC$ is an encryption algorithm: $c\gets\ENC(m)$
+    \item $\DEC$ is a decryption algorithm: $m\gets\DEC(c)$
   \end{itemize}
 
   \vspace*{1em}
 
   \pause
-  The output of the encryption $c = \ENC(m)$ is called the \emph{ciphertext}.
+  The output of the encryption $c\gets\ENC(m)$ is called the \emph{ciphertext}.
 
   \vspace*{1em}
 
@@ -207,23 +205,19 @@
 \begin{frame}
   \frametitle{Attack types}
 
-  \pause
-  \begin{itemize}
+  \begin{itemize}[<+(1)->]
     \item Ciphertext-only attack
     \begin{itemize}
       \item You only know a ciphertext.
     \end{itemize}
-    \pause
     \item Known-plaintext attack (KPA)
     \begin{itemize}
       \item You are given a ciphertext--plaintext pair.
     \end{itemize}
-    \pause
     \item Chosen-plaintext attack (CPA)
     \begin{itemize}
       \item You are given ciphertexts for plaintexts you provide.
     \end{itemize}
-    \pause
     \item Chosen-ciphertext attack (CCA)
     \begin{itemize}
       \item You are given plaintexts for ciphertexts you provide.
