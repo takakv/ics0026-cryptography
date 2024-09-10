@@ -1,0 +1,177 @@
+\documentclass[parskip=half]{scrartcl}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+
+\usepackage{xcolor}
+
+\usepackage{crysymb}
+
+\usepackage{csquotes}
+\setquotestyle{british}
+
+\usepackage[hidelinks]{hyperref}
+
+\usepackage{fontspec}
+\usepackage{unicode-math}
+\usepackage{microtype}
+
+\setmainfont{Stix Two Text}
+\setmathfont{Stix Two Math}
+\setmonofont{Courier}
+
+\usepackage{booktabs}
+
+\begin{document}
+
+\begin{center}
+  \textbf{On the malleability of the One Time Pad}
+\end{center}
+
+Consider the string \enquote{rand}.
+The ASCII character codes for the string are
+\begin{table}[h!]
+  \centering
+  \begin{tabular}{@{}cccc@{}}
+    r & a & n & d\\
+    \midrule
+    \texttt{0x72} & \texttt{0x61} & \texttt{0x6E} & \texttt{0x64}
+  \end{tabular}
+  \vspace*{-.8em}
+\end{table}
+
+The binary representations of the characters are thus
+\begin{table}[h!]
+  \centering
+  \begin{tabular}{@{}cccc@{}}
+    r & a & n & d\\
+    \midrule
+    \texttt{01110010} & \texttt{01100001} & \texttt{01101110} & \texttt{01100100}
+  \end{tabular}
+  \vspace*{-.8em}
+\end{table}
+
+Let \texttt{0x4368DBA5} represent a random 4-byte key that was obtained from a random source (TRNG).
+Its binary representation is \texttt{01000011} \texttt{01011000} \texttt{11011011} \texttt{10100101}.
+
+Recall that the one time pad (OTP) encryption is carried out as
+\[
+  \ENC_k(m) = m \oplus k = c
+\]
+where $\oplus$ denotes the bitwise XOR operation, $k$ denotes the $\lambda$-bit key, $m$ denotes the $\lambda$-bit message, and $c$ denotes the $\lambda$-bit ciphertext.
+
+For $m = \mathtt{0x72616E64}$, $k = \mathtt{0x4358DBA5}$, we have
+\begin{table}[h!]
+  \centering
+  \begin{tabular}{@{}ccccc@{}}
+    & \texttt{01110010} & \texttt{01100001} & \texttt{01101110} & \texttt{01100100}\\
+    $\oplus$
+    & \texttt{01000011} & \texttt{01011000} & \texttt{11011011} & \texttt{10100101}\\
+    \midrule
+    & \texttt{00110001} & \texttt{00111001} & \texttt{10110101} & \texttt{11000001}
+  \end{tabular}
+  \vspace*{-.8em}
+\end{table}
+
+and so $c = \mathtt{0x3139B5C1}$.
+
+Suppose now that Alice sends $c$ to Bob over an insecure channel. 
+However, Eve intercepts the message and manipulates it by XORing the message with the noise $n = \mathtt{0x01000000}$.
+By doing so, $c' = c \oplus n = \mathtt{0x3039B5C1}$ since
+\begin{table}[h!]
+  \centering
+  \begin{tabular}{@{}ccccc@{}}
+    & \texttt{00110001} & \texttt{00111001} & \texttt{10110101} & \texttt{11000001}\\
+    $\oplus$
+    & \texttt{00000001} & \texttt{00000000} & \texttt{00000000} & \texttt{00000000}\\
+    \midrule
+    & \texttt{00110000} & \texttt{00111001} & \texttt{10110101} & \texttt{11000001}
+  \end{tabular}
+  \vspace*{-.8em}
+\end{table}
+
+In essence, Eve only changed the second leftmost HEX-digit of the ciphertext:
+\[
+  \mathtt{0x3{\textcolor{red}1}39B5C1} \to \mathtt{0x3{\textcolor{red}0}39B5C1}
+\]
+
+Eve then forwards $c'$ instead of $c$ to Bob and since the channel is insecure/unauthenticated, Bob has no way of knowing that Eve tampered with the message.
+Bob thus thinks that $c'$ is the message that Alice sent him and decrypts it with
+\[
+  \DEC_k(c') = c' \oplus k = (c \oplus n) \oplus k = (c \oplus k) \oplus n = m \oplus n.
+\]
+Note that
+\[
+  (c \oplus n) \oplus k = c \oplus n \oplus k = c \oplus k \oplus n = (c \oplus k) \oplus n
+\]
+stems from the fact that $\oplus$ is associative\footnote{Rearranging the parentheses does not change the result.} and commutative\footnote{Rearranging the terms does not change the result.}.
+
+Bob thus recovers $m' = m \oplus n = \mathtt{0x73616E64}$ since
+\begin{table}[h!]
+  \centering
+  \begin{tabular}{@{}ccccc@{}}
+    & \texttt{01110010} & \texttt{01100001} & \texttt{01101110} & \texttt{01100100}\\
+    $\oplus$
+    & \texttt{00000001} & \texttt{00000000} & \texttt{00000000} & \texttt{00000000}\\
+    \midrule
+    & \texttt{01110011} & \texttt{01100001} & \texttt{01101110} & \texttt{01100100}
+  \end{tabular}
+  \vspace*{-.8em}
+\end{table}
+
+In essence, the recovered plaintext differs from the original plaintext in only the second leftmost HEX-digit:
+\[
+  \mathtt{0x7{\textcolor{red}2}616E64} \to \mathtt{0x7{\textcolor{red}3}616E64}
+\]
+just like the manipulated ciphertext.
+From the bitwise calculation, we can easily see that the highest order byte of the message has been incremented by $1$, i.e. $\mathtt{0x72} \to \mathtt{0x73}$.
+When thinking in ASCII terms, this means that the first letter has been incremented by one and so $\text{r} \to \text{s}$.
+It follows that Bob has decrypted \enquote{sand} instead of \enquote{rand}.
+
+This highlights the malleability of the OTP and shows that even though the OTP has perfect secrecy when used properly, it still does not necessarily satisfy all properties which we expect from secure communication.
+Indeed, in practice, we consider integrity as part of our secure communication requirements; otherwise, the communication loses its meaning.
+
+You can verify the decryption result by computing $c' \oplus k$
+\begin{table}[h!]
+  \centering
+  \begin{tabular}{@{}ccccc@{}}
+    & \texttt{00110000} & \texttt{00111001} & \texttt{10110101} & \texttt{11000001}\\
+    $\oplus$
+    & \texttt{01000011} & \texttt{01011000} & \texttt{11011011} & \texttt{10100101}\\
+    \midrule
+    & \texttt{01110011} & \texttt{01100001} & \texttt{01101110} & \texttt{01100100}
+  \end{tabular}
+  \vspace*{-.8em}
+\end{table}
+
+and checking with the ASCII table that the recovered message is indeed \enquote{sand}.
+\begin{table}[h!]
+  \centering
+  \begin{tabular}{@{}cccc@{}}
+    s & a & n & d\\
+    \midrule
+    \texttt{0x73} & \texttt{0x61} & \texttt{0x6E} & \texttt{0x64}\\
+    \texttt{01110011} & \texttt{01100001} & \texttt{01101110} & \texttt{01100100}
+  \end{tabular}
+  \vspace*{-.8em}
+\end{table}
+
+\iffalse
+\begin{table}
+  \centering
+  \begin{tabular}{l l l}
+    DEC & HEX & CHR\\
+    \midrule
+    $\vdots$ & $\vdots$ & $\vdots$\\
+    97 & \texttt{0x60} & a\\
+    98 & \texttt{0x61} & b\\
+    $\vdots$ & $\vdots$ & $\vdots$ \\
+    121 & \texttt{0x79} & y\\
+    122 & \texttt{0x7A} & z\\
+    $\vdots$ & $\vdots$ & $\vdots$
+  \end{tabular}
+\end{table}
+\fi
+
+\end{document}
