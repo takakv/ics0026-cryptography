@@ -1,0 +1,525 @@
+\usetheme[numbering=fraction]{metropolis}
+
+\usepackage{cryslides}
+\usepackage{crygame}
+
+\usepackage{soul}
+
+\usetikzlibrary{positioning,calc}
+
+\graphicspath{ {../../images/} }
+
+\title{ICS0026 Cryptography}
+\subtitle{Randomness, OTP, and stream ciphers}
+\date{\DTMdate{2024-09-10}}
+\author{Taaniel Kraavi}
+\institute%
+{%
+  \textit{IT College}\\
+  \textit{Tallinn University of Technology}
+}
+
+\begin{document}
+\begin{frame}[plain]
+  \titlepage
+\end{frame}
+
+\begin{frame}
+  \frametitle{Is it random?}
+
+  \begin{itemize}
+    \item<1-> 2204219747
+    \begin{itemize}
+      \item<2-> \texttt{10000011 01100001 10111001 01100011}
+      \item<2-> \texttt{0}: $17$, \texttt{1}: $15$
+      \item<3-> Source: \texttt{/dev/urandom}
+    \end{itemize}
+    \item<1-> 1415926535
+    \begin{itemize}
+      \item<2-> \texttt{01010100 01100101 01010011 00000111}
+      \item<2-> \texttt{0}: $18$, \texttt{1}: $14$
+      \item<4-> Source: first 10 decimal digits of $\pi$
+    \end{itemize}
+    \item<1-> 1918987876
+    \begin{itemize}
+      \item<2-> \texttt{01110010 01100001 01101110 01100100}
+      \item<2-> \texttt{0}: $17$, \texttt{1}: $15$
+      \item<5-> Source: decoded ASCII string \enquote{rand}
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Randomness}
+
+  % Mention double pendulums, Cloudflare lava lamps
+  \begin{itemize}[<+->]
+    \item Randomness is unprovable
+    \item Statistical tests for non-randomness
+    \item \enquote{True} randomness:
+    \begin{itemize}
+      \item Thermal noise, photoelectric effect, quantum phenomena, \dots
+    \end{itemize}
+    \vspace*{1em}
+    \item Random sequence
+    \begin{itemize}
+      \item forward \& backward unpredictable
+      \item follows no deterministic pattern
+      \item cannot be compressed
+      \item has no description shorter than itself
+    \end{itemize}
+    \vspace*{1em}
+    \item Computers and humans are predictable
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{RNG}
+
+  \begin{itemize}[<+->]
+    \item Random number generators
+    \item RNG boogaloo:
+    \begin{itemize}
+      \item hardware, true \& quantum RNG: HRNG, TRNG, QRNG
+      \item NRBG: non-deterministic random bit generator
+    \end{itemize}
+    \item HRNG requires a physical source of entropy
+    \begin{itemize}
+      \item Integrated (opaque)
+      \item External (more choice)
+    \end{itemize}
+    \item How do computers fill the entropy pool?
+    \begin{itemize}
+      \item Hardware sources, interrupt signals, user behaviour, \dots
+      \item Beware of boot: low entropy
+      \item Quantity of entropy?
+      \item To block or not to block?
+    \end{itemize}
+    \item Do we always need a TRNG?
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{PRNG}
+
+  \begin{itemize}[<+->]
+    \item Pseudo-random number generator
+    \item PRNG boogaloo:
+    \begin{itemize}
+      \item CSPRNG: cryptographically secure PRNG
+      \item DRBG: deterministic random bit generator
+    \end{itemize}
+    \item Deterministic
+    \item Random input \emph{seed}
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  Some recommendations/standards:
+  \begin{itemize}
+    \item \href{https://csrc.nist.gov/projects/random-bit-generation}{NIST on random bit generation}
+    \begin{itemize}
+      \item \url{https://csrc.nist.gov/projects/random-bit-generation}
+    \end{itemize}
+    \item \href{https://www.bsi.bund.de/dok/randomnumbergenerators}{BSI on random number generators}
+    \begin{itemize}
+      \item \url{https://www.bsi.bund.de/dok/randomnumbergenerators}
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{An intuition on construction}
+
+  We want a black box with:
+  \begin{itemize}[<+(1)->]
+    \item confusion
+    \item diffusion (avalanche effect)
+  \end{itemize}
+
+  \pause
+  Given this black box:
+  \begin{itemize}[<+(1)->]
+    \item compute one output \enquote{block} from the seed and counter
+    \item increment the counter
+    \item repeat as needed
+  \end{itemize}
+
+  \pause
+  This is one type of construction, but there are others.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Getting randomness on *nix}
+
+  \pause
+  Device files:
+  \begin{itemize}
+    \item \texttt{/dev/random}: historically blocking, but not any more ($\ge$ kernel 5.6)
+    \item \texttt{/dev/urandom}: historically non-blocking
+    \pause
+    \item Both are a CSPRNG outputs seeded from the entropy pool
+    \pause
+    \item Documentation is commonly obsolete
+    \pause
+    \item Beware of flavour/kernel differences!
+  \end{itemize}
+
+  \vspace*{1em}
+  
+  \pause
+  Beware of randomness in VMs!
+  \begin{itemize}
+    \item A nice \href{https://blogs.oracle.com/linux/post/rngd1}{\emph{blog post}} by Oracle.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Platform functions}
+  \begin{itemize}[<+(1)->]
+    \item Linux: \href{https://man7.org/linux/man-pages/man2/getrandom.2.html}{\texttt{getrandom()}}
+    \begin{itemize}
+      \item \texttt{GRND\_RANDOM} flag for \texttt{random} vs \texttt{urandom}
+      \item Beware of obsolete documentation (e.g. \texttt{GRND\_NONBLOCK} flag)!
+    \end{itemize}
+    \vspace*{1em}
+    \item macOS: \href{https://developer.apple.com/documentation/security/secrandomcopybytes(_:_:_:)}{\texttt{SecRandomCopyBytes}}
+    \vspace*{1em}
+    \item Windows: \href{https://learn.microsoft.com/en-us/windows/win32/api/bcrypt/nf-bcrypt-bcryptgenrandom}{\texttt{BCryptGenRandom}}
+    \begin{itemize}
+      \item \href{https://learn.microsoft.com/en-us/windows/win32/api/wincrypt/nf-wincrypt-cryptgenrandom}{\texttt{CryptGenRandom}} is being deprecated
+      \item For .NET, use \href{https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.randomnumbergenerator}{\texttt{RandomNumberGenerator}}
+      \item \href{https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.rngcryptoserviceprovider}{\texttt{RNGCryptoServiceProvider}} is deprecated
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{PRNG security}
+  \pause
+  The output of a CSPRNG should be \emph{indistinguishable} from the output of a TRNG by a \emph{computationally bounded} adversary.
+
+  \vspace*{1em}
+  \pause
+  The \emph{adversary} (or \emph{distinguisher}) should distinguish between the two worlds/games:
+    \begin{align*}
+      &\begin{game}{\GAME_0}
+        &r\gets\mathsf{TRNG}\\
+        &\RETURN r
+      \end{game}
+      &\begin{game}{\GAME_1}
+        &s\gets\mathsf{TRNG}\\
+        &r\gets\mathsf{CSPRNG}(s)\\
+        &\RETURN r
+      \end{game}
+    \end{align*}
+
+    \vspace*{1em}
+
+    \pause
+    If it cannot guess with better success than $\frac{1}{2}$ then the CSPRNG is \enquote{secure}.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Trusting randomness}
+
+  \begin{itemize}[<+(1)->]
+    \item Mix entropy sources
+    \begin{itemize}
+      \item Integrated \& external (speed boost)
+      \item Client \& server-side
+      \item Combine with timestamp (helps with bad randomness)
+      \item All these have gotchas!
+    \end{itemize}
+    \item DYOR:
+    \begin{itemize}
+      \item Is it open source?
+      \item Certified?
+      \item Reputable vendor?
+      \item Track record?
+    \end{itemize}
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  Randomness combined with anything\textsuperscript{*} is random.
+
+  \vspace*{0.5em}
+  {\scriptsize \textsuperscript{*}without information loss}
+\end{frame}
+
+\begin{frame}
+  \frametitle{XOR}
+
+  \pause
+  \begin{itemize}[<+->]
+    \item XOR ($\oplus$): exclusive OR
+    \vspace*{1em}
+    \begin{displaymath}
+      \begin{array}{|c c|c|}
+      a & b & a \oplus b\\
+      \hline
+      0 & 0 & 0\\
+      0 & 1 & 1\\
+      1 & 0 & 1\\
+      1 & 1 & 0\\
+      \end{array}
+    \end{displaymath}
+    \vspace*{1em}
+    \item reversible without information loss
+    \item associative: $a \oplus (b \oplus c) = (a \oplus b) \oplus c$
+    \item commutative: $a \oplus b = b \oplus a$
+    \item self-inverse: $a \oplus a = 0$
+    \item identity element: $a \oplus 0 = a$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{One-time pad (OTP)}
+
+  \begin{itemize}[<+->]
+    \item Symmetric, deterministic cryptosystem
+    \begin{itemize}
+      \item Same key for encryption and decryption
+      \item One ciphertext for each message
+      \item $\ENC_k(m) = m \oplus k = c$
+      \item $\DEC_k(c) = c \oplus k = m$
+    \end{itemize}
+    \vspace*{1em}
+    \item Key $k$ of length $\lambda$ bits
+    \begin{itemize}
+      \item Must be \enquote{perfectly} random (uniformly random)
+      \item $k\getsu\{0,1\}^\lambda$
+      \item $\lambda \ge \lvert m\rvert$ i.e. key as long as message 
+      \item key must only be used once
+    \end{itemize}
+    \vspace*{1em}
+    \item \textbf{Information theoretically secure}, i.e. perfect secrecy
+    \begin{itemize}
+      \item All decryptions are valid $\iff$ the intended message cannot be identified
+      \item Brute force alone is useless even for an unbounded adversary (infinite resources)
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{One-time pad (OTP)}
+  \begin{center}
+    {\color{red} Catastrophic failure if the 3 conditions are not respected!}
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{OTP limitations}
+
+  \pause
+  \begin{itemize}[<+->]
+    \item Size issues:
+    \begin{itemize}
+      \item Key as long as message
+      \item How do we design and store the codebook?
+    \end{itemize}
+    \item Practicality issues: 
+    \begin{itemize}
+      \item New key for every message
+      \item How do we synchronise keys?
+      \item How to exchange the codebook?
+    \end{itemize}
+    \item Security issues:
+    \begin{itemize}
+      \item Malleable i.e. can be meaningfully altered
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Symmetric cryptosystems}
+
+  A \emph{private-key encryption scheme} is a triple of algorithms:
+  \begin{itemize}
+    \pause\item $\GEN$ is a randomised \emph{key generation algorithm}: $k\gets\GEN$
+    \pause\item $\ENC$ is a (possibly randomised) \emph{encryption algorithm}: $c\gets\ENC_k(m)$
+    \pause\item $\DEC$ is a \emph{decryption algorithm}: $m\gets\DEC_k(c)$.
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \begin{itemize}
+    \pause\item $k$ is the \emph{private key}, also called \emph{secret key}
+    \pause\item The message $m$ is the \emph{plaintext}
+    \pause\item The encrypted message $c$ is the \emph{ciphertext}
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  The cryptosystem is \emph{functional} (achieves \emph{correctness}) if $\DEC_k(\ENC_k(m))=m$.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Symmetric cryptosystems}
+  \framesubtitle{For mathematical rigour}
+
+  Keys, messages, and ciphertexts must belong to \emph{spaces}, i.e. sets of elements:
+  \begin{itemize}
+    \pause\item Key space $\KKK$
+    \pause\item Message space $\MMM$
+    \pause\item Ciphertext space $\CCC$
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  The functions are therefore maps
+  \begin{itemize}
+    \pause\item $\ENC_k:\MMM\to\CCC$
+    \pause\item $\DEC_k:\CCC\to\MMM\cup\{\bot\}$
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  The symbol $\bot$ (\enquote{bottom}) denotes decryption failure, i.e. the \emph{abort} symbol. 
+\end{frame}
+
+\begin{frame}{Symmetric cryptosystems}
+  \framesubtitle{EAV-security}
+  \begin{center}
+  \begin{tikzpicture}
+    \node (alice) at (0,0)      {\includegraphics[height=80px]{alice}};
+    \node (bob)   at (8, 0)     {\includegraphics[height=80px]{bob}};
+    \node (eve)   at (4, -2.1)  {\includegraphics[height=80px]{eve}};
+
+    \draw[->,thick] (alice.east) -- (bob.west);
+    \draw[->,thick] (4, 0) -- (4, -0.5);
+    \node[anchor=center,draw,circle,fill=white,thick,minimum size = 2px, inner sep=0pt] at (4,0) {};
+    
+    \node (c) at (4, 0.2) {$c$};
+    \node (gen)   at (4, 2) {$\GEN$};
+
+    \node (ska) at (alice.north) [xshift=-7px,yshift=7px] {$k$};
+    \node (skb) at (bob.north) [xshift=7px,yshift=7px] {$k$};
+
+    \draw[<-,dashed,thick] (alice.north) |- (gen.west);
+    \draw[->,dashed,thick] (gen.east) -| (bob.north);
+
+    \node[anchor=west] (m) at (-3, 0.25) {$m\gets\MMM$};
+    \node[anchor=west] (enc) at (-3, -0.25) {$c\gets\ENC_k(m)$};
+    \node[anchor=east] (dec) at (11, 0) {$m\gets\DEC_k(c)$};
+  \end{tikzpicture}
+  \end{center}
+
+  \pause
+  Can Eve guess the message that Alice sent Bob?
+\end{frame}
+
+\begin{frame}
+  \frametitle{IND-OT-CPA}
+
+  \begin{itemize}[<+->]
+    \item Cryptographers speak of \emph{semantic security}
+    \item Semantic security is difficult to work with
+    \item IND-CPA $\implies$ IND-SEM
+    \item We aim for \emph{indistinguishability} instead
+    \pause
+    \begin{align*}
+      &\begin{game}{\GAME_0^{\AD}}
+        &k\gets\GEN\\
+        &(m_0, m_1)\gets\AD\\
+        &\IF \lvert m_0\rvert \neq \lvert m_1\rvert\  \RETURN 0\\
+        &\RETURN \ENC_k(m_0)
+      \end{game}
+      &\begin{game}{\GAME_1^{\AD}}
+        &k\gets\GEN\\
+        &(m_0, m_1)\gets\AD\\
+        &\IF \lvert m_0\rvert \neq \lvert m_1\rvert\  \RETURN 0\\
+        &\RETURN \ENC_k(m_1)
+      \end{game}
+    \end{align*}
+  \end{itemize}
+
+  \pause
+  The \emph{advantage} of the $t$-time (poly time) adversary should be \emph{negligible}:
+  \pause
+  \[
+    \mathsf{Adv}_{\AD}^{\mathsf{IND\text{-}OT\text{-}CPA}} = 
+    \Bigl\lvert
+      \Pr{\bigl[\GAME_0 = 1\bigr]} - \Pr{\bigl[\GAME_1 = 1\bigr]}
+    \Bigr\rvert \le \varepsilon
+  \]
+  \pause
+  The scheme is then $(t,\varepsilon)$-IND-OT-CPA secure.
+
+\end{frame}
+
+\begin{frame}{Stream ciphers}
+  \pause
+  \begin{itemize}[<+->]
+    \item Follows from the OTP
+    \item Symmetric cipher
+    \item Combine message with PRNG stream: the \emph{keystream}
+    \item Typically bit-by-bit using XOR
+    \item The key is the PRNG \emph{seed}
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  For security:
+  \pause
+  \begin{itemize}[<+->]
+    \item Generate a high quality seed
+    \item Use a reputable CSPRNG
+    \item Do not re-use a keystream
+    \item Do not re-use a key
+    \item Use a message authentication mechanism (for integrity)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Stream ciphers}
+  \begin{itemize}[<+->]
+    \item How to decrypt?
+    \begin{itemize}
+      \item Recipient re-generates the keystream from the seed
+    \end{itemize}
+    \item How to send multiple messages?
+    \begin{itemize}
+      \item Goal: keep the key, but use a new stream
+      \item Use an \emph{initialisation vector} (IV) sometimes called \emph{nonce}
+      \item Update the IV after every encryption
+      \item Initialise the PRNG with key and IV (complex \enquote{mixing})
+      \item Send the IV to the recipient
+    \end{itemize}
+    \item IVs are not supposed to be secret: only the key should be secret
+    \item Not all stream ciphers use an IV
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Stream ciphers}
+  Some well-known ciphers include
+  \pause
+  \begin{itemize}[<+->]
+    \item RC4: belongs in a museum, weak!
+    \item A5/1: used for GSM, weak!
+    \item E0: used for Bluetooth, weak!
+    \item Ascon \& ACORN: relatively new, interesting for constrained envs
+    \item ChaCha20: used by many \texttt{arc4random} PRNGs, popular
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  Note: NIST does not standardise stream ciphers. Not entirely sure why.
+
+  \vspace*{1em}
+
+  \pause
+  Some block ciphers can be turned into stream ciphers through \emph{modes of operation} e.g. AES-CTR.
+
+  \vspace*{1em}
+
+  \pause
+  To also provide authenticity: ChaCha20-Poly1305, AES-GCM.
+\end{frame}
+
+\end{document}
