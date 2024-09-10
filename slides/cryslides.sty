@@ -1,0 +1,19 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{cryslides}[2024/09/10 LaTeX package for cryptography slides]
+
+% Cryptographic symbols
+\RequirePackage{crysymb}
+
+% Typographic improvements (needs LuaLaTeX)
+\RequirePackage{fontspec}
+\RequirePackage{unicode-math}
+\RequirePackage{microtype}
+
+% https://tex.stackexchange.com/a/348428
+\let\textttorig\texttt
+
+\RequirePackage{csquotes}
+\setquotestyle{british}
+
+\RequirePackage[en-GB]{datetime2}
+\DTMlangsetup[en-GB]{ord=omit}
