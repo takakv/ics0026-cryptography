@@ -8,6 +8,7 @@
 \RequirePackage{amsthm}
 
 \RequirePackage{tcolorbox}
+\RequirePackage{fancyvrb}
 
 \RequirePackage[hidelinks]{hyperref}
 
@@ -16,9 +17,13 @@
 \RequirePackage{microtype}
 
 \setmainfont{Stix Two Text}
-\setsansfont[BoldFont = *-Semibold]{Source Sans 3}
+%\setsansfont[BoldFont = *-Semibold]{Source Sans 3}
+\setsansfont{TeX Gyre Heros}
 \setmathfont{Stix Two Math}
 \setmonofont{Courier New}
+
+\RequirePackage{csquotes}
+\setquotestyle{british}
 
 \RequirePackage{bookmark}
 
@@ -38,6 +43,7 @@
 \newcounter{task}[section]
 \newenvironment*{task}[1]{%
   \refstepcounter{task}%
+  \vspace*{1em}
   \textbf{Task~\thetask{} --- {#1}}\par}{}
 
 %\makeatletter
