@@ -2,30 +2,23 @@
 
 \metroset{block=fill}
 
-\usepackage{csquotes}
-\setquotestyle{british}
-
-\usepackage{graphicx}
-\graphicspath{ {../../images/} }
-
-\usepackage{crysymb}
+\usepackage{cryslides}
+\usepackage{crygame}
 
 \usepackage{soul}
 
 \usetikzlibrary{positioning,calc}
+
 \graphicspath{ {../../images/} }
 
-\title[Short version of title]{ICS0026 Cryptography}
+\title{ICS0026 Cryptography}
 \subtitle{Block ciphers \& AES}
-\author%
-{%
-    {Taaniel Kraavi}\\
-    \textit{\footnotesize Guest Lecturer}
-}
+\date{\DTMdate{2024-09-17}}
+\author{Taaniel Kraavi}
 \institute%
 {%
-    \textit{IT College}\\
-    \textit{Tallinn University of Technology}
+  \textit{IT College}\\
+  \textit{Tallinn University of Technology}
 }
 
 \begin{document}
@@ -109,9 +102,9 @@
   \pause
   Properties:
   \begin{itemize}[<+->]
+    \item Messages and ciphertexts of fixed size (blocks)
     \item Deterministic by default
     \item Confusion \& diffusion
-    \item Messages and ciphertexts of fixed size (blocks)
   \end{itemize}
 \end{frame}
 
@@ -376,8 +369,8 @@
   SIV mode:
   \begin{itemize}[<+->]
     \item Synthetic initialization vector
-    \item RFC 5297
-    \item Example: AES-GCM-SIV (RFC 8452)
+    \item \href{https://datatracker.ietf.org/doc/html/rfc5297}{RFC 5297}
+    \item Example: AES-GCM-SIV (\href{https://datatracker.ietf.org/doc/html/rfc8452}{RFC 8452})
   \end{itemize}
 \end{frame}
 
@@ -417,15 +410,17 @@
 
   \pause
   Block size:
-  \begin{itemize}[<+->]
+  \begin{itemize}
     \item The number of bits in a block, i.e. message/ciphertext length
+    \pause
     \item Typical values are: 64 (bad), 128, 192, 256 bits
   \end{itemize}
 
   \pause
   Key length:
-  \begin{itemize}[<+->]
-    \item Usually tied to the \enquote{strength} of the algorithm
+  \begin{itemize}
+    \item Usually tied to the \enquote{strength} of the cipher
+    \pause
     \item Typical values are: 128, 192, 256 bits
   \end{itemize}
 
@@ -484,8 +479,8 @@
   Advanced Encryption Standard
   \begin{itemize}[<+(1)->]
     \item Originally called Rijndael
-    \item Standardised by NIST in 2001 (FIPS 197)
-    \item Later standardised by ISO (ISO/IEC 18033-3)
+    \item Standardised by NIST in 2001 (\href{https://csrc.nist.gov/pubs/fips/197/final}{FIPS 197})
+    \item Later standardised by ISO (\href{https://www.iso.org/standard/54531.html}{ISO/IEC 18033-3:2010})
     \item Superseded the Data Encryption Standard (DES)
   \end{itemize}
 
@@ -598,7 +593,7 @@
 
   \pause
   Key derivation functions
-  \begin{itemize}
+  \begin{itemize}[<+(1)->]
     \item Derive secret keys from a secret value
     \item \enquote{Stretches} (and strengthens) secrets
     \item Hash-function or block-cipher based (typically)
