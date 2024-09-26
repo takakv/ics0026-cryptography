@@ -27,7 +27,7 @@
 \RequirePackage{microtype}
 
 \setmainfont{Stix Two Text}
-\setsansfont[BoldFont = *-Semibold]{Source Sans 3}
+%\setsansfont[BoldFont = *-Semibold]{Source Sans 3}
 \setmathfont{Stix Two Math}
 \setmonofont{Courier New}
 
@@ -37,11 +37,14 @@
 \DTMsetdatestyle{ddmmyy}
 \DTMsetup{datesep=.}
 
+\RequirePackage{csquotes}
+\setquotestyle{british}
+
 \makeatletter
 \def\@maketitle{%
   \newpage
   \begin{center}%
-    {Homework~\@title{} --- Deadline:~\@date~23:59~EET\par}%
+    {Homework~\@title{} --- Deadline:~\@date~23:59~EEST\par}%
   \end{center}%
   \par}
 \makeatother

@@ -1,4 +1,4 @@
-\documentclass{practice}
+\documentclass{homework}
 
 \usepackage{enumitem}
 \usepackage{tcolorbox}
@@ -16,59 +16,42 @@ columns=flexible,
 breaklines=true
 }
 
+\usepackage{fancyvrb}
+\fvset{listparameters=\setlength{\topsep}{0pt}\setlength{\partopsep}{0pt}}
+
+\title{01}
+\author{Taaniel Kraavi}
+\date{\DTMdate{2024-10-06}}
+
 \begin{document}
-\begin{center}
-Homework 01 --- Deadline: 01.03.24 23:59 EET
-\end{center}
-
-\textbf{Technical instructions}
-
-\begin{itemize}
-  \item Theory part:
-  \begin{itemize}
-    \item Submit on Moodle as a PDF called \texttt{studentid-01.pdf} where `studentid' is your 6 letter student ID/email username (`takraa' for me).
-    \item Add to your report roughly how long it took you to solve the complete homework (theory + code).
-    \item Include your Discord username in the PDF if you want me to give you feedback on Discord instead of Moodle (make sure to whitelist the server for DMs).
-  \end{itemize}
-
-  \item Practical/code part:
-  \begin{itemize}
-    \item Submit your code part files as a ZIP bundle on Moodle.
-    \item I must be able to run your code using the CLI parameters defined in the templates.
-    \item Your code must run with Python 3.11.
-    \item You may use any standard module, but only the following 3\textsuperscript{rd} party libraries:
-    \begin{itemize}
-      \item \href{https://pypi.org/project/pycryptodome/}{\texttt{pycryptodome}}, \href{https://pypi.org/project/PyNaCl/}{\texttt{PyNaCl}}, \href{https://pypi.org/project/cryptography/}{\texttt{cryptography}}
-    \end{itemize}
-
-    Confirm with me beforehand if you want to use anything else.
-  \end{itemize}
-\end{itemize}
+\maketitle
 
 \textbf{Organisational details}
 
 \begin{itemize}
-  \item You may request deadline extensions until 26.02.24 23:59 EET.
-  \item If you cannot solve the code tasks, explain your issues instead \& show that you tried.
-  \item You may give hints to each-other (but no answer/code sharing) and you may ask me questions in private or publicly (discord server/Moodle forums).
-  \item The only way to fail the homework is by:
+  \item Include in your report approximately how long the homework took for you.
+  \item If you want feedback on Discord, include your username in your report.
+  \item Read through task descriptions carefully.
+  \item You may request deadline extensions until 03.10.24 23:59 EEST.
+  \item Deadlines are strict: if you do not submit your assignment by the deadline, you fail it.
+  \item To pass the course you must pass all homework assignments.
+  \item Second chances:
   \begin{itemize}
-    \item not submitting it on time
-    \item submitting an incomplete homework \emph{without} explanations
-    \item plagiarising/copying (in which case I will also report you to the faculty)
+    \item If I review your assignment before the deadline, I will \emph{always} give you a chance to fix it for the deadline (or with a slight extension).
+    Start early!
+    \item If I review your assignment after the deadline, I will give you an extension \emph{only} if you have explained what part of your code does not work, and what you did to attempt to fix it.
+    Ask questions when you are stuck to avoid risking it!
+    \item If I give you an extension, you must still fix your homework by the extended deadline to pass.
+    \item If your code does not work but you are not aware of it or have not explained your issues, you fail the homework (if I review it after the deadline).
+    Test your code!
+    \item If you fail your homework, you can appeal my decision within 3 days of receiving your grade (grade day + 3).
+    Write me an email or message me on Discord.
+    I will then organise an oral defence for you.
   \end{itemize}
-  \item If you fail the homework, you fail the course: you cannot attend the exam unless you have passed all homework assignments.
-  \item If I mark your homework as failed you can appeal my decision:
-  \begin{itemize}
-    \item You must do so within 3 days of receiving your grade (grade day + 3).
-    \item We will have a homework defence/impromptu oral exam.
-    \item If you fail the defence, the fail is permanent.
-  \end{itemize}
-  \item I grade homework ASAP:
-  \begin{itemize}
-    \item If you submit before the deadline, you may get feedback on issues that you can still fix before the deadline.
-    \item The closer to the deadline you submit, the less likely I can review it before the deadline.
-  \end{itemize}
+  \item You may share hints with each-other, but no answers/code.
+  \item You may ask me questions (I prefer Discord to Moodle/email).
+  If your code does not work and you have not asked me any questions, you will have a hard time arguing that you actually tried solving it!
+  \item If I catch you plagiarising/copying, I will report you to the faculty and fail you for the course.
 \end{itemize}
 
 \newpage
@@ -77,102 +60,146 @@ Homework 01 --- Deadline: 01.03.24 23:59 EET
   Theory tasks
 \end{center}
 
-\textbf{Task 1 --- A little about you}
+\textbf{Additional instructions}
 
-What role are you currently working as/what would you like to work as?
-Is or do you anticipate cryptography to be somehow related to your work?
-Was there any specific reason (other than the 6 ECTS) that made you pick this course/what do you hope to gain from it?
+\begin{itemize}
+  \item Submit as a PDF file called \texttt{studentid-01.pdf} where \enquote{studentid} is your 6 letter student ID/username (\enquote{takraa}) for me.
+  \item Submit it on Moodle as a standalone file (not as part of the code ZIP).
+\end{itemize}
 
-\textit{Just a few sentences (3--4) is fine.}
+\begin{task}{A little about you}
+  What role are you currently working as/what would you like to work as?
+  Is or do you anticipate cryptography to be somehow related to your work?
+  Was there any specific reason (other than the 6 ECTS) that made you pick this course/what do you hope to gain from it?
 
-\textbf{Task 2 --- Knowing your system}
+  \textit{Just a few sentences (3--4) is fine.}
+\end{task}
 
-What operating system do you use? Give three examples of disk-encryption software supported on your OS (include links).
+\begin{task}{Knowing your system}
+  What operating system do you use? Give three examples of disk-encryption software supported on your OS (include links).
 
-Do you use full disk encryption? If not, would you start using it?
+  Do you use full disk encryption? If not, would you start using it?
+\end{task}
 
-\textbf{Task 3 --- Knowing your tools}
+\begin{task}{Knowing your tools}
+  What programming language do you use most/are you most comfortable in?
+  For this language, list the following:
+  \begin{enumerate}
+    \item Standard library/namespace/module (if any) for getting cryptographic randomness.
+    \item Standard library/namespace/module (if any) for encryption.
+    \item Three well regarded 3\textsuperscript{rd} party libraries for cryptographic stuff (any kind).
+  \end{enumerate}
 
-What programming language do you use most/are you most comfortable in?
-For this language, list the following:
-\begin{enumerate}
-  \item Standard library/namespace/module (if any) for getting cryptographic randomness.
-  \item Standard library/namespace/module (if any) for encryption.
-  \item Three well regarded 3\textsuperscript{rd} party libraries for cryptographic stuff (any kind).
-\end{enumerate}
+  Include your sources!
+\end{task}
 
-Include your sources!
+\begin{task}{Cryptographer's Rosetta}
+  If your mother tongue is not English, try to find a frequency diagram for your language (as we did for the shift cipher).
 
-\textbf{Task 4 --- Cryptographer's Rosetta}
+  If your mother tongue is English, or you cannot find a diagram for your mother tongue, find a frequency diagram for bigrams (two letter pairs, e.g. \enquote{at}, \enquote{to}, \enquote{no}, \dots) or trigrams.
 
-If your mother tongue is not English, try to find a frequency diagram for your language (as we did for the shift cipher).
+  Include the source!
+\end{task}
 
-If your mother tongue is English, or you cannot find a diagram for your mother tongue, find a frequency diagram for two (or three) letter pairs (e.g. `at', `to', `no', \dots).
+\begin{task}{Knowing your processor}
+  Benchmark how long it takes for your computer to iterate over the 32-bit space (practice 1). How long would it take for your computer to cover the 128-bit space based on this info? Show your calculations.
+\end{task}
 
-Include the source!
+\begin{task}{A pledge}
+  \enquote{
+    I understand that I should not implement my own cryptography for any production system, i.e. for any purpose other than a personal learning challenge.
+    I understand also that any implementations done during this course are only for learning purposes, and are not for real world use. I understand that due diligence is crucial.
+  }
 
-\textbf{Task 5 --- Knowing your processor}
-
-Benchmark how long it takes for your computer to iterate over the 32-bit space (practice 1). How long would it take for your computer to cover the 128-bit space based on this info? Show your calculations.
-
-\textbf{Task 6 --- A pledge}
-
-`I understand that I should not implement my own cryptography for any production system, i.e. for any purpose other than a personal learning challenge.
-I understand also that any implementations done during this course are only for learning purposes, and are not for real world use. I understand that due diligence is crucial.'
-
-\textit{Answer with yes/no.}
+  \textit{Answer with yes/no.}
+\end{task}
 
 \newpage
+\setcounter{task}{0}
 
 \begin{center}
   Practical tasks
 \end{center}
 
-\textbf{Task 1 --- Cryptohack}
+\textbf{Additional instructions}
 
-Create an account on \url{https://cryptohack.org/courses/}, and try to finish at least the 10 courses of the `Introduction to Cryptohack'.
-If you cannot finish the 10 courses, write in your report what tasks you were stuck with and what did you try.
-
-Include a screenshot of your module completion and your username in the PDF report.
-
-I do recommend that you to attempt the `Symmetric Cryptography' module as well, but that is not a mandatory part of the homework.
-
-\textbf{Task 2 --- AES CBC from ECB}
-
-Homework template file: \texttt{aes\_ecb\_cbc\_template.py}
-
-The task is to use a library implementation of AES (you need not implement AES yourself) in ECB mode, and build the CBC mode out of it.
-
-For example, if you use PyCryptodome, you should instantiate AES with
-\begin{center}
-  \texttt{aes = AES.new(key, AES.MODE\_ECB)}
-\end{center}
-
-Your program should take in the key and message from the CLI, and have an optional parameter for the IV (see template).
-The key, message, and IV are provided as hex-encoded on the CLI.
-
-\begin{tcolorbox}[title=Note]
-  In practice, providing secrets (e.g. keys, passwords, etc) directly on the CLI as an argument to a program is a terrible idea, since they typically get logged into your terminal history!
-\end{tcolorbox}
-
-Additional program requirements:
 \begin{itemize}
-  \item If the IV is provided with the CLI, it must use the IV. Else, it must generate a \emph{random} IV.
-  \item It must work with any key-size supported by AES.
-  \item It must encrypt the provided message and print out the hex-encoded ciphertext (without the IV).
-  \item It must support multi-block messages.
-  \item It should not crash if a dubious key/IV is provided: handle your errors!
+  \item I must be able to run your program with Python 3.12 and OpenSSL v3.3.1\footnotemark{}.
+  \footnotetext{You may use older versions of Python and OpenSSL as long as you do not use deprecated functionality.}
+  \item Do not import any 3\textsuperscript{rd} party module\footnotemark{} not specified in the template files.
+  \footnotetext{You may change \texttt{Crypto} to \texttt{Cryptodome} if needed.}
+  You are free to import any built-in module.
+  If you feel the need to import some other 3\textsuperscript{rd} party module, please check with me beforehand!
+  \item Your program must not have any unhandled errors that are dependent on user provided data.
+  Print a message and exit with an error code without printing the trace when you encounter a situation that should error.
+  However, you need not handle file-based errors, e.g. file read/write errors, although it is good practice to handle them.
+  \item Submit on Moodle as a ZIP file called \texttt{code.zip}.
+  \item Your Python files must have the same name as the template files but without the \texttt{template} suffix, e.g. \texttt{chacha20\_template.py} becomes \texttt{chacha20.py}.
+  \item You may change everything in the template files as long as I can run your program with the CLI arguments specified in the templates.
+  \item Your ZIP must have the following structure/contents:
+  \begin{Verbatim}
+code/
+├── aes_ecb_cbc.py
+├── chacha20.py
+├── key.txt
+└── ciphertexts/
+    ├── ct-1.bin
+    ├── ct-2.bin
+    ├── ct-3.bin
+    ├── ct-4.bin
+    └── ct-5.bin
+  \end{Verbatim}
 \end{itemize}
 
-Example call (with NIST AES MTT data):%
-\begin{verbatim}
+\begin{task}{Cryptohack}
+  Create an account on \url{https://cryptohack.org/courses/}, and try to finish at least the 10 courses of the \enquote{Introduction to Cryptohack}.
+  If you cannot finish the 10 courses, write in your report what tasks you were stuck with and what did you try.
+
+  Include a screenshot of your module completion and your username in the PDF report.
+
+  I do recommend that you to attempt the \enquote{Symmetric Cryptography} module as well, but that is not a mandatory part of the homework.
+\end{task}
+
+\begin{task}{AES CBC from ECB}
+  Homework template file: \texttt{aes\_ecb\_cbc\_template.py}
+
+  The task is to use a library implementation of AES (you need not implement AES yourself) in ECB mode, and build the CBC mode out of it.
+  That is, you must instantiate AES with
+  \begin{center}
+    \texttt{aes = AES.new(key, AES.MODE\_ECB)}
+  \end{center}
+  Use the PKCS\#7 padding for messages that do not divide into blocks.
+  \begin{tcolorbox}[title=Padding]
+    Recall that padding is always added (at least for PKCS) even if the message length is a multiple of the block size.
+    If the message length is a multiple of the block size, add an entire block of just padding.
+  \end{tcolorbox}
+
+  Your program should take in the key and message from the CLI, and have an optional parameter for the IV (see template).
+  The key, message, and IV are provided as hex-encoded on the CLI.
+
+  \begin{tcolorbox}[title=Note]
+    In practice, providing secrets (e.g. keys, passwords, etc) directly on the CLI as an argument to a program is a terrible idea, since they typically get logged into your terminal history!
+  \end{tcolorbox}
+
+  Additional program requirements:
+  \begin{itemize}
+    \item If the IV is provided with the CLI, it must use the IV. Else, it must generate a \emph{random} IV.
+    \item It must work with any key-size supported by AES.
+    \item It must encrypt the provided message and print out the hex-encoded ciphertext (without the IV).
+    \item It must support multi-block messages.
+    \item It should not crash if a dubious key/IV is provided: handle your errors!
+  \end{itemize}
+
+  Example call (with NIST AES MTT data):%
+  \begin{Verbatim}
 python3 aes_ecb_cbc.py \ 
   4278b840fb44aaa757c1bf04acbe1a3e \
   3c888bbbb1a8eb9f3e9b87acaad986c466e2f7071c83083b8a557971918850e5 \
   --iv 57f02a5c5339daeb0a2908a06ac6393f
-\end{verbatim}
+  \end{Verbatim}
 
-Do not remove/modify the \texttt{print} or \texttt{assert} statements in the template.
+  Do not remove/modify the \texttt{print} or \texttt{assert} statements in the template!
+\end{task}
 
 %Some hints: https://www.pycryptodome.org/src/cipher/aes
 
@@ -182,37 +209,35 @@ Do not remove/modify the \texttt{print} or \texttt{assert} statements in the tem
 %AES.block_size
 %AES.key_size[0]
 
-\textbf{Task 3 --- ChaCha20 encryption/decryption}
+\begin{task}{ChaCha20 encryption/decryption}
+  Homework template file: \texttt{chacha20\_template.py}
 
-Homework template file: \texttt{chacha20\_template.py}
+  Encrypt the file \texttt{plaintext.txt} $5$ times using ChaCha20 with the same key and output the ciphertext bytes into files \texttt{ct-1.bin}, \texttt{ct-2.bin}, \dots.
 
-Encrypt the file \texttt{plaintext.txt} $5$ times using ChaCha20 with the same key and output the ciphertext bytes into files \texttt{ct-1.bin}, \texttt{ct-2.bin}, \dots.
+  \begin{tcolorbox}[title=Note]
+    Make sure that you write the raw ciphertext bytes to the file, and not the bytes of a hex or base64 encoded ciphertext.
+  \end{tcolorbox}
 
-\begin{tcolorbox}[title=Note]
-  Make sure that you write the raw ciphertext bytes to the file, and not the bytes of a hex or base64 encoded ciphertext.
-\end{tcolorbox}
+  Write the key into a file called \texttt{key.txt} as a hex string, e.g.
+  \begin{tcolorbox}[title={\texttt{key.txt}}]
+    \texttt{4278b840fb44aa...}
+  \end{tcolorbox}
 
-Write the key into a file called \texttt{key.txt} as a hex string, e.g.
-\begin{tcolorbox}
-  \texttt{key.txt}
-  \tcblower
-  \texttt{4278b840fb44aa...}
-\end{tcolorbox}
+  Write the data needed for the decryption of each file, one hex string per line, into a file named \texttt{decryption.txt}.
+  Remember to clear the file at the beginning of each encryption cycle, i.e. there should only be 5 lines in the file.
 
-Write the data needed for the decryption of each file, one hex string per line, into a file named \texttt{decryption.txt}.
-Remember to clear the file at the beginning of each encryption cycle, i.e. there should only be 5 lines in the file.
+  Test your program!
+  \begin{itemize}
+    \item Your program should be able to decrypt all ciphertexts!
+    \item Your program should not crash!
+  \end{itemize}
 
-Test your program!
-\begin{itemize}
-  \item Your program should be able to decrypt all ciphertexts!
-  \item Your program should not crash!
-\end{itemize}
+  Include the generated files \texttt{ct-\{1-5\}.bin}, \texttt{key.txt}, \texttt{decryption.txt} into your submission ZIP.
 
-Include the generated files \texttt{ct-\{1-5\}.bin}, \texttt{key.txt}, \texttt{decryption.txt} into your submission ZIP.
-
-Example call:%
-\begin{verbatim}
-python3 chacha20.py encrypt 4278b840fb44aa... message.txt ./
-\end{verbatim}
+  Example call:%
+  \begin{Verbatim}
+python3 chacha20.py encrypt 4278b840fb44aa... message.txt cts/
+  \end{Verbatim}
+\end{task}
 
 \end{document}
