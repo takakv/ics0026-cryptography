@@ -61,6 +61,19 @@ breaklines=true
   Install PractRand and evaluate your computer's current contents of \texttt{/dev/random} with it.
   Note that by default, PractRand will run until the first \enquote{failure} or until it has seen 32TB of data --- manually abort the run after a minute.
 
+  \newtcblisting{commandshell}{listing only,listing options={style=tcblatex,language=sh}}
+  %every listing line*={\textcolor{red}{\small\ttfamily\bfseries > }}}
+
+  The commands I used to compile it are:
+  \begin{commandshell}
+> g++ -std=c++14 -c src/*.cpp src/RNGs/*.cpp \
+    src/RNGs/other/*.cpp -O3 -Iinclude -pthread
+> ar rcs libPractRand.a *.o
+> rm *.o
+> g++ -std=c++14 -o RNG_test tools/RNG_test.cpp \
+    libPractRand.a -O3 -Iinclude -pthread
+  \end{commandshell}
+
   Then, compile \texttt{rand.c} and evaluate it's output by piping it to PractRand.
   What does the documentation say about C's \texttt{rand()} function?
 \end{task}
