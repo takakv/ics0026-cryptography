@@ -25,49 +25,53 @@ def unpad_pkcs(padded: bytes, bl: int = BLOCK_SIZE) -> bytes:
     pass
 
 
-def encrypt(msg: bytes, key: bytes, iv: bytes = None) -> bytes:
+def encrypt(msg: bytes, key: bytes, iv: bytes = None) -> tuple[bytes, bytes]:
     """Encrypt a message in CBC mode.
 
     If the IV is not provided, generate a random IV.
     :param msg: The message to encrypt
     :param key: The encryption key
-    :param iv: The IV used for encryption
-    :return: the ciphertext with the IV as the first block
+    :param iv: The initialisation vector
+    :return: a tuple (ciphertext, iv)
     """
     pass
 
 
-def decrypt(ct: bytes, key: bytes) -> bytes:
+def decrypt(ct: bytes, key: bytes, iv: bytes) -> bytes:
     """Decrypt a ciphertext in CBC mode.
 
     :param ct: The encrypted message
     :param key: The decryption key
+    :param iv: The initialisation vector
     :return: the unpadded plaintext
     """
     pass
 
 
+# Do not modify. Needed for code correctness assertions.
 def encrypt_lib(msg: bytes, key: bytes, iv: bytes) -> bytes:
     """Encrypt a message using library CBC.
 
     :param msg: The message to encrypt
     :param key: The encryption key
-    :param iv: The IV used for encryption
-    :return: the ciphertext with the IV as the first block
+    :param iv: The initialisation vector
+    :return: the ciphertext
     """
     cipher = AES.new(key, AES.MODE_CBC, iv=iv)
-    return iv + cipher.encrypt(pad_pkcs(msg))
+    return cipher.encrypt(pad_pkcs(msg))
 
 
-def decrypt_lib(ct: bytes, key: bytes) -> bytes:
+# Do not modify. Needed for code correctness assertions.
+def decrypt_lib(ct: bytes, key: bytes, iv: bytes) -> bytes:
     """Decrypt a ciphertext using library CBC.
 
     :param ct: The encrypted message
     :param key: The decryption key
+    :param iv: The initialisation vector
     :return: the unpadded plaintext
     """
-    cipher = AES.new(key, AES.MODE_CBC)
-    return unpad_pkcs(cipher.decrypt(ct)[BLOCK_SIZE:])
+    cipher = AES.new(key, AES.MODE_CBC, iv=iv)
+    return unpad_pkcs(cipher.decrypt(ct))
 
 
 def main(i_key: str, i_msg: str, i_iv: str):
@@ -75,19 +79,19 @@ def main(i_key: str, i_msg: str, i_iv: str):
     msg = ...
     iv = ...
 
-    ciphertext = encrypt(...)
-    check_enc = encrypt_lib(msg, key, ciphertext[:BLOCK_SIZE])
+    ciphertext, iv = encrypt(...)
+    check_enc = encrypt_lib(msg, key, iv)
 
     assert ciphertext == check_enc
 
     # Do not remove or modify the print statements.
     print("Key:", key.hex())
     print("PT :", msg.hex())
-    print("IV :", ciphertext[:BLOCK_SIZE].hex())
-    print("CT :", ciphertext[BLOCK_SIZE:].hex())
+    print("IV :", iv.hex())
+    print("CT :", ciphertext.hex())
 
     decrypted = decrypt(...)
-    check_dec = decrypt_lib(ciphertext, key)
+    check_dec = decrypt_lib(ciphertext, key, iv)
 
     assert decrypted == check_dec
     assert decrypted == msg
