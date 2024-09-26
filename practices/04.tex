@@ -3,16 +3,14 @@
 \title{4}
 \date{\today}
 
+\usepackage{crysymb}
+
 %\usepackage{etoolbox}
 %\makeatletter
 %\preto{\@verbatim}{\topsep=0pt \partopsep=-2\parsep }
 %\makeatother
 
-\usepackage{fancyvrb}
 \fvset{listparameters=\setlength{\topsep}{0pt}\setlength{\partopsep}{0pt}}
-
-\newcommand*{\getsu}{\gets_{\scriptscriptstyle \hspace*{-0.65em} u\hspace*{0.0em}}}
-\newcommand*{\ZZ}{\mathbb{Z}}
 
 \usepackage{listings}
 
@@ -33,16 +31,16 @@ breaklines=true
   For example, by sampling uniformly at random from the set $\{0, 1, 2, 3, 4\}$, i.e. $x\getsu\{0, 1, 2, 3, 4\}$, the probability distribution should be the following:
   \begin{center}
     \begin{tabular}{l r r r r r}
-      \hline
+      \toprule
       $x$ & $0$ & $1$ & $2$ & $3$ & $4$\\
-      \hline
+      \midrule
       $\Pr$ & $0.2$ & $0.2$ & $0.2$ & $0.2$ & $0.2$\\
-      \hline
+      \bottomrule
     \end{tabular}
   \end{center}
 
   During week 2, we saw that we could get roughly those results by querying random bytes from the CSPRNG.
-  However, querying even a single byte of `randomness' would give us an integer in the range $0$--$255$.
+  However, querying even a single byte of \enquote{randomness} would give us an integer in the range $0$--$255$.
 
   \iffalse
   In general, getting a random number in the range $[0, 2^n - 1]$ is `easy' since then we could just bit-mask the bytes gotten from the CSPRNG.
@@ -55,11 +53,11 @@ breaklines=true
   The following table shows the number of occurrences of numbers $0$--$5$ for $a \bmod n$ where each $a\in\{0, \dots, 255\}$ is picked once and $n = 5$:
   \begin{center}
     \begin{tabular}{l r r r r r}
-      \hline
+      \toprule
       $a \bmod 5$ & $0$ & $1$ & $2$ & $3$ & $4$\\
-      \hline
+      \midrule
       Num. of occ. & $52$ & $51$ & $51$ & $51$ & $51$\\
-      \hline
+      \bottomrule
     \end{tabular}
   \end{center}
 
@@ -94,7 +92,7 @@ breaklines=true
 
   Python is not a strongly typed language, and takes care of implementing MP arithmetic for us.
   This is why we typically need not worry about overflow in Python when working with numbers.
-  While it is not surprising that MP arithmetic is slower than `hardware arithmetic', then not all MP implementations are created equal.
+  While it is not surprising that MP arithmetic is slower than \enquote{hardware arithmetic}, then not all MP implementations are created equal.
   That is, when doing heavy number crunching, we may want better performance than what Python provides us by default.
 
   One of the most popular and performant general purpose MP libraries is the GNU Multiple Precision library (GMP)\footnote{\url{https://gmplib.org}}.
@@ -126,7 +124,7 @@ breaklines=true
   \end{tcolorbox}
 \end{task}
 
-\begin{task}{`Generating' random primes}
+\begin{task}{\enquote{Generating} random primes}
   \textit{Preface.}
   Primes and primality testing are awesome and intriguing topics.
   However, they are also quite mathematically involved, so we will not go into the details in this course.
@@ -136,7 +134,7 @@ breaklines=true
   For large numbers, primality tests are typically \emph{probabilistic}: if a number is found to be composite, then it is so, and if not, the number is likely a prime, but not provably so.
   In general, for robust primality testing, either or both of the following approaches are used:
   \begin{itemize}
-    \item Run multiple iterations of a `quality' primality test.
+    \item Run multiple iterations of a \enquote{quality} primality test.
     Intuitively, the more iterations a number passes, the more likely it is for the number to be prime.
     \item Combine different primality tests.
   \end{itemize}
@@ -144,7 +142,7 @@ breaklines=true
   Perhaps the most widely used probabilistic primality testing algorithm is the \emph{Miller-Rabin}\footnote{\url{https://en.wikipedia.org/wiki/Miller–Rabin_primality_test}} test.
   
   The question then is: how to pick the number of iterations for the Miller-Rabin test?
-  The rule of thumb is that Miller-Rabin gives a `security level' of $128$-bits for $64$ iterations, but there are different methods to select the number of `optimal' iterations.
+  The rule of thumb is that Miller-Rabin gives a \enquote{security level} of $128$-bits for $64$ iterations, but there are different methods to select the number of \enquote{optimal} iterations.
   For example, OpenSSL uses the Miller-Rabin test with $128$ iterations for integers larger than $2048$ bits\footnote{\url{https://github.com/openssl/openssl/blob/master/crypto/bn/bn_prime.c\#L94}}.
 
   There are different approaches for generating (finding) random primes, but the two most intuitive ones are:
@@ -153,7 +151,7 @@ breaklines=true
     \item \emph{Incremental search}: instead of rejection sampling, keep incrementing the generated number by $2$ until it passes some primality test.
   \end{enumerate}
 
-  If it seems to you that the second method is `less secure', your intuition is quite good: indeed the latter method introduces some bias not present with the first method.
+  If it seems to you that the second method is \enquote{less secure}, your intuition is quite good: indeed the latter method introduces some bias not present with the first method.
   However, currently no (publicly) known method can help an attacker abuse this bias.
 
   \textit{Task.}
@@ -162,19 +160,23 @@ breaklines=true
   Now, count the number of bits in the product of these numbers.
   Is it $3072$?
 
-  Next, use a library function for finding two $1536$-bit primes using \emph{incremental search} and benchmark the time taken.
-  Likewise, count the number of bits in the semiprime.
+  Next, implement a simple \emph{incremental search} for finding two $1536$-bit primes and benchmark the time taken.
+  Count also the number of bits in the semiprime product.
 
-  Compare the performance of both methods.
+  Finally, use a library function for finding two $1536$-bit primes and benchmark the time taken.
+  Once more, count the number of bits in the semiprime.
 
+  Compare the performance of all three methods.
+
+  \textit{Hint.}
   The following functions are likely to help you:
   \begin{itemize}
-    \item \href{https://gmpy2.readthedocs.io/en/latest/mpz.html#gmpy2.mpz.is_probab_prime}{\texttt{gmpy2.is\_probab\_prime()}}
+    \item \href{https://gmpy2.readthedocs.io/en/latest/mpz.html#gmpy2.mpz.is_prime}{\texttt{gmpy2.is\_prime()}} and \href{https://gmpy2.readthedocs.io/en/latest/mpz.html#gmpy2.mpz.is_probab_prime}{\texttt{gmpy2.is\_probab\_prime()}}
     \item \href{https://gmpy2.readthedocs.io/en/latest/mpz.html#gmpy2.next_prime}{\texttt{gmpy2.next\_prime()}}
-    \item \href{https://gmpy2.readthedocs.io/en/latest/mpz.html#gmpy2.bit_length}{\texttt{gmpy2.bit\_length()}}
+    \item \href{https://docs.python.org/3/library/stdtypes.html#int.bit_length}{\texttt{int.bit\_length()}} and \href{https://gmpy2.readthedocs.io/en/latest/mpz.html#gmpy2.bit_length}{\texttt{gmpy2.bit\_length()}}
   \end{itemize}
 
-  Check out also gmpy2's docs on \href{https://gmpy2.readthedocs.io/en/latest/advmpz.html#advanced-number-theory-functions}{`Advanced Number Theory Functions'} for more granular control on primality testing.
+  Check out also gmpy2's docs on \href{https://gmpy2.readthedocs.io/en/latest/advmpz.html#advanced-number-theory-functions}{\enquote{Advanced Number Theory Functions}} for more granular control on primality testing.
 
   \begin{tcolorbox}[title=Warning]
     The methods we use here are for learning purposes/convenience only.
@@ -185,12 +187,14 @@ breaklines=true
   \end{tcolorbox}
 \end{task}
 
+\newpage
+
 \begin{task}{Sage RSA}
-  SageMath\footnote{https://www.sagemath.org} is a computer algebra system (CAS) which can be programmed in with a Python-based language.
+  SageMath\footnote{\url{https://www.sagemath.org}} is a computer algebra system (CAS) which can be programmed in with a Python-based language.
   It is free and open-source as opposed to Wolfram Mathematica and MATLAB, and is very powerful.
   As such, it is quite popular among cryptographers for some quick computations/prototyping, and is also popular for cryptography tasks in CTFs (Capture The Flag exercises).
 
-  Check out also Sage's \href{https://doc.sagemath.org/html/en/reference/cryptography/index.html}{`cryptography reference'}.
+  Check out also Sage's \href{https://doc.sagemath.org/html/en/reference/cryptography/index.html}{\enquote{cryptography reference}}.
 
   \textit{Task.}
   Given the following RSA public key:
@@ -200,7 +204,7 @@ breaklines=true
   \end{itemize}
   decipher the RSA ciphertext $c = 161670843286605628968182075437059446607$.
 
-  Note that the RSA modulus is $128$ bits long, so `naively' brute forcing either prime is not a good approach.
+  Note that the RSA modulus is $128$ bits long, so \enquote{naively} brute forcing either prime is not a good approach.
   Can you think of a more efficient approach?
   
   \textit{Hint 1.}
@@ -242,18 +246,19 @@ breaklines=true
   This format is called the PEM (Privacy-Enhanced Mail) format\footnote{\url{https://en.wikipedia.org/wiki/Privacy-Enhanced_Mail}} and the convention for key-files to have the extension \texttt{.pem} or \texttt{.key}.
   We will see other headers and usages of PEM during future classes/practices.
 
-  There are three primary OpenSSL tools for working with RSA:
+  There are three primary OpenSSL tools for working with public keys:
   \begin{itemize}
-    \item \href{https://www.openssl.org/docs/man1.0.2/man1/genrsa.html}{\texttt{genrsa}}: RSA private key generation
-    \item \href{https://www.openssl.org/docs/man1.1.1/man1/rsa.html}{\texttt{rsa}}: commands to `process' RSA keys, e.g. change their format (PEM vs DER) or their passphrase
-    \item \href{https://www.openssl.org/docs/man1.0.2/man1/rsautl.html}{\texttt{rsautl}}: the utility for encrypting, decrypting, signing, and verifying signatures
+    \item \href{https://docs.openssl.org/master/man1/openssl-genpkey/}{\texttt{genpkey}}: private key generation (and more)
+    \item \href{https://docs.openssl.org/master/man1/openssl-pkey/}{\texttt{pkey}}: commands to \enquote{process} keys, e.g. change their format (PEM vs DER) or their passphrase
+    \item \href{https://docs.openssl.org/master/man1/openssl-pkeyutl/}{\texttt{pkeyutl}}: the utility for encrypting and decrypting (also signing and verifying signatures)
   \end{itemize}
 
   \textit{Task.}
-  Generate a $3072$-bit RSA private key using OpenSSL:
+  Generate an RSA private key using OpenSSL with
   \begin{Verbatim}
-openssl genrsa 3072 > {path_private_pem}
+openssl genpkey -algorithm RSA -out {path_private_pem}
   \end{Verbatim}
+  What is the default bit-size for the key?
 
   \begin{tcolorbox}[title=Warning]
     By generating a key using this command, the key is \emph{not} protected by a passphrase, meaning that anyone with access to the key-file/key can simply use it for decryption.
@@ -261,33 +266,31 @@ openssl genrsa 3072 > {path_private_pem}
     Password protecting keyfiles is good practice (e.g. SSH or PGP keys).
     The following command generates and encrypts the RSA private key with AES-128 using the user-provided passphrase:
     \begin{Verbatim}
-openssl genrsa -aes128 3072
+openssl genpkey -algorithm RSA -aes128
     \end{Verbatim}
   \end{tcolorbox}
 
-  Next, generate the RSA public key corresponding to the private key:
-  \begin{Verbatim}
-openssl rsa -pubout -in {path_private_pem}
-  \end{Verbatim}
+  Generate a new 3072-bit RSA secret key and determine the public key corresponding to it.
 
   Finally, attempt to encrypt and decrypt files using the generated keys.
   Is there a limit to the file-sizes?
+  Does the encryption use proper padding by default?
 
-  For encryption:
-  \begin{Verbatim}
-openssl rsautl -encrypt -inkey {path_public_pem} -pubin \
-    -in {pt_in} -out {ct_out}
-  \end{Verbatim}
+  \textit{Note.}
+  There exist also the utilities:
+  \begin{itemize}
+    \item \href{https://docs.openssl.org/master/man1/openssl-genrsa/}{\texttt{genrsa}}
+    \item \href{https://docs.openssl.org/master/man1/openssl-rsa/}{\texttt{rsa}}
+    \item \href{https://docs.openssl.org/master/man1/openssl-rsautl/}{\texttt{rsautl}}
+  \end{itemize}
+  which accomplish the same tasks but only for RSA.
+  Therefore, these commands are a bit simpler.
 
-  For decryption:
-  \begin{Verbatim}
-openssl rsautl -decrypt -inkey {path_private_pem} \
-    -in {ct_in} -out {pt_out}  
-  \end{Verbatim}
-
-  The extension \texttt{.enc} is often used to denote encrypted files.
+  Note, however, that \texttt{rsautl} has been deprecated and \texttt{pkeyutl} should be used instead.
+  More generally, you should prefer the generic commands since that seems to be the direction OpenSSL is moving in.
 \end{task}
 
+\iffalse
 \begin{task}{ASN.1}
   \textit{Preface.}
   The base64 encoding is an encoding of the ASN.1 DER format which we briefly saw in class.
@@ -300,5 +303,6 @@ openssl rsautl -decrypt -inkey {path_private_pem} \
   Now try to figure out how to use OpenSSL's \href{https://www.openssl.org/docs/man1.1.1/man1/openssl-asn1parse.html}{\texttt{asn1parse}} tool to do the same thing.
   Which output do you prefer?
 \end{task}
+\fi
 
 \end{document}
