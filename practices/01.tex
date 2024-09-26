@@ -1,59 +1,76 @@
 \documentclass{practice}
 
+\title{1}
+\date{\today}
+
 \begin{document}
-\textbf{Task 1 --- Benchmarking}
+\maketitle
 
-Computers are fast, but how fast are they exactly?
+\begin{task}{Benchmarking}
+  Computers are fast, but how fast are they exactly?
 
-Write a C program iterating over the whole space of $32$-bit unsigned integers, and measure the time needed by your CPU to complete this.
+  Write a C program iterating over the whole space of $32$-bit unsigned integers, and measure the time needed by your CPU to complete this.
 
-How long will it take to iterate over the whole space of $33$-bit unsigned integers?
-Confirm your calculation by benchmarking this loop as well.
+  How long will it take to iterate over the whole space of $33$-bit unsigned integers?
+  Confirm your calculation by benchmarking this loop as well.
 
-Finally, calculate how long would it take your CPU to iterate over the whole $64$-bit space.
-This should provide some insight into the \textit{intractability} of some computational problems, i.e. the \textit{infeasibility} of solving some tasks in practice due to limited computing power (or some other resource).
+  Finally, calculate how long would it take your CPU to iterate over the whole $64$-bit space.
+  This should provide some insight into the \emph{intractability} of some computational problems, i.e. the \emph{infeasibility} of solving some tasks in practice due to limited computing power (or some other resource).
 
-Try adding some multiplications or even exponentiations into your $32$-bit loop and benchmark the duration now.
+  Try adding some multiplications or even exponentiations into your $32$-bit loop and benchmark the duration now.
 
-There are of course techniques to speed up computations, e.g. multithreading.
-Still, even such techniques are limited.
-For example, what about an algorithm that must be executed sequentially?
+  There are of course techniques to speed up computations, e.g. multithreading.
+  Still, even such techniques are limited.
+  For example, what about an algorithm that must be executed sequentially?
+\end{task}
 
-\textbf{Task 2.a --- a--z shift cipher}
+\begin{task}{a--z shift cipher}
+  Implement a shift cipher (encryption and decryption functions) for characters a--z in python3.
+  That is, messages should be all lowercase and contain only letters of the English alphabet, e.g. \texttt{helloworld}.
+  The ciphertext should likely only contain characters a--z.
 
-Implement a shift cipher (encryption and decryption functions) for characters a--z in python3.
-That is, messages should be all lowercase and contain only letters of the English alphabet, e.g. \texttt{helloworld}.
-The ciphertext should likely only contain characters a--z.
+  Recall that the shift cipher is a cipher where every character of the plaintext alphabet is shifted an equal amount of positions in this alphabet.
+  This shift is wrap-around, i.e. if you reach the end of the alphabet, you start again from the beginning.
 
-Recall that the shift cipher is a cipher where every character of the plaintext alphabet is shifted an equal amount of positions in this alphabet.
-This shift is wrap-around, i.e. if you reach the end of the alphabet, you start again from the beginning.
+  Tip:
+  recall that in ASCII encoding, consecutive characters of the English alphabet are mapped to consecutive integers.
+  In python3, you can get the integer value of an ASCII character using the \texttt{ord} function\footnote{\url{https://docs.python.org/3/library/functions.html\#ord}}.
+\end{task}
 
-Tip:
-recall that in ASCII encoding, consecutive characters of the English alphabet are mapped to consecutive integers.
-In python3, you can get the integer value of an ASCII character using the \texttt{ord} function\footnote{\url{https://docs.python.org/3/library/functions.html\#ord}}.
+\begin{task}{Frequency analysis}
+  For both the plaintext and the ciphertext of the a--z shift cipher, plot the letter frequencies on a graph, e.g. with \texttt{matplotlib}\footnote{\url{https://matplotlib.org}}.
+  Clearly, the shift cipher does not provide diffusion.
+\end{task}
 
-\textbf{Task 2.b --- Frequency analysis}
+\begin{task}{Binary shift cipher}
+  Because it is inconvenient to read long messages without spaces or special characters, and we may want support for more encodings, implement the shift cipher on bytes.
+  That is, plaintexts of sequence of bytes, e.g. obscure unicode characters, should be able to be encrypted.
 
-For both the plaintext and the ciphertext of the a--z shift cipher, plot the letter frequencies on a graph, e.g. with \texttt{matplotlib}\footnote{\url{https://matplotlib.org}}.
-Clearly, the shift cipher does not provide diffusion.
+  Print the ciphertext in hexadecimal encoding.
+\end{task}
 
-\textbf{Task 3 --- Binary shift cipher}
+\begin{task}{Substitution cipher}
+  Implement a (monoalphabetic) substitution cipher in python3.
 
-Because it is inconvenient to read long messages without spaces or special characters, and we may want support for more encodings, implement the shift cipher on bytes.
-That is, plaintexts of sequence of bytes, e.g. obscure unicode characters, should be able to be encrypted.
+  The substitution cipher is the cipher where each character of the plaintext alphabet is mapped to some new alphabet character.
+  Note that the alphabet needs not correspond to a common language, e.g. English.
+  You could very well map the characters to some other symbols, e.g. emojis.
 
-Print the ciphertext in hexadecimal encoding.
+  Does substitution help with confusion or diffusion?
+\end{task}
 
-\textbf{Task 4 --- Substitution cipher}
+\begin{task}{Permutation cipher}
+  Implement a permutation cipher in python3.
 
-Implement now the substitution cipher in python3.
+  The permutation cipher is the cipher where the plaintext is split into blocks, and characters are permuted within each block.
+  Note that the permutation should be the same for every block.
+  If the message does not evenly split into your chosen block-size, pad the last block.
 
-The substitution cipher is the cipher where each character of the plaintext alphabet is mapped to some new alphabet character.
-Note that the alphabet needs not correspond to a common language, e.g. English.
-You could very well map the characters to some other symbols, e.g. emojis.
+  Does permutation help with confusion or diffusion?
+\end{task}
 
-\textbf{Note}
-
-For tasks 2--4 you may also use some language other than python3.
-However, if you do not feel comfortable with python, you should stick with it since it will be required in homework tasks.
+\begin{tcolorbox}[title=Note]
+  For tasks 2--6 you may also use some language other than python3.
+  However, if you do not feel comfortable with python, you should stick with it since it will be required in homework tasks.
+\end{tcolorbox}
 \end{document}
