@@ -1,0 +1,19 @@
+% Author: Sven Laur (https://github.com/swenlaur)
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{crygame}[2010/03/21 Macros for drawing crypto games: Version 0.21]
+\input{crygame-slow.sty}
+%\DeclareOption{draft}{\input{crygame-fast.sty}}
+%\DeclareOption{final}{\input{crygame-slow.sty}}
+\ProcessOptions\relax
+
+% This is a hack. We need a if then construction to call package without arguments in future.
+\newcommand{\RETURN}{\textbf{return}\ }
+\newcommand{\IF}{\mathsf{if}\ }
+\newcommand{\THEN}{\mathsf{then}\ }
+\newcommand{\ELSE}{\mathsf{else}\ }
+\newcommand{\BREAK}{\mathsf{break}\ }
+\newcommand{\CONTINUE}{\mathsf{continue}\ }
+\newcommand{\OR}{\mathsf{or}\ }
+\newcommand{\AND}{\mathsf{and}\ }
+\newcommand{\FOR}{\textbf{for}\ }

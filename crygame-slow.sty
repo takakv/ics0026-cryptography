@@ -1,0 +1,142 @@
+% Author: Sven Laur (https://github.com/swenlaur)
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{game-alg}
+\RequirePackage{amssymb}
+\RequirePackage{amsmath}
+\RequirePackage{array}
+
+
+% Lengths for restoring old values
+\newlength{\oldarrayrulewidth}
+\newlength{\oldtabcolsep}
+\newlength{\algblocksep}
+
+% A vertical space after if, for and while blocks
+\setlength{\algblocksep}{2.0ex}
+
+
+% Phantom line
+\newcommand{\vspacex}[1]{\raisebox{-#1}{\rule{0pt}{#1}}}
+\newcommand{\addalgblockspace}{\raisebox{-\algblocksep}{\rule{0pt}{\algblocksep}}}
+
+
+% Code block
+% A complex wrapper that builds a tabular around the code block 
+% to get the nice square bracket with constant with to the right.
+% Externally behaves like ordinary align environment exept
+% each line must start width & and end with \\
+% Recursive nesting is allowed. 
+% (Extra spaces are deliberately commented out)
+\newenvironment{cblock} 
+{%
+  \setlength{\oldarrayrulewidth}{\arrayrulewidth}%
+  \setlength{\oldtabcolsep}{\tabcolsep}% 
+  \setlength{\arrayrulewidth}{0.62pt}%
+  \setlength{\tabcolsep}{0em}%
+  \begin{tabular}{|m{0.2em}>{\hspace*{0.1em}$}l<{$}}
+  \cline{1-1}
+}
+{
+  \\
+  \cline{1-1}
+  \end{tabular}%
+  \setlength{\arrayrulewidth}{\oldarrayrulewidth}%
+  \setlength{\tabcolsep}{\oldtabcolsep}%
+}
+
+% A game block
+\newenvironment{game}[1]
+{%
+  \begin{tabular}{l}%
+  \ensuremath{#1} \\
+  \begin{cblock}%
+}
+{%
+  \end{cblock}%
+  \end{tabular}%
+}
+
+% A function block
+\newenvironment{fblock}[1]
+{%
+  \begin{tabular}{l}%
+  \ensuremath{#1} \\
+  \begin{cblock}%
+}
+{%
+  \end{cblock}%
+  \end{tabular}%
+}
+
+
+
+% A while loop block 
+\newenvironment{whileblock}[1]
+{%
+  \begin{tabular}{l}%
+  \WHILE \ensuremath{#1}\ \DO \\
+  \begin{cblock}%
+}
+{%
+  \end{cblock}%
+  \addalgblockspace%
+  \end{tabular}% 
+}
+
+% A  for block 
+\newenvironment{forblock}[1]
+{%
+  \begin{tabular}{l}%
+  \FOR \ensuremath{#1}\ \DO \\
+  \begin{cblock}%
+}
+{%
+  \end{cblock}%
+  \addalgblockspace%
+  \end{tabular}% 
+}
+
+% A if block 
+\newenvironment{ifblock}[1]
+{%
+  \begin{tabular}{l}%
+  \IF \ensuremath{#1}\ \THEN \\
+  \begin{cblock}%
+}
+{%
+  \end{cblock}%
+  \addalgblockspace%
+  \end{tabular}% 
+}
+
+% A if block 
+\newenvironment{elseifblock}[1]
+{%
+  \begin{tabular}{l}%
+  \ELSE \IF \ensuremath{#1}\ \THEN \\
+  \begin{cblock}%
+}
+{%
+  \end{cblock}%
+  \addalgblockspace%
+  \end{tabular}% 
+}
+
+
+% A else block 
+\newenvironment{elseblock}
+{%
+  \begin{tabular}{l}%
+  \ELSE  \\
+  \begin{cblock}%
+}
+{%
+  \end{cblock}%
+  \addalgblockspace%
+  \end{tabular}% 
+}
+
+
+
+

@@ -1,0 +1,120 @@
+% Author: Sven Laur (https://github.com/swenlaur)
+
+\newenvironment{code}{\left[\begin{aligned}}{\end{aligned}\right.}
+\newenvironment{game}[1]
+{\begin{aligned} &\hspace{0.3em}#1\\ &\left[\begin{aligned}}{\end{aligned}\right.\end{aligned}}
+\newenvironment{adversary}[1]
+{\begin{aligned} &\hspace{0.3em}#1\\ &\left[\begin{aligned}}{\end{aligned}\right.\end{aligned}}
+\newenvironment{cblock}
+{\left[\begin{aligned}}{\end{aligned}\right.}
+\newenvironment{fblock}[1]
+{\begin{aligned} &\hspace{0.3em}#1\\ &\left[\begin{aligned}}{\end{aligned}\right.\end{aligned}}
+\newcommand{\vspacex}[1]{\raisebox{-#1}{\rule{0pt}{#1}}}
+\newenvironment{forblock}[1]
+{\begin{aligned} &\hspace{0.3em}\mathrm{For}\ #1 \mathrm{do} \\ &\left[\begin{aligned}}{\end{aligned}\right.\end{aligned}}
+\newcommand{\ublockend}{kala}
+\newenvironment{ublock}[1]
+{\renewcommand{\ublockend}{#1}\begin{aligned} &\mathsf{repeat} \\ &\left|\begin{aligned}}
+{\end{aligned}\right.\\ &\mathsf{until}\ \ublockend \end{aligned}}
+
+
+
+\newcommand{\graycommand}[1]
+{\hspace*{-0.15em}\colorbox{lightgray}{\hspace*{-0.25em}\ensuremath{#1}\rule{0pt}{1.6ex}}\hspace*{-0.25em}}
+\newcommand{\orangecommand}[1]
+{\hspace*{-0.15em}\colorbox{orange}{\hspace*{-0.25em}\ensuremath{#1}\rule{0pt}{1.6ex}\hspace*{-0.25em}}}
+
+
+\newenvironment{code}{\left[\begin{aligned}}{\end{aligned}\right.}
+\newenvironment{game}[1]
+{\begin{aligned} &\hspace{0.3em}#1\\ &\left[\begin{aligned}}{\end{aligned}\right.\end{aligned}}
+\newenvironment{adversary}[1]
+{\begin{aligned} &\hspace{0.3em}#1\\ &\left[\begin{aligned}}{\end{aligned}\right.\end{aligned}}
+\newenvironment{cblock}
+{\left[\begin{aligned}}{\end{aligned}\right.}
+\newenvironment{fblock}[1]
+{\begin{aligned} &\hspace{0.3em}#1\\ &\left[\begin{aligned}}{\end{aligned}\right.\end{aligned}}
+\newcommand{\vspacex}[1]{\raisebox{-#1}{\rule{0pt}{#1}}}
+\newenvironment{forblock}[1]
+{\begin{aligned} &\hspace{0.3em}\mathrm{For}\ #1 \mathrm{do} \\ &\left[\begin{aligned}}{\end{aligned}\right.\end{aligned}}
+\newcommand{\ublockend}{kala}
+\newenvironment{ublock}[1]
+{\renewcommand{\ublockend}{#1}\begin{aligned} &\mathsf{repeat} \\ &\left|\begin{aligned}}
+{\end{aligned}\right.\\ &\mathsf{until}\ \ublockend \end{aligned}}
+
+\newenvironment{ifblock}[1]
+{\begin{aligned} &\hspace{0.3em}\IF\ #1 \THEN \\ &\left[\begin{aligned}}{\end{aligned}\right.\end{aligned}}
+
+\newenvironment{elseblock}
+{\begin{aligned} &\hspace{0.3em}\ELSE\ \\ &\left[\begin{aligned}}{\end{aligned}\right.\end{aligned}}
+
+
+
+\newcommand{\graycommand}[1]
+{\hspace*{-0.15em}\colorbox{lightgray}{\hspace*{-0.25em}\ensuremath{#1}\rule{0pt}{1.6ex}}\hspace*{-0.25em}}
+\newcommand{\orangecommand}[1]
+{\hspace*{-0.15em}\colorbox{orange}{\hspace*{-0.25em}\ensuremath{#1}\rule{0pt}{1.6ex}\hspace*{-0.25em}}}
+
+
+\newenvironment{code}{\left[\begin{aligned}}{\end{aligned}\right.}
+\newenvironment{game}[1]
+{\begin{aligned} &\hspace{0.3em}#1\\ &\left[\begin{aligned}}{\end{aligned}\right.\end{aligned}}
+\newenvironment{adversary}[1]
+{\begin{aligned} &\hspace{0.3em}#1\\ &\left[\begin{aligned}}{\end{aligned}\right.\end{aligned}}
+\newenvironment{cblock}
+{\left[\begin{aligned}}{\end{aligned}\right.}
+\newenvironment{fblock}[1]
+{\begin{aligned} &\hspace{0.3em}#1\\ &\left[\begin{aligned}}{\end{aligned}\right.\end{aligned}}
+\newcommand{\vspacex}[1]{\raisebox{-#1}{\rule{0pt}{#1}}}
+\newenvironment{forblock}[1]
+{\begin{aligned} &\hspace{0.3em}\mathrm{For}\ #1 \mathrm{do} \\ &\left[\begin{aligned}}{\end{aligned}\right.\end{aligned}}
+\newcommand{\ublockend}{kala}
+\newenvironment{ublock}[1]
+{\renewcommand{\ublockend}{#1}\begin{aligned} &\mathsf{repeat} \\ &\left|\begin{aligned}}
+{\end{aligned}\right.\\ &\mathsf{until}\ \ublockend \end{aligned}}
+
+\newenvironment{ifblock}[1]
+{\begin{aligned} &\hspace{0.3em}\IF\ #1 \THEN \\ &\left[\begin{aligned}}{\end{aligned}\right.\end{aligned}}
+
+\newenvironment{elseblock}
+{\begin{aligned} &\hspace{0.3em}\ELSE\ \\ &\left[\begin{aligned}}{\end{aligned}\right.\end{aligned}}
+
+
+
+\newcommand{\graycommand}[1]
+{\hspace*{-0.15em}\colorbox{lightgray}{\hspace*{-0.25em}\ensuremath{#1}\rule{0pt}{1.6ex}}\hspace*{-0.25em}}
+\newcommand{\orangecommand}[1]
+{\hspace*{-0.15em}\colorbox{orange}{\hspace*{-0.25em}\ensuremath{#1}\rule{0pt}{1.6ex}\hspace*{-0.25em}}}
+
+
+\newenvironment{code}{\left[\begin{aligned}}{\end{aligned}\right.}
+\newenvironment{game}[1]
+{\begin{aligned} &\hspace{0.3em}#1\\ &\left[\begin{aligned}}{\end{aligned}\right.\end{aligned}}
+\newenvironment{adversary}[1]
+{\begin{aligned} &\hspace{0.3em}#1\\ &\left[\begin{aligned}}{\end{aligned}\right.\end{aligned}}
+\newenvironment{cblock}
+{\left[\begin{aligned}}{\end{aligned}\right.}
+\newenvironment{fblock}[1]
+{\begin{aligned} &\hspace{0.3em}#1\\ &\left[\begin{aligned}}{\end{aligned}\right.\end{aligned}}
+\newcommand{\vspacex}[1]{\raisebox{-#1}{\rule{0pt}{#1}}}
+\newenvironment{forblock}[1]
+{\begin{aligned} &\hspace{0.3em}\mathrm{For}\ #1 \mathrm{do} \\ &\left[\begin{aligned}}{\end{aligned}\right.\end{aligned}}
+\newcommand{\ublockend}{kala}
+\newenvironment{ublock}[1]
+{\renewcommand{\ublockend}{#1}\begin{aligned} &\mathsf{repeat} \\ &\left|\begin{aligned}}
+{\end{aligned}\right.\\ &\mathsf{until}\ \ublockend \end{aligned}}
+
+\newenvironment{ifblock}[1]
+{\begin{aligned} &\hspace{0.3em}\IF\ #1 \THEN \\ &\left[\begin{aligned}}{\end{aligned}\right.\end{aligned}}
+
+\newenvironment{elseblock}
+{\begin{aligned} &\hspace{0.3em}\ELSE\ \\ &\left[\begin{aligned}}{\end{aligned}\right.\end{aligned}}
+
+
+
+\newcommand{\graycommand}[1]
+{\hspace*{-0.15em}\colorbox{lightgray}{\hspace*{-0.25em}\ensuremath{#1}\rule{0pt}{1.6ex}}\hspace*{-0.25em}}
+\newcommand{\orangecommand}[1]
+{\hspace*{-0.15em}\colorbox{orange}{\hspace*{-0.25em}\ensuremath{#1}\rule{0pt}{1.6ex}\hspace*{-0.25em}}}
+
+
