@@ -1,5 +1,8 @@
 .DS_Store
 
+# Images (use makefile to get them)
+images/*[.png,.jpg]
+
 # IDEs and editors
 .vscode/
 .idea/
