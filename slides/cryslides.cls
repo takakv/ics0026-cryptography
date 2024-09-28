@@ -1,8 +1,17 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{cryslides}[2024/09/10 LaTeX package for cryptography slides]
+\ProvidesClass{cryslides}[2024/09/10 LaTeX class for cryptography slides]
+
+\DeclareOption*{\PassOptionsToClass{\CurrentOption}{beamer}}
+\ProcessOptions\relax
+\LoadClass[aspectratio=169]{beamer}
+
+\usetheme[numbering=fraction]{metropolis}
+\metroset{block=fill}
 
 % Cryptographic symbols
 \RequirePackage{crysymb}
+
+\RequirePackage{tikz}
 
 % Typographic improvements (needs LuaLaTeX)
 \RequirePackage{fontspec}
