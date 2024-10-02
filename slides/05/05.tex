@@ -1,12 +1,3 @@
-\usetheme[numbering=fraction]{metropolis}
-
-\metroset{block=fill}
-
-\usepackage{booktabs}
-
-\usepackage{csquotes}
-\setquotestyle{british}
-
 \usepackage{graphicx}
 \graphicspath{ {../../images/} }
 
@@ -14,22 +5,15 @@
 \usetikzlibrary{positioning,calc,external}
 %\tikzexternalize[prefix=figures/] 
 
-\usepackage{crysymb}
-
-\renewcommand*{\arraystretch}{1.2}
-
 \usepackage{soul}
 
 \usetikzlibrary{positioning,calc}
 \graphicspath{ {../../images/} }
 
-\title[Short version of title]{ICS0026 Cryptography}
+\title{ICS0026 Cryptography}
 \subtitle{DL, DH \& ECC}
-\author%
-{%
-    {Taaniel Kraavi}\\
-    \textit{\footnotesize Guest Lecturer}
-}
+\date{\today}
+\author{Taaniel Kraavi}
 \institute%
 {%
     \textit{IT College}\\
@@ -53,8 +37,8 @@
   Sets you must know:
   \begin{itemize}[<+(1)->]
     \item Integers without $0$: $\ZZ\setminus\{0\}=\ZZ^*=\{\dots, -2, -1, 1, 2, 3, \dots\}$
-    \item Integers modulo $n$: $\ZZ/n\ZZ = \ZZ_n = \{0, 1, 2, \dots, n-1\}$
-    \item Invertible integers modulo $n$: $(\ZZ/n\ZZ)^\times = \ZZ_n^*$
+    \item Integers modulo $p$: $\ZZ/p\ZZ = \ZZ_p = \{0, 1, 2, \dots, p-1\}$
+    \item Invertible integers modulo $p$: $(\ZZ/p\ZZ)^\times = \ZZ_p^*$ (if $p$ is prime)
     \item $n$-bit bitstrings: $\{0, 1\}^n$
     \item All bitstrings: $\{0, 1\}^*$
   \end{itemize}
@@ -212,7 +196,7 @@
 \begin{frame}{Discrete logarithm problem (DLP)}
   \begin{itemize}[<+(1)->]
     \item Let $p$ be a (large) safe prime such that $p = 2q + 1$ with $q$ prime.
-    \item Fix a generator $g$ s.t. $g^2 \neq 1$ and define $\GG = \langle g \rangle = \{g^i :0 \le i < q\}$.
+    \item Fix a generator $g$ and define $\GG = \langle g \rangle = \{g^i :0 \le i < q\}$.
     \begin{itemize}
       \item E.g. subgroup of quadratic residues
     \end{itemize}
@@ -242,7 +226,7 @@
 \end{frame}
 
 \begin{frame}{Weak DLP group}
-  Consider the group $(\ZZ_n, +)$.
+  Consider the group $(\ZZ_p^*, +)$.
   \begin{itemize}[<+(1)->]
     \item Not multiplicative, but great for intuition.
     \item DLP (cursed definition): $\log(y) = x \iff xg \equiv y \pmod{p}$.
@@ -335,10 +319,11 @@
     \begin{itemize}
       \item Long-term key still used for setting up the DHE/ECDH
     \end{itemize}
+    \item See also \emph{\href{https://en.wikipedia.org/wiki/Double_Ratchet_Algorithm}{double ratchet}}
   \end{itemize}
 
   \pause
-  We will cover PFS in more detail during the TLS lecture.
+  No absolute protection against future cryptanalysis.
 \end{frame}
 
 \iffalse
@@ -382,8 +367,8 @@
   ElGamal is a probabilistic public-key encryption scheme based on the DLP.
 
   \pause
-  Let $p$ be a safe prime with $p = 2q + 1$, and $\GG_q$ a subgroup of order $q$ with generator $g$. 
-  $(p, q, \GG_q, g)$ are then the public parameters.
+  Let $p$ be a safe prime with $p = 2q + 1$, and $\GG$ a subgroup of order $q$ with generator $g$. 
+  $(p, q, \GG, g)$ are then the public parameters.
 
   \pause
   Key generation:
@@ -398,7 +383,7 @@
 \begin{frame}{ElGamal}
   Encryption:
   \begin{itemize}[<+(1)->]
-    \item $m\in\GG_q$
+    \item $m\in\GG$
     \item $r\getsu\ZZ_q$
     \item $\ENC_\PK(m; r) = (g^r, m\cdot \PK^r) = (u, v) = c$
   \end{itemize}
@@ -426,6 +411,28 @@
   Way too many variations: \url{https://ibm.github.io/system-security-research-updates/2021/07/20/insecurity-elgamal-pt1}
 \end{frame}
 
+\begin{frame}{Homomorphic encryption}
+  Perform meaningful operations on the ciphertexts without the secret key.
+
+  \vspace*{1em}
+
+  \pause
+  If a cryptosystem is homomorphic for the relation $\circ$, then:
+  \begin{itemize}[<+(1)->]
+    \item $c_1 \circ c_2 = \ENC_\PK(m_1) \circ \ENC_\PK(m_2) = \ENC_\PK(m_1 \circ m_2) = c_3$
+    \item $\DEC_\SK(c_3) = m_1 \circ m_2$
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  Types of homomorphisms:
+  \begin{itemize}[<+(1)->]
+    \item Partially homomorphic: perform certain operations
+    \item Fully homomorphic: perform any computable operation
+  \end{itemize}
+\end{frame}
+
 \begin{frame}{Homomorphisms of ElGamal}
   \pause
   Multiplicative homomorphism:
@@ -448,28 +455,6 @@
     \begin{itemize}
       \item Essentially DL brute-force (pre-computable)
     \end{itemize}
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{Homomorphic encryption}
-  Perform meaningful operations on the ciphertexts without the secret key.
-
-  \vspace*{1em}
-
-  \pause
-  If a cryptosystem is homomorphic for the relation $\circ$, then:
-  \begin{itemize}[<+(1)->]
-    \item $c_1 \circ c_2 = \ENC_\PK(m_1) \circ \ENC_\PK(m_2) = \ENC_\PK(m_1 \circ m_2) = c_3$
-    \item $\DEC_\SK(c_3) = m_1 \circ m_2$
-  \end{itemize}
-
-  \vspace*{1em}
-
-  \pause
-  Types of homomorphisms:
-  \begin{itemize}[<+(1)->]
-    \item Partially homomorphic: perform certain operations
-    \item Fully homomorphic: perform any computable operation
   \end{itemize}
 \end{frame}
 
@@ -556,7 +541,7 @@
 
 \begin{frame}{Why not elliptic curves}
   Complex structure
-  \begin{itemize}
+  \begin{itemize}[<+(1)->]
     \item Higher bar of expertise
     \item Supporting encryption is sus
     \item Questionable parameter generation: are there backdoors?
@@ -586,6 +571,10 @@
   Some popular curves include:
   \begin{itemize}[<+(1)->]
     \item \textbf{Curve25519} (D. J. Bernstein): good default choice
+    \begin{itemize}
+      \item Ed25519 EdDSA signatures
+      \item X25519 DH over curve25519
+    \end{itemize}
     \item \textbf{P-256}, P-384, P-521 (NIST): FIPS-approved
     \begin{itemize}
       \item secp256r1, secp384r1, secp521r1 

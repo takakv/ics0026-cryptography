@@ -26,3 +26,7 @@
 
 \RequirePackage[en-GB]{datetime2}
 \DTMlangsetup[en-GB]{ord=omit}
+
+% Better tables
+\RequirePackage{booktabs}
+\renewcommand*{\arraystretch}{1.2}
