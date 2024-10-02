@@ -31,6 +31,8 @@
 \DTMsetdatestyle{ddmmyy}
 \DTMsetup{datesep=.}
 
+\RequirePackage{booktabs}
+
 \makeatletter
 \def\@maketitle{%
   \newpage

@@ -218,14 +218,6 @@ breaklines=true
   Can you solve the task using the tool?
 \end{task}
 
-\begin{task}{RSA in Python}
-  \textit{Task.}
-  Use a reliable 3\textsuperscript{rd} party library to implement RSA key generation, encryption, and decryption.
-  Encryption should use OAEP padding, and the key-size should provide $128$-bits of security.
-
-  Can you find test vectors similar to the NIST AES test vectors anywhere to test the library?
-\end{task}
-
 \begin{task}{OpenSSL \& PEM}
   \textit{Preface.}
   Last week we learnt a bit about OpenSSL and we used it for AES encryption and decryption.
@@ -254,27 +246,29 @@ breaklines=true
   \end{itemize}
 
   \textit{Task.}
-  Generate an RSA private key using OpenSSL with
-  \begin{Verbatim}
-openssl genpkey -algorithm RSA -out {path_private_pem}
-  \end{Verbatim}
-  What is the default bit-size for the key?
-
-  \begin{tcolorbox}[title=Warning]
-    By generating a key using this command, the key is \emph{not} protected by a passphrase, meaning that anyone with access to the key-file/key can simply use it for decryption.
-    \tcblower
-    Password protecting keyfiles is good practice (e.g. SSH or PGP keys).
-    The following command generates and encrypts the RSA private key with AES-128 using the user-provided passphrase:
+  For this task, you will generate an RSA keypair and use it to encrypt and decrypt data:
+  \begin{enumerate}
+    \item Generate an RSA private key using OpenSSL with
     \begin{Verbatim}
-openssl genpkey -algorithm RSA -aes128
+openssl genpkey -algorithm RSA -out {path_private_pem}
     \end{Verbatim}
-  \end{tcolorbox}
+    What is the default bit-size for the key?
 
-  Generate a new 3072-bit RSA secret key and determine the public key corresponding to it.
+    \begin{tcolorbox}[title=Warning]
+      By generating a key using this command, the key is \emph{not} protected by a passphrase, meaning that anyone with access to the key-file/key can simply use it for decryption.
+      \tcblower
+      Password protecting keyfiles is good practice (e.g. SSH or PGP keys).
+      The following command generates and encrypts the RSA private key with AES-128 using the user-provided passphrase:
+      \begin{Verbatim}
+openssl genpkey -algorithm RSA -aes128
+      \end{Verbatim}
+    \end{tcolorbox}
 
-  Finally, attempt to encrypt and decrypt files using the generated keys.
-  Is there a limit to the file-sizes?
-  Does the encryption use proper padding by default?
+    \item Generate a new 3072-bit RSA secret key and determine the public key corresponding to it.
+    \item Finally, attempt to encrypt and decrypt files using the generated keys.
+    Is there a limit to the file-sizes?
+    Does OpenSSL use the proper RSA encryption padding by default?
+  \end{enumerate}
 
   \textit{Note.}
   There exist also the utilities:
@@ -286,11 +280,10 @@ openssl genpkey -algorithm RSA -aes128
   which accomplish the same tasks but only for RSA.
   Therefore, these commands are a bit simpler.
 
-  Note, however, that \texttt{rsautl} has been deprecated and \texttt{pkeyutl} should be used instead.
+  However, note that \texttt{rsautl} has been deprecated and \texttt{pkeyutl} should be used instead.
   More generally, you should prefer the generic commands since that seems to be the direction OpenSSL is moving in.
 \end{task}
 
-\iffalse
 \begin{task}{ASN.1}
   \textit{Preface.}
   The base64 encoding is an encoding of the ASN.1 DER format which we briefly saw in class.
@@ -303,6 +296,13 @@ openssl genpkey -algorithm RSA -aes128
   Now try to figure out how to use OpenSSL's \href{https://www.openssl.org/docs/man1.1.1/man1/openssl-asn1parse.html}{\texttt{asn1parse}} tool to do the same thing.
   Which output do you prefer?
 \end{task}
-\fi
+
+\begin{task}{RSA in Python}
+  \textit{Task.}
+  Use a reliable 3\textsuperscript{rd} party library to implement RSA key generation, encryption, and decryption.
+  Encryption should use OAEP padding, and the key-size should provide $128$-bits of security.
+
+  Can you find test vectors similar to the NIST AES test vectors anywhere to test the library?
+\end{task}
 
 \end{document}
