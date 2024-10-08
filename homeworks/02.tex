@@ -2,7 +2,7 @@
 
 \title{02}
 \author{Taaniel Kraavi}
-\date{\DTMdate{2024-03-21}}
+\date{\DTMdate{2024-10-25}}
 
 %\usepackage{etoolbox}
 %\makeatletter
@@ -29,9 +29,8 @@ breaklines=true
 
 \begin{itemize}
   \item Include in your report approximately how long the homework took for you.
-  \item If you want feedback on Discord, include your username in your report.
   \item Read through task descriptions carefully.
-  \item You may request deadline extensions until 17.03.24 23:59 EET.
+  \item You may request deadline extensions until 22.10.24 23:59 EEST.
   \item Deadlines are strict: if you do not submit your assignment by the deadline, you fail it.
   \item To pass the course you must pass all homework assignments.
   \item Second chances:
@@ -62,7 +61,7 @@ breaklines=true
 \textbf{Additional instructions}
 
 \begin{itemize}
-  \item Submit as a PDF file called \texttt{studentid-02.pdf} where `studentid' is your 6 letter student ID/username (`takraa') for me.
+  \item Submit as a PDF file called \texttt{username-02.pdf} where `username' is your 6 letter student student username (`takraa') for me.
   \item Submit it on Moodle as a standalone file (not as part of the code ZIP).
 \end{itemize}
 
@@ -149,7 +148,7 @@ breaklines=true
 \textbf{Additional instructions}
 
 \begin{itemize}
-  \item I must be able to run your program with Python 3.12 and OpenSSL v3.2.1\footnotemark{}.
+  \item I must be able to run your program with Python 3.12 and OpenSSL v3.3.2\footnotemark{}.
   \footnotetext{You may use older versions of Python and OpenSSL as long as you do not use deprecated functionality.}
   \item Do not import any 3\textsuperscript{rd} party module\footnotemark{} not specified in the template files.
   \footnotetext{You may change \texttt{Crypto} to \texttt{Cryptodome} if needed.}
@@ -159,10 +158,19 @@ breaklines=true
   \item Submit on Moodle as a ZIP file called \texttt{code.zip}.
   \item Your Python files must have the same name as the template files but without the \texttt{template} suffix, e.g. \texttt{interop\_template.py} becomes \texttt{interop.py}.
   \item You may change everything in the template files as long as I can run your program with the CLI arguments specified in the templates.
+  \item \textbf{Check before you submit!}
+  You have ways to check whether each of your 3 tasks is functionally correct.
+  If
+  \begin{enumerate}
+    \item I cannot review your homework before the deadline, \emph{and}
+    \item your homework does not pass the checks, \emph{and}
+    \item you have not stated in your report that this is the case (and what did you try),
+  \end{enumerate}
+  you \emph{fail} the homework!
   \item Your ZIP must have the following structure/contents:
   \begin{Verbatim}
 code/
-├── interop.py
+├── ossl_rsa.py
 └── homomorphic.py
   \end{Verbatim}
 \begin{Verbatim}
@@ -171,63 +179,64 @@ code/
 \end{itemize}
 
 \begin{task}{RSA interop}
-  Homework template file: \texttt{interop\_template.py}
+  Homework template file: \texttt{ossl\_rsa\_template.py}
 
-  Create a Python3 program that performs RSA-OAEP\footnote{\url{https://en.wikipedia.org/wiki/Optimal_asymmetric_encryption_padding}} encryption/decryption.
+  Create a Python3 program that performs RSA-OAEP\footnote{\url{https://en.wikipedia.org/wiki/Optimal_asymmetric_encryption_padding}} encryption/decryption by calling OpenSSL.
   Recall from the lecture that OAEP padding is required for probabilistic encryption, and to prevent some subtle attacks.
 
   Your program must provide three separate tools:
   \begin{itemize}
     \item \texttt{genpkey} --- generate an RSA private key
 
-    Depending on the parameter, your program must generate a $3072$-bit RSA private key either with OpenSSL or with PyCryptodome and export it into a file in PEM format.
+    Your program must generate a $3072$-bit RSA private key with OpenSSL and export it into a file in PEM format.
+    Your program \emph{must not} print the key-generation progress bar to the console.
 
-    When generating a private key with OpenSSL, your program \emph{must not} print the key-generation progress bar to the console.
-
-    The private key must be password protected, and encrypted with AES-256 in CBC mode in the PKCS\#8 format.
+    The private key must be password protected according to the following:
     \begin{itemize}
-      \item For PyCryptodome, you should use \texttt{PBKDF2WithHMAC-SHA512AndAES256-CBC} with an iteration count of $210 000$ when setting up the private key encryption.
-      Why these parameters?
-      They are in the documentation and are fairly sensible.
-      \item New versions of OpenSSL (> 3.0) should use PKCS\#8 by default if you export an encrypted private key in PEM, but do not allow for such a fine-grained control with \texttt{genpkey} as PyCryptodome.
-      
-      If you want more control, you can check out \href{https://www.openssl.org/docs/man3.2/man1/openssl-pkcs8.html}{\texttt{openssl-pkcs8}}.
+      \item The key derivation function for obtaining the encryption key must be PBKDF2, and the parameters must be:
+      \begin{itemize}
+        \item \texttt{HMAC-SHA512} for the PRF,
+        \item an iteration count of $210000$ (OWASP recommendation).
+      \end{itemize}
+      \item The key must be encrypted with AES-256 in CBC mode and use the PKCS\#8 format.
     \end{itemize}
 
-    If you are unsure whether your exported private key is in PKCS\#8 format and do not want to read through \href{https://datatracker.ietf.org/doc/html/rfc5208}{RFC 5208}, you can simply dump the ASN.1 structure of both your private key and of the example private key given on Moodle.
-    If both seem to have a similar structure, your key is using PKCS\#8.
+    \begin{tcolorbox}[title=Note]
+      New versions of OpenSSL (> 3.0) should use PKCS\#8 by default if you export an encrypted private key in PEM, but do not allow for the fine-grained control needed for this task.
+
+      Hint: Can you find a tool in the OpenSSL documentation which allows more fine-grained control over PKCS\#8 encrypted private keys? 
+    \end{tcolorbox}
+
+    You can see what the expected private key structure looks like by dumping the ASN.1 structure of the example private key given on Moodle.
 
     Example invocation:
     \begin{Verbatim}
-python3 interop.py genpkey --openssl \
-    --out key.pem --pass secret
+python3 ossl_rsa.py genpkey --out key.pem --pass secret
     \end{Verbatim}
 
-    \item \texttt{pkey} --- file encryption
+    \item \texttt{pkey} --- public key derivation
     
-    Your program must extract the public key from a private key with either PyCryptodome or with OpenSSL depending on the parameter.
+    Your program must extract the public key from a private key and export it into a file in PEM format by using OpenSSL.
 
     Example invocation:
     \begin{Verbatim}
-python3 interop.py pkey --openssl \
-    --in key.pem --out pub.pem --pass secret
+python3 ossl_rsa.py pkey --in key.pem \
+    --out pub.pem --pass secret
     \end{Verbatim}
 
-    \item \texttt{pkeyutl} --- file decryption
+    \item \texttt{pkeyutl} --- file encryption and decryption
     
-    Your program must read either the private or public key from the specified file, a plaintext or ciphertext from the specified file, and output the encryption or decryption to the specified file.
-
-    Depending on the parameter, your program must use either PyCryptodome or OpenSSL for the encryption/decryption.
+    Your program must output the encryption or decryption of the specified input file with the specified key to the specified output file using OpenSSL.
 
     Example invocation for encryption:
     \begin{Verbatim}
-python3 interop.py pkeyutl --openssl --encrypt \
+python3 ossl_rsa.py pkeyutl --encrypt \
     --inkey pub.pem --in message.txt --out data.enc
     \end{Verbatim}
 
     Example invocation for decryption:
     \begin{Verbatim}
-python3 interop.py pkeyutl --openssl --decrypt \
+python3 ossl_rsa.py pkeyutl --decrypt \
     --inkey key.pem --in data.enc --out data.enc \
     --pass secret
     \end{Verbatim}
@@ -239,16 +248,31 @@ python3 interop.py pkeyutl --openssl --decrypt \
 
   You do not however have to (but you may) check for file I/O errors, i.e. you may assume that if you provide a filename, then that filename does exist or can be written to.
 
-  The password provided on the command line must be treated as an UTF-8 string.
-  Remember to wrap the password in quotes if you want to include spaces!
-
-  \begin{tcolorbox}[title=Note]
+  \begin{tcolorbox}[title=Reminder]
     In practice, providing secrets (e.g. keys, passwords, etc.) directly on the CLI as an argument to a program is a terrible idea, since they typically get logged into your terminal history!
   \end{tcolorbox}
 
-  You can check whether your code is functional with the script \texttt{interop\_check.py}.
+  You can check whether your code is functional with the script \texttt{ossl\_check.py}.
   This script does not test for error handling, so do not consider it as the definitive validator.
   I have not included the error handling checks in this script since it would give away the edge cases and I want you to think about them yourself.
+  The script requires the following python3 modules: \texttt{pycryptodome}, \texttt{pyasn1}, \texttt{pyasn1-modules}.
+
+  \iffalse
+  \begin{tcolorbox}[title=Reading comprehension]
+    Beware!
+    If you submit a homework which:
+    \begin{itemize}
+      \item does not pass the test script \textbf{and}
+      \item do not mention this in your report \textbf{and}
+      \item do not describe in your report what you tried and what problems you still have,
+    \end{itemize}
+    I will consider your homework as unsubmitted for grading.
+    If the deadline hits with your homework in this state, you fail the homework.
+    \tcblower
+    Motivation: in cryptography (and cybersecurity in general), paying close attention to details is crucial.
+    If you cannot be bothered to pay attention and check whether things work, you should not work in cryptography.
+  \end{tcolorbox}
+  \fi
 \end{task}
 
 \begin{task}{256-bit RSA}
@@ -259,21 +283,29 @@ MDwwDQYJKoZIhvcNAQEBBQADKwAwKAIhAITRpRf+PNWruknCVkz+bCvD+09P84Gf
 CBSO7oyM87qHAgMBAAE=
 -----END PUBLIC KEY-----
   \end{Verbatim}
-  Find the two RSA primes used for obtaining this key and include them in your report.
+  Find the two RSA primes used for obtaining this key and include them in your report in written form as base10 integers.
   Show how you obtained the primes (preferably with a screenshot of reasonable resolution) and include any applicable links.
 \end{task}
 
-\begin{task}{Homomorphism and semiprimes}
+\begin{task}{Nifty homomorphism}
   Homework template file: \texttt{homomorphic\_template.py}
 
   The template contains a hard-coded ElGamal public key, an ElGamal encryption function (\texttt{pk.encrypt()}) and a ciphertext product function (\texttt{pk.multiply()}).
   Recall that an ElGamal ciphertext $c$ is comprised of two parts: $c = (u, v) = \bigl(g^r, m\cdot\PK^r\bigr)$.
 
-  Your program must accept an ElGamal ciphertext as two integers on the command line (see the parsed arguments in the template).
-  Your program must produce a ciphertext that decrypts to the same value as the challenge ciphertext.
-  However, your ciphertext may not be the same as the provided challenge ciphertext, i.e. $(u, v)$ must be different.
+  The legendary cryptographer Mr. Cry has developed the following authentication protocol:
+  \begin{itemize}
+    \item Authorised users know the secret authentication number.
+    \item To gain access to the server, users encrypt this number (with ElGamal) to obtain the \emph{token}, submit the token to the server, and the server decrypts it.
+    If the decrypted number corresponds to the authentication number, the user is granted access.
+    \item To avoid authentication token re-use, the server keeps in mind all previously used tokens (encrypted numbers).
+    If you submit an already used token, the server will deny you access.
+    \item To mitigate \enquote{double-submission} (you submit the same token twice e.g. due to bad latency), the server displays the previously used token to the user.
+  \end{itemize}
 
-  Your program should print this ciphertext: $u$ as a base10 integer and $v$ as a base10 integer on the next line.
+  Your goal is to forge a token and thus gain access.
+
+  Your program must accept an ElGamal ciphertext (the token) as two integers on the command line\footnote{See the parsed arguments in the template.}, and print the token into the console in the following manner\footnote{This is taken care of by the template.}: $u$ as a base10 integer and $v$ as a base10 integer on the next line.
   E.g.
   \begin{Verbatim}
 python3 homomorphic.py 157928...613543 296738...721947
@@ -287,6 +319,8 @@ python3 homomorphic.py 157928...613543 296738...721947
     \item $\DEC_\SK\bigl((u_\mathit{challenge}, v_\mathit{challenge})\bigr) = \DEC_\SK\bigl((u_\mathit{you}, v_\mathit{you})\bigr)$, and
     \item $(u_\mathit{challenge}, v_\mathit{challenge}) \neq (u_\mathit{you}, v_\mathit{you})$.
   \end{itemize}
+
+  You can get a test token from the Discord bot and submit your answer to it to validate your solution.
 \end{task}
 
 \end{document}

@@ -33,23 +33,12 @@ class EGPublicKey:
         v = (m * blind) % self.p
         return Ciphertext(u, v)
 
-    def multiply(self, ct_1: Ciphertext, ct_2: Ciphertext):
-        """Multiply two ElGamal ciphertexts.
-
-        :param ct_1: The first ciphertext
-        :param ct_2: The second ciphertext
-        :return: the product ciphertext
-        """
-        u = (ct_1.u * ct_2.u) % self.p
-        v = (ct_1.v * ct_2.v) % self.p
-        return Ciphertext(u, v)
-
 
 def main(ct: Ciphertext):
     pk = EGPublicKey()
 
     # Your code here
-    ct_res = pk.encrypt(...)
+    ct_res = ...
 
     assert ct.u != ct_res.u or ct.v != ct_res.v
     print(ct_res.u)

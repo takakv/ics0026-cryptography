@@ -52,4 +52,5 @@
 \newcounter{task}[section]
 \newenvironment*{task}[1]{%
   \refstepcounter{task}%
+  \vspace{1em}
   \textbf{Task~\thetask{} --- {#1}}\par}{}
