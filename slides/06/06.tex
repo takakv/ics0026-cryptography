@@ -1,43 +1,27 @@
-\usetheme[numbering=fraction]{metropolis}
-
-\metroset{block=fill}
-
 \usepackage[dvipsnames]{xcolor}
-
-\usepackage{booktabs}
 
 \usepackage{fancyvrb}
 \fvset{listparameters=\setlength{\topsep}{0pt}\setlength{\partopsep}{0pt}}
 
-\usepackage{csquotes}
-\setquotestyle{british}
 
 \usepackage{graphicx}
 \graphicspath{ {../../images/} }
 
 \usepackage{pgfplots}
 \usetikzlibrary{positioning,calc,external}
+
+
+%\usepackage{newcomputermodern}
+\setmonofont{cmuntt}
 %\tikzexternalize[prefix=figures/] 
-
-\usepackage{crysymb}
-
-\renewcommand*{\arraystretch}{1.2}
-
-\usepackage{soul}
-\usepackage[en-GB]{datetime2}
-\DTMlangsetup[en-GB]{ord=omit}
 
 \usetikzlibrary{positioning,calc}
 \graphicspath{ {../../images/} }
 
-\title[Short version of title]{ICS0026 Cryptography}
+\title{ICS0026 Cryptography}
 \subtitle{Hash functions, KDFs \& MACs}
-\date{\DTMdate{2024-03-05}}
-\author%
-{%
-    {Taaniel Kraavi}\\
-    \textit{\footnotesize Guest Lecturer}
-}
+\date{\today}
+\author{Taaniel Kraavi}
 \institute%
 {%
     \textit{IT College}\\
@@ -51,10 +35,10 @@
 
 \begin{frame}{Hash functions}
   \pause
-  A map from arbitrary sized data to fixed-size values.
+  A map from arbitrary sized data to fixed-size values\textsuperscript{*}.
   \begin{itemize}[<+(1)->]
     \item $h:\{0,1\}^* \to \{0,1\}^n$
-    \item Some functions provide variable-length output
+    \item \textsuperscript{*}Some functions provide variable-length output
     \item Values are called \emph{hashes} or \emph{digests}
     \item Deterministic
   \end{itemize}
@@ -64,8 +48,8 @@
   \pause
   A good hash function:
   \begin{itemize}[<+(1)->]
-    \item fast
-    \item minimal collisions
+    \item efficient
+    \item uniformity and minimal collisions
   \end{itemize}
 \end{frame}
 
@@ -93,14 +77,14 @@
   \pause
   Consequences:
   \begin{itemize}[<+(1)->]
-    \item `General computing': bad performance (e.g. indexing)
+    \item \enquote{General computing}: bad performance (e.g. indexing)
     \item Cryptography: loss of integrity and/or security
   \end{itemize}
 
   \vspace*{1em}
 
   \pause
-  Not all hash functions provide `strong' integrity guarantees!
+  Not all hash functions provide \enquote{strong} integrity guarantees!
 \end{frame}
 
 \begin{frame}{Cryptographic hash functions (CHF)}
@@ -109,9 +93,11 @@
     \item Collision resistance (infeasible to find any)
     \item (First) preimage resistance (one-wayness)
     \item Second preimage resistance
-    \item Avalanche effect
     \item Uniform output distribution
   \end{itemize}
+
+  \pause
+  Moreover, it must exhibit a good avalanche effect.
 \end{frame}
 
 \begin{frame}{Different resistances}
@@ -156,11 +142,10 @@
 \begin{frame}{Different resistances}
   Collision resistance $\implies$ second preimage resistance.
   \begin{itemize}[<+(1)->]
-    \item Implies first preimage resistance only if input space $\gg$ output space
     \item 2\textsuperscript{nd} preimage resistance:
     \begin{itemize}
-      \item weaker assumption
       \item harder problem
+      \item weaker assumption
     \end{itemize}
     \item 2\textsuperscript{nd} preimage resistance not enough for a `general' case
     \item In addition, it should be hard to find similar hashes
@@ -284,7 +269,7 @@
 \begin{frame}{What CHFs are not}
   CHFs are not suitable for encryption:
   \begin{itemize}[<+(1)->]
-    \item hashes cannot be `decrypted'
+    \item hashes cannot be \enquote{decrypted}
     \item there is no secret key
     \item keyed hash functions: MACs not encryption
   \end{itemize}
@@ -295,6 +280,7 @@
   \begin{itemize}[<+(1)->]
     \item hash functions should be fast to compute
     \item passwords should be slow to brute force
+    \item no randomness: easy to build a dictionary
     \item use a KDF designed for passwords instead
   \end{itemize}
 \end{frame}
@@ -475,7 +461,7 @@
   \end{center}
 
   \pause
-  {\scriptsize\url{https://x.com/Guardtime/status/1759897737212899612?s=20} most recent root}
+  {\scriptsize\url{https://x.com/Guardtime/status/1836338823896158506} most recent root}
 \end{frame}
 
 \begin{frame}{KDFs}
@@ -614,10 +600,10 @@
 \end{frame}
 
 \begin{frame}{Naive construction}
-  Naive construction: SHA-256 with a secret key (keyed hashing)
+  Naive construction: SHA-256 with a secret key
   \begin{itemize}[<+(1)->]
     \item Set the tag $t = \mathsf{SHA\text{-}256}(k||m)$
-    \item Recipient verifies $t$ by recomputing the keyed hash
+    \item Recipient verifies $t$ by recomputing the hash
     \item Length extension attacks! (and other subtle attacks)
   \end{itemize}
 
@@ -627,7 +613,7 @@
   Do not build your own MACs!
   \begin{itemize}[<+(1)->]
     \item Use special-purpose MAC algorithms.
-    \item Use parameters suggested by reputable sources (will be homework ;))
+    \item Use parameters suggested by reputable sources
   \end{itemize}
 \end{frame}
 
@@ -658,6 +644,9 @@
 
   \pause
   Encrypt first, then MAC the ciphertext: Encrypt-then-MAC (EtM).
+  \begin{itemize}[<+(1)->]
+    \item Include the nonce/iv in the MAC
+  \end{itemize}
 
   \vspace*{1em}
 
@@ -666,10 +655,10 @@
 \end{frame}
 
 \begin{frame}{Using MACs}
-  You should almost always use a MAC!
+  You should almost always use a MAC in symmetric settings!
   \begin{itemize}[<+(1)->]
     \item Not needed if solid authentication is integrated into the scheme.
-    \item Encrypt-then-MAC (EtM): authenticates the ciphertext.
+    \item Encrypt-then-MAC (EtM): authenticates the ciphertext too.
     \item Do not use the same key for encryption and the MAC.
   \end{itemize}
 
