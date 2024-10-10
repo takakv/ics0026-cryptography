@@ -158,6 +158,7 @@ breaklines=true
   \item Submit on Moodle as a ZIP file called \texttt{code.zip}.
   \item Your Python files must have the same name as the template files but without the \texttt{template} suffix, e.g. \texttt{interop\_template.py} becomes \texttt{interop.py}.
   \item You may change everything in the template files as long as I can run your program with the CLI arguments specified in the templates.
+  \iffalse
   \item \textbf{Check before you submit!}
   You have ways to check whether each of your 3 tasks is functionally correct.
   If
@@ -167,6 +168,7 @@ breaklines=true
     \item you have not stated in your report that this is the case (and what did you try),
   \end{enumerate}
   you \emph{fail} the homework!
+  \fi
   \item Your ZIP must have the following structure/contents:
   \begin{Verbatim}
 code/
@@ -298,7 +300,7 @@ CBSO7oyM87qHAgMBAAE=
     \item Authorised users know the secret authentication number.
     \item To gain access to the server, users encrypt this number (with ElGamal) to obtain the \emph{token}, submit the token to the server, and the server decrypts it.
     If the decrypted number corresponds to the authentication number, the user is granted access.
-    \item To avoid authentication token re-use, the server keeps in mind all previously used tokens (encrypted numbers).
+    \item To avoid authentication token re-use, the server remembers all previously used tokens (encrypted numbers).
     If you submit an already used token, the server will deny you access.
     \item To mitigate \enquote{double-submission} (you submit the same token twice e.g. due to bad latency), the server displays the previously used token to the user.
   \end{itemize}
