@@ -7,5 +7,5 @@ The course is not a formal (or mathematical) study of primitives, their implemen
 Rather, students learn about what tools are available and for which purpose.
 Students are encouraged to appreciate the ‘unknown unknowns’ of cryptography and warned about the danger of designing or implementing algorithms and protocols.
 
-The slides are not self-contained and serve merely as a remainder on discussed topics.
+The slides are not self-contained and serve merely as a reminder on discussed topics.
 For formal notions and definitions, see the suggested course literature.
