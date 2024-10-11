@@ -10,6 +10,11 @@ images:
 
 # TODO: figure out how to use wildacrd rules while keeping phonies
 
+.PHONY: slides/00
+slides/00:
+	latexmk -lualatex -cd -c slides/00/00_handout.tex
+	latexmk -lualatex -cd -c slides/00/00_presentation.tex
+
 .PHONY: slides/01
 slides/01:
 	latexmk -lualatex -cd -c slides/01/01_handout.tex
@@ -39,3 +44,8 @@ slides/05:
 slides/06:
 	latexmk -lualatex -cd -c slides/06/06_handout.tex
 	latexmk -lualatex -cd -c slides/06/06_presentation.tex
+
+.PHONY: slides/07
+slides/07:
+	latexmk -lualatex -cd -c slides/07/07_handout.tex
+	latexmk -lualatex -cd -c slides/07/07_presentation.tex

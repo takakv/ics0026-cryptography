@@ -1,22 +1,14 @@
+\graphicspath{ {../../images/} }
+\usetikzlibrary{external}
+
+% Needed for setting font size for mono blocks
+\usepackage{fancyvrb}
+
+% Needed for argon2id hash colours
 \usepackage[dvipsnames]{xcolor}
 
-\usepackage{fancyvrb}
-\fvset{listparameters=\setlength{\topsep}{0pt}\setlength{\partopsep}{0pt}}
-
-
-\usepackage{graphicx}
-\graphicspath{ {../../images/} }
-
-\usepackage{pgfplots}
-\usetikzlibrary{positioning,calc,external}
-
-
-%\usepackage{newcomputermodern}
+% Needed for argon2id hash to fit
 \setmonofont{cmuntt}
-%\tikzexternalize[prefix=figures/] 
-
-\usetikzlibrary{positioning,calc}
-\graphicspath{ {../../images/} }
 
 \title{ICS0026 Cryptography}
 \subtitle{Hash functions, KDFs \& MACs}
@@ -24,8 +16,8 @@
 \author{Taaniel Kraavi}
 \institute%
 {%
-    \textit{IT College}\\
-    \textit{Tallinn University of Technology}
+  \textit{IT College}\\
+  \textit{Tallinn University of Technology}
 }
 
 \begin{document}

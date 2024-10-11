@@ -11,7 +11,10 @@
 % Cryptographic symbols
 \RequirePackage{crysymb}
 
+% Graphics and drawings
+\RequirePackage{graphicx}
 \RequirePackage{tikz}
+\usetikzlibrary{positioning,calc}
 
 % Typographic improvements (needs LuaLaTeX)
 \RequirePackage{fontspec}
