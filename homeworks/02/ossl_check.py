@@ -3,6 +3,7 @@ import sys
 
 import pyasn1.error
 from Crypto.Cipher import PKCS1_OAEP
+from Crypto.Hash import SHA256
 from Crypto.IO import PEM
 from Crypto.PublicKey import RSA
 from pyasn1.codec.der import decoder
@@ -14,6 +15,7 @@ PREFIX = ["python3", "ossl_rsa.py"]
 PASS = ["--pass", "secret"]
 
 ITER_COUNT = 210000
+HASH_ALGO = SHA256
 
 
 def check_pem(filename: str) -> None:
@@ -152,7 +154,7 @@ def enc_check(f_key: str, f_in: str, f_out: str) -> None:
     :param f_out: The file to store the ciphertext in
     """
     key = read_pk(f_key)
-    cipher = PKCS1_OAEP.new(key)
+    cipher = PKCS1_OAEP.new(key, hashAlgo=HASH_ALGO)
 
     with open(f_in, "rb") as f:
         pt = f.read()
@@ -171,7 +173,7 @@ def dec_check(f_key: str, f_in: str, f_out: str) -> None:
     :param f_out: The file to store the decrypted data in
     """
     key = read_sk(f_key, PASS[1])
-    cipher = PKCS1_OAEP.new(key)
+    cipher = PKCS1_OAEP.new(key, hashAlgo=HASH_ALGO)
 
     with open(f_in, "rb") as f:
         ct = f.read()
