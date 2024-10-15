@@ -185,6 +185,9 @@ code/
 
   Create a Python3 program that performs RSA-OAEP\footnote{\url{https://en.wikipedia.org/wiki/Optimal_asymmetric_encryption_padding}} encryption/decryption by calling OpenSSL.
   Recall from the lecture that OAEP padding is required for probabilistic encryption, and to prevent some subtle attacks.
+  Make sure to use OAEP with the SHA256 hash function for padding derivation, since its default hash function SHA1 is deprecated\footnote{We will see the specifics of this during week 7, so treat it as a \enquote{black box} good practice for now.}.
+
+  \newpage
 
   Your program must provide three separate tools:
   \begin{itemize}
