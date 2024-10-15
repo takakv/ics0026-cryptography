@@ -29,7 +29,7 @@
   \begin{itemize}[<+(1)->]
     \item Message authentication codes (MAC)
     \item Issuing \& verification with the same key
-    \item Secret knowledge and/or possession
+    \item Secret knowledge or possession
     \item Key exchange problem
     \item \emph{Repudiation} problem
   \end{itemize}
@@ -44,13 +44,13 @@
       \item a secret \emph{signing key} known to the signer
     \end{itemize}
     \item publicly verifiable: signatures are \emph{transferable}
-    \item identification becomes possible\textsuperscript{\ast}
+    \item identification becomes possible\textsuperscript{*}
     \begin{itemize}
       \item keys are personal
       \item verification for a specific signer
       \item signatures are \emph{non-interactive} identification schemes\textsuperscript{*}
     \end{itemize}
-    \item \emph{non-repudiation}: cannot reject your signature
+    \item \emph{non-repudiation}: you cannot deny your signature
     \item how to tie identity with information?
     \begin{itemize}
       \item legal identification vs tracing
@@ -150,7 +150,7 @@
   \begin{itemize}[<+(1)->]
     \item cryptographic hash: message representative
     \item hash and sign the hash (hash used in the algorithm)
-    \item how do you verify? (message not recoverable from the signature)
+    \item how do you verify? (message not recoverable from the hash)
   \end{itemize}
 
   \pause
@@ -166,14 +166,33 @@
     \item \href{https://datatracker.ietf.org/doc/html/rfc8017}{\texttt{RFC 8017}}
   \end{itemize}
 
+  \vfill
+
   \pause
   PSS --- Probabilistic Signature Scheme
   \begin{itemize}[<+(1)->]
     \item Renders signatures probabilistic
-    \item Digest cannot be extracted from the signature
-    \item Parameters must be known before signature verification
     \item Has a security analysis: provably reducible to the RSA problem
+    \item Parameters must be known before signature verification 
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{RSA-PSS parameters}
+  RSA-PSS uses a mask generation function (MGF) for the padding
+  \begin{itemize}[<+(1)->]
+    \item Similar to a cryptographic hash function
+    \item Variable length output
+    \item Specifically MGF1: iterative hashing with counter
+    \item MGF1 also used in RSA-OAEP
+  \end{itemize}
+
+  \vfill
+
+  \pause
+  Hashing in RSA-PSS:
+  \begin{itemize}[<+(1)->]
     \item Uses SHA1 by default: if possible, parametrise with a SHA2 variant
+    \item If possible, use the same hash function for the message and MGF1
   \end{itemize}
 \end{frame}
 
@@ -187,14 +206,17 @@
   \pause
   Nonces protect the key in many constructions:
   \begin{itemize}[<+(1)->]
-    \item nonce leak allows secret recovery
-    \item nonce reuse allows secret recovery
+    \item nonce leak might allow secret recovery
+    \item nonce reuse might allow secret recovery
     \item conclusion: nonces must be unique and hard to find
     \item (secrecy over nondeterminism)
   \end{itemize}
 
   \pause
   Poor randomness is catastrophic in many schemes!
+  \begin{itemize}[<+(1)->]
+    \item Good randomness helps with uniqueness and secrecy
+  \end{itemize}
 \end{frame}
 
 \begin{frame}{Randomness pros and cons}
@@ -202,7 +224,7 @@
   Issues with randomness:
   \begin{itemize}[<+(1)->]
     \item Cryptographic randomness required (real-world security issue)
-    \item Covert channel attacks (e.g. physical crypto wallets)
+    \item Covert channel attacks (steganography, e.g. physical crypto wallets)
   \end{itemize}
 
   \pause
@@ -225,8 +247,7 @@
   Digital Signature Algorithm (DSA):
   \begin{itemize}[<+(1)->]
     \item DL-based (variant of Schnorr \& ElGamal)
-    \item Part of DSS versions 1--4
-    \item Removed from DSS version 5 (\href{https://csrc.nist.gov/pubs/fips/186-5/final}{FIPS 168-5} finalised in 2023)
+    \item Part of DSS versions 1--4, removed in version 5 (2023)
     \item ECDSA: Elliptic Curve DSA
     \item \href{https://datatracker.ietf.org/doc/html/rfc6979}{\texttt{RFC 6979}}: deterministic DSA \& ECDSA
   \end{itemize}
@@ -239,7 +260,7 @@
   \end{itemize}
 
   \pause
-  ECDSA not yet deprecated, but better to use EdDSA.
+  Do not use DSA! Do not default to ECDSA.
 \end{frame}
 
 \begin{frame}{EdDSA}
@@ -275,9 +296,10 @@
       \item Both Ed25519 and Ed448 variants
       \item Variants differ a bit from the RFC
     \end{itemize}
-    \item RSA as defined in PKCS \#1 v2.2 is allowed
+    \item RSA signatures as defined in PKCS \#1 v2.2 are allowed
     \begin{itemize}
       \item Additional restrictions apply
+      \item No textbook RSA!
     \end{itemize}
   \end{itemize}
 \end{frame}
@@ -410,6 +432,27 @@
   Someone somewhere has to trust something sometime.
 \end{frame}
 
+\begin{frame}{Digital certificates}
+  A \emph{certificate} binds keys to an entity's attributes (e.g. name, email).
+  \begin{itemize}[<+(1)->]
+    \item An entity lists their attributes and public key on a certificate
+    \item A third party verifies the info and signs the certificate
+    \begin{itemize}
+      \item The party confirms the attributes somehow
+      \item The party verifies secret key ownership of the entity
+    \end{itemize}
+    \item Self-signing is possible
+  \end{itemize}
+
+  \pause
+  Ideally, the 3\textsuperscript{rd} party is like a digital notary.
+  \begin{itemize}[<+(1)->]
+    \item You simply trust the notary
+    \item Trust the notary $\to$ trust their approved certificate\textsuperscript{*}
+    \item Verification requirements vary (national eID vs. git commit)
+  \end{itemize}
+\end{frame}
+
 \begin{frame}{Public Key Infrastructure (PKI)}
   A public key infrastructure consists of a:
   \begin{itemize}[<+(1)->]
@@ -437,27 +480,12 @@
   These are less critical for understanding how the PKI works.
 \end{frame}
 
-\begin{frame}{Digital certificates}
-  A \emph{certificate} binds keys to an entity's attributes (e.g. name, email).
-  \begin{itemize}[<+(1)->]
-    \item An entity lists their attributes and public key (entity signature)
-    \item A third party confirms the attributes (3\textsuperscript{rd} party's signature)
-  \end{itemize}
-
-  \pause
-  Ideally, the 3\textsuperscript{rd} party is like a digital notary.
-  \begin{itemize}[<+(1)->]
-    \item You simply trust the notary
-    \item Only need to verify the notary's signature on certificates\textsuperscript{*}
-    \item Verification requirements vary (national eID vs. git commit)
-  \end{itemize}
-\end{frame}
-
 \begin{frame}{PKI (CA-based)}
   \pause
   Root CAs:
   \begin{itemize}[<+(1)->]
     \item Root CAs who certify lower level CA's
+    \item Root CAs self-sign their certificates
     \item Root CA certificates are bundled with the OS
     \item Root CA certs can be added to a device's root certificate store
   \end{itemize}
@@ -483,7 +511,7 @@
     \item LinkedIn for public keys
     \item Upload your keys to key-servers on the web (no deletion possible usually)
     \item You \emph{vet} a user by signing their keys
-    \item Other who trust you can then trust the keys you have signed
+    \item Others who trust you can then trust the keys you have signed
     \item You can assign a trust level to keys
   \end{itemize}
 
