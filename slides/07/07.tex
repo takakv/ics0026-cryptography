@@ -503,13 +503,14 @@
   \pause
   Chain of trust:
   \begin{itemize}[<+(1)->]
-    \item Root CAs determine the powers of intermediate CAs
+    \item Root CAs certify and assign powers to intermediate CAs
     \begin{itemize}
       \item Intermediate CAs might be able to delegate to even further CAs etc.
     \end{itemize}
     \item End users are issued \emph{end entity} certificates by a CA
     \begin{itemize}
       \item Cannot be used to further certify certificates
+      \item Not certified directly by a root certificate
     \end{itemize}
     \item Certificate chain:
     \begin{center}
@@ -517,7 +518,7 @@
     \end{center}
   \end{itemize}
 
-  \vfill
+  \vspace*{1em}
 
   \pause
   To verify a certificate, recursively verify until the root
