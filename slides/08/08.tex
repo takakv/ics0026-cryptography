@@ -1,43 +1,11 @@
-\usetheme[numbering=fraction]{metropolis}
-
-\metroset{block=fill}
-
-\usepackage[dvipsnames]{xcolor}
-
-\usepackage{booktabs}
-
-\usepackage{fancyvrb}
-\fvset{listparameters=\setlength{\topsep}{0pt}\setlength{\partopsep}{0pt}}
-
-\usepackage{csquotes}
-\setquotestyle{british}
-
-\usepackage{graphicx}
-\graphicspath{ {../../images/} }
-
-\usepackage{pgfplots}
-\usetikzlibrary{positioning,calc,external}
-%\tikzexternalize[prefix=figures/] 
-
-\usepackage{crysymb}
-
-\renewcommand*{\arraystretch}{1.2}
-
-\usepackage{soul}
-\usepackage[en-GB]{datetime2}
-\DTMlangsetup[en-GB]{ord=omit}
-
-\usetikzlibrary{positioning,calc}
-\graphicspath{ {../../images/} }
-
 \title{ICS0026 Cryptography}
 \subtitle{Certificate validity, eIDAS \& qualified signatures}
-\date{\DTMdate{2024-03-19}}
+\date{\today}
 \author{Taaniel Kraavi}
 \institute%
 {%
-    \textit{IT College}\\
-    \textit{Tallinn University of Technology}
+  \textit{IT College}\\
+  \textit{Tallinn University of Technology}
 }
 
 \begin{document}
@@ -48,10 +16,17 @@
 \begin{frame}{Refresher on PKI}
   Hierarchical trust model:
   \begin{itemize}[<+(1)->]
-    \item Root CA self-signs their own certificate (trust-anchor)
-    \item CA may delegate trust to subordinate/intermediate CAs
-    \item Subordinates might be able to delegate further depending on policy
-    \item The chain continues until end-entity certificates (users, companies, \dots)
+    \item Root CA self-signs their own root certificate(s) (trust-anchor)
+    \item Root certificates used to certify subordinate/intermediate certificates
+    \item Subordinates issue end-entity certificates or certify other intermediates
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  A root certificate is linked to end-entity certificates through intermediate certificates.
+  \begin{itemize}[<+(1)->]
+    \item This forms the certificate chain
   \end{itemize}
 
   \vspace*{1em}
@@ -61,10 +36,6 @@
   \begin{itemize}[<+(1)->]
     \item Certification Authority (CA): issues \& manages certificates
     \item Registration Authority (RA): verifies applicant identities
-    \begin{itemize}
-      \item Methods vary
-      \item Trusted by the CA
-    \end{itemize}
   \end{itemize}
 \end{frame}
 

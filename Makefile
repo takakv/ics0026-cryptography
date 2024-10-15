@@ -49,3 +49,8 @@ slides/06:
 slides/07:
 	latexmk -lualatex -cd -c slides/07/07_handout.tex
 	latexmk -lualatex -cd -c slides/07/07_presentation.tex
+
+.PHONY: slides/08
+slides/08:
+	latexmk -lualatex -cd -c slides/08/08_handout.tex
+	latexmk -lualatex -cd -c slides/08/08_presentation.tex
