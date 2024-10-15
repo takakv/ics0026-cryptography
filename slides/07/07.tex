@@ -480,27 +480,50 @@
   These are less critical for understanding how the PKI works.
 \end{frame}
 
-\begin{frame}{PKI (CA-based)}
+\begin{frame}{Root CAs}
+  Someone must be at the source of trust.
+
   \pause
   Root CAs:
   \begin{itemize}[<+(1)->]
-    \item Root CAs who certify lower level CA's
-    \item Root CAs self-sign their certificates
-    \item Root CA certificates are bundled with the OS
-    \item Root CA certs can be added to a device's root certificate store
+    \item Self-sign their certificates: root certificates
+    \item Root certificates are bundled with the OS, with browsers
+    \item Certify lower level CAs, called \emph{intermediate} CAs
+    \begin{itemize}
+      \item Typically root CAs have an internal intermediate CA too
+      \item Intermediate certificates
+    \end{itemize}
   \end{itemize}
 
   \pause
-  Tree model:
+  New root certificates can manually be added to a device's root certificate store.
+\end{frame}
+
+\begin{frame}{PKI tree model}
+  \pause
+  Chain of trust:
   \begin{itemize}[<+(1)->]
-    \item Root CAs determine the powers of lower level CAs
-    \item Lower level CAs might be able to name even lower level CAs etc.
-    \item Chain of certification
-    \item To verify a certificate, recursively verify until the root
+    \item Root CAs determine the powers of intermediate CAs
+    \begin{itemize}
+      \item Intermediate CAs might be able to delegate to even further CAs etc.
+    \end{itemize}
+    \item End users are issued \emph{end entity} certificates by a CA
+    \begin{itemize}
+      \item Cannot be used to further certify certificates
+    \end{itemize}
+    \item Certificate chain:
+    \begin{center}
+      root cert $\to$ intermediate cert(s) $\to$ end entity cert
+    \end{center}
   \end{itemize}
 
+  \vfill
+
   \pause
-  How much to verify?
+  To verify a certificate, recursively verify until the root
+  \begin{itemize}[<+(1)->]
+    \item How much to verify?
+  \end{itemize}
 \end{frame}
 
 \begin{frame}{Web of Trust}
