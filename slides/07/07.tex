@@ -486,7 +486,7 @@
   \end{block}
 
   \pause
-  Root CAs are the root of trust:
+  Root CAs are trust anchors:
   \begin{itemize}[<+(1)->]
     \item Self-sign their certificates: root certificates
     \item Root certificates are bundled with the OS, with browsers
@@ -501,13 +501,13 @@
   New root certificates can manually be added to a device's root certificate store.
 \end{frame}
 
-\begin{frame}{PKI tree model}
-  \pause
-  Chain of trust:
+\begin{frame}{Chain of Trust}
+  A chain of trust is derived from a trust anchor:
   \begin{itemize}[<+(1)->]
     \item Root CAs certify and assign powers to intermediate CAs
     \begin{itemize}
       \item Intermediate CAs might be able to delegate to even further CAs etc.
+      \item Multi-domain (company) relationships defined in \href{https://datatracker.ietf.org/doc/html/rfc5217}{RFC 5217}
     \end{itemize}
     \item End users are issued \emph{end entity} certificates by a CA
     \begin{itemize}
@@ -518,19 +518,16 @@
     \begin{center}
       root cert $\to$ intermediate cert(s) $\to$ end entity cert
     \end{center}
-  \end{itemize}
-
-  \vspace*{1em}
-
-  \pause
-  To verify a certificate, recursively verify until the root
-  \begin{itemize}[<+(1)->]
-    \item How much to verify?
+    \vspace*{1em}
+    \item To verify a certificate, recursively verify until the root
+    \begin{itemize}[<+(1)->]
+      \item How much to verify?
+    \end{itemize}
   \end{itemize}
 \end{frame}
 
 \begin{frame}{Web of Trust}
-  Some key points:
+  An alternative to the PKI chain of trust:
   \begin{itemize}[<+(1)->]
     \item Popular with PGP
     \item Not centralised unlike CA-based systems (PKIs in general)
