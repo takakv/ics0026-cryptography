@@ -481,17 +481,19 @@
 \end{frame}
 
 \begin{frame}{Root CAs}
-  Someone must be at the source of trust.
+  \begin{block}{Terminology}
+    Think of a CA as a (key, certificate) pair, and not as a company.
+  \end{block}
 
   \pause
-  Root CAs:
+  Root CAs are the root of trust:
   \begin{itemize}[<+(1)->]
     \item Self-sign their certificates: root certificates
     \item Root certificates are bundled with the OS, with browsers
     \item Certify lower level CAs, called \emph{intermediate} CAs
     \begin{itemize}
-      \item Typically root CAs have an internal intermediate CA too
       \item Intermediate certificates
+      \item Typically the intermediate CA is the same company
     \end{itemize}
   \end{itemize}
 
