@@ -1,18 +1,29 @@
 import argparse
+import sys
 
 import ldap  # python-ldap
 
 
 def main(idcode: str):
-    # SK LDAP catalogue for personal ID documents.
-    connect = ldap.initialize("ldaps://esteid.ldap.sk.ee")
-    result = connect.search_s("c=EE", ldap.SCOPE_SUBTREE,
-                              f"serialNumber=PNOEE-{idcode}")
+    try:
+        # SK LDAP catalogue for personal ID documents.
+        connect = ldap.initialize("ldaps://esteid.ldap.sk.ee")
+        connect.set_option(ldap.OPT_NETWORK_TIMEOUT, 2)
+    except ldap.LDAPError:
+        print("[-] Incorrect LDAP host")
+        sys.exit(1)
+
+    try:
+        result = connect.search_s("c=EE", ldap.SCOPE_SUBTREE,
+                                  f"serialNumber=PNOEE-{idcode}")
+    except ldap.SERVER_DOWN:
+        print("[-] Could not connect to the server. Is the LDAP URL correct?")
+        sys.exit(1)
 
     # There should be an authentication and a signature cert.
     if len(result) != 2:
         print("[-] No active certificates found")
-        return
+        sys.exit(1)
 
     cert_data_1 = result[0]
     cert_data_2 = result[1]
@@ -20,7 +31,7 @@ def main(idcode: str):
     cert_auth: bytes = cert_data_1[1]["userCertificate;binary"][0]
     cert_dsig: bytes = cert_data_2[1]["userCertificate;binary"][0]
 
-    # The order should be consistent, but just to be sure...
+    # The order should be consistent, but just to be sure....
     ou_index = cert_data_1[0].find("ou=")
     o_index = cert_data_1[0].find("o=")
     # There is a comma before 'o='.
@@ -28,6 +39,9 @@ def main(idcode: str):
 
     if data1_ou == "Digital Signature":
         cert_auth, cert_dsig = cert_dsig, cert_auth
+    elif data1_ou != "Authentication":
+        print(f"[-] Unexpected certificate type: '{data1_ou}'")
+        sys.exit(1)
 
     with open(f"{idcode}.auth.der", "wb") as f:
         f.write(cert_auth)
