@@ -1,7 +1,19 @@
 import argparse
+import os
 import sys
 
 import ldap  # python-ldap
+
+skos = {
+    "Identity card of Estonian citizen": "",
+    "Identity card of European Union citizen": "",  # no conflict with EE ID card
+    "Diplomatic identity card": "diplomatic-id",
+    "Residence card of long-term resident": "",  # no conflict
+    "Residence card of temporary residence citizen": "",  # no conflict
+    "Digital identity card": "digi-id",
+    "Digital identity card of e-resident": "",  # no conflict
+    "Mobile-ID": "m-id"
+}
 
 
 def main(idcode: str):
@@ -21,33 +33,45 @@ def main(idcode: str):
         sys.exit(1)
 
     # There should be an authentication and a signature cert.
-    if len(result) != 2:
+    if len(result) < 2:
         print("[-] No active certificates found")
         sys.exit(1)
 
-    cert_data_1 = result[0]
-    cert_data_2 = result[1]
+    if not os.path.isdir(f"{idcode}"):
+        os.mkdir(f"{idcode}")
 
-    cert_auth: bytes = cert_data_1[1]["userCertificate;binary"][0]
-    cert_dsig: bytes = cert_data_2[1]["userCertificate;binary"][0]
+    for data in result:
+        meta = data[0]
+        ou_index = meta.find("ou=")
+        o_index = meta.find("o=")
+        dc_index = meta.find("dc=")
+        # There is a comma before 'o='.
+        ou = meta[ou_index + 3:o_index - 1]
+        # There is a comma before 'dc='.
+        o = meta[o_index + 2:dc_index - 1]
 
-    # The order should be consistent, but just to be sure....
-    ou_index = cert_data_1[0].find("ou=")
-    o_index = cert_data_1[0].find("o=")
-    # There is a comma before 'o='.
-    data1_ou = cert_data_1[0][ou_index + 3:o_index - 1]
+        try:
+            ctype = skos[o]
+        except KeyError:
+            print(f"[-] Unknown certificate type: '{o}'")
+            sys.exit(1)
 
-    if data1_ou == "Digital Signature":
-        cert_auth, cert_dsig = cert_dsig, cert_auth
-    elif data1_ou != "Authentication":
-        print(f"[-] Unexpected certificate type: '{data1_ou}'")
-        sys.exit(1)
+        # Add the dot suffix only if the type goes into the filename.
+        if ctype:
+            ctype = f".{ctype}"
 
-    with open(f"{idcode}.auth.der", "wb") as f:
-        f.write(cert_auth)
+        match ou:
+            case "Authentication":
+                purpose = "auth"
+            case "Digital Signature":
+                purpose = "dsig"
+            case _:
+                print(f"[-] Unknown certificate purpose: '{ou}'")
+                sys.exit(1)
 
-    with open(f"{idcode}.dsig.der", "wb") as f:
-        f.write(cert_dsig)
+        cert = data[1]["userCertificate;binary"][0]
+        with open(f"{idcode}/{idcode}{ctype}.{purpose}.der", "wb") as f:
+            f.write(cert)
 
 
 def ee_idcode(s: str):
