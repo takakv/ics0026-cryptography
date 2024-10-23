@@ -3,7 +3,7 @@
 # The certificate must be an identity document certificate
 # i.e. ID card, digi-ID, ..., but not mID, Smart-ID.
 # For mID, Smart-ID, the intermediate and root are different.
-CERT_NAME=...
+CERT_NAME=$1
 
 # Problem: issuer not known
 # openssl verify $CERT_NAME
