@@ -1,0 +1,206 @@
+\documentclass[parskip=half]{scrartcl}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+
+\usepackage{csquotes}
+\setquotestyle{british}
+
+\usepackage[hidelinks]{hyperref}
+
+\usepackage{fontspec}
+\usepackage{unicode-math}
+\usepackage{microtype}
+
+\setmainfont{Stix Two Text}
+\setmathfont{Stix Two Math}
+\setmonofont{Courier}
+
+\RequirePackage{bookmark}
+
+\begin{document}
+
+\textbf{Decimal system}
+
+When we think about digits, we typically think of the $10$ Arabic numerals $0$--$9$.
+That is because we use them to represent numbers in the \emph{decimal} system, which should be familiar from the maths learnt at school.
+
+In the decimal system we use strings of digits $0$--$9$ to represent numbers.
+The decimal numeral system is also called a \emph{base $10$} system because it uses $10$ unique digits.
+In the decimal system, $8$ is a single digit number, $17$ is a two-digit number, etc.
+
+We notice that the more digits the number has, the larger it is, and this is not by coincidence.
+In fact, any $n$-digit base 10 number can be decomposed in the following way
+\[
+  d_1 \cdot 10^{n-1} + d_2 \cdot 10^{n-2} + \dots + d_{n-1} \cdot 10^1 + d_n \cdot 10^0\ ,
+\]
+where $d_i$ is a digit $0 \le d_i < 10$ at the $i$-th position in the number counting from the left and indexing from $1$\footnote{Indexing from $1$ means that we start counting from $1$. In programming we are used to $0$-indexing, e.g. the first element in an array is element number $0$.}.
+For example, if we decompose the $3$-digit number $365$ in base 10, we get
+\[
+  365_{10} = 3 \cdot 100 + 6 \cdot 10 + 5 \cdot 1 = 3 \cdot 10^2 + 6 \cdot 10^1 + 5 \cdot 10^0\ .
+\]
+The notation $365_{10}$ makes the base explicit, i.e. it indicates that the number must be interpreted in base $10$.
+
+It should now be clear why the more digits a number has in the decimal system, the larger it is.
+We call this type of numeral system a \emph{positional} numeral system: digits are multiplied by a factor depending on their position.
+If you think about the Roman numeral system, this was not the case: they used repetition instead, e.g CCCLXV for $365$ where CCC represents $300$.
+
+While we can conveniently represent numbers using the decimal system, numbers are conceptually far more abstract than their base $10$ representation.
+Indeed, numeral systems help us represent and work with numbers, but do not necessarily define numbers---a number is an abstract object.
+
+Regardless, our intuitive understanding of the decimal system can help us to learn the \textit{binary system}, i.e. the base $2$ numeral system used by computers.
+
+\textbf{Binary system}
+
+In the binary system, there are only two digits: $0$ and $1$, which we call \emph{bits}, i.e. binary digits.
+We use bits because of our familiarity with the decimal system, but we could (and practically do) use other methods to represent the digits, e.g. no electrical current = $0$, electrical current = $1$.
+
+The binary system is also a positional numeral system, where an $n$-digit base $2$ number is decomposed as:
+\[
+  d_1 \cdot 2^{n-1} + d_2 \cdot 2^{n-2} + \dots + d_{n-1} \cdot 2^1 + d_n \cdot 2^0
+\]
+where $d_i$ is a digit $0 \le d_i < 2$ at the $i$-th position from the left.
+
+As such, the $9$-digit binary number $101101101$ is decomposed as
+\begin{align*}
+  101101101_2 &=
+  1 \cdot 2^8 + 0 \cdot 2^7 + 1 \cdot 2^6 + 1 \cdot 2^5 + 0 \cdot 2^4 +
+  1 \cdot 2^3 + 1 \cdot 2^2 + 0 \cdot 2^1 + 1 \cdot 2^0\\
+  &= 2^8 + 2^6 + 2^5 + 2^3 + 2^2 + 2^0\\
+  &= 256 + 64 + 32 + 8 + 4 + 1\\
+  &= 365\ ,
+\end{align*}
+and is in fact the number $365$ in the familiar decimal system.
+That is, $365_{10} = 101101101_2$.
+
+\textbf{Bytes}
+
+A \emph{byte} is comprised of $8$ bits, and so we can think of a byte as an $8$-bit number.
+The largest $8$ bit number is therefore
+\begin{align*}
+  11111111_2 &= 1 \cdot 2^7 + 1 \cdot 2^6 + 1 \cdot 2^5 + 1 \cdot 2^4 + 1 \cdot 2^3 + 1\cdot 2^2 + 1\cdot 2^1 + 1 \cdot 2^0\\
+  &= 2^7 + 2^6 + 2^5 + 2^4 + 2^3 + 2^2 + 2^1 + 2^0\\
+  &= 128 + 64 + 32 + 16 + 8 + 4 + 2 + 1\\
+  &= 255\ ,
+\end{align*}
+and so we know that an \emph{unsigned} byte $B$ is a non-negative integer in the range $0 \le B < 256$.
+It is possible to represent negative numbers and decimals\footnotemark{} also in base $2$, however this is not important in this course, so we will only consider unsigned bytes.
+\footnotetext{Note that decimal means a number with a decimal point, e.g. $3.14$ and not a number in the decimal numeral system. This can be somewhat confusing\dots.}
+
+Processors work at a byte level, i.e. the byte is the smallest addressable unit for CPUs.
+That is, while the number $7_{10} = 111_{2}$ can be represented with only $3$ bits, the number still takes up a whole byte for the CPU.
+
+\textbf{Hexadecimal system}
+
+The \emph{hexadecimal} system is a positional numeral system which uses $16$ digits, i.e. it is a base $16$ system.
+Because it requires more than the $10$ digits of the decimal system, we need some other familiar symbols to denote the extra $6$ digits: letters \enquote{A}--\enquote{F}.
+Therefore, the base 10 representation of hexadecimal digits is:
+\begin{center}
+\begin{tabular}{|l|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+  \hline
+  Hex &
+  \texttt{0} &
+  \texttt{1} &
+  \texttt{2} &
+  \texttt{3} &
+  \texttt{4} &
+  \texttt{5} &
+  \texttt{6} &
+  \texttt{7} &
+  \texttt{8} &
+  \texttt{9} &
+  \texttt{A} &
+  \texttt{B} &
+  \texttt{C} &
+  \texttt{D} &
+  \texttt{E} &
+  \texttt{F}\\
+  \hline
+  Dec & $0$ & $1$ & $2$ & $3$ & $4$ & $5$ & $6$ & $7$ & $8$ & $9$ & $10$ & $11$ & $12$ & $13$ & $14$ & $15$\\
+  \hline
+\end{tabular}
+\end{center}
+
+Hexadecimal, or simply \emph{hex}, is typically used to represent bytes instead of the base $2$ representation.
+The explicit notation for bytes in hexadecimal is to prepend the number with a \enquote{\texttt{0x}}, e.g. \enquote{\texttt{0xFF}} for the byte representing $255$.
+This is also the prefix in many programming languages if we wish to write integers in hex.
+
+We notice that the hex representation of a byte larger than $15$ (\texttt{0xF}) requires two digits.
+Thus, bytes are typically represented by two hex digits even when this is not needed: the first digit is then set to $0$, e.g. \texttt{0x0F}.
+
+Each of the two hex digits for a byte represents a \emph{nibble}, i.e. a grouping of $4$ bits.
+This makes it easier for us to convert between hex and bits on the fly, especially when doing bitwise operations\footnotemark{}.
+For example, we can neatly split the byte \texttt{0x7F} into:
+\begin{center}
+  \texttt{0x7}: \texttt{0111} \hspace*{2cm}
+  \texttt{0xF}: \texttt{1111}
+\end{center}
+although it does not necessarily make it easier to convert to decimal representation in our head.
+\footnotetext{Bitwise operations are operations on the bits directly, e.g. changing a single bit in a byte. We will cover some of them in class.}
+
+\textbf{Overflow}
+
+So what happens when we try to exceed the value $255$ when working with bytes?
+For example, what will happen if we try to add \texttt{0x80} ($128$) to itself and store the result in a byte?
+
+We know that $128 \cdot 2 = 256 = 255 + 1 = \texttt{0xFF} + \texttt{0x01}$.
+Addition in base $2$ works the same way as the addition \enquote{with carry}/long addition in base $10$:
+\begin{center}
+  \begin{tabular}{cccccccccc}
+    & & $1$ & $1$ & $1$ & $1$ & $1$ & $1$ & $1$ & $1$\\
+  + & & & & & & & & & $1$\\
+  \hline
+    & $1$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$\\
+  \end{tabular}
+\end{center}
+but since there is only room for $8$ bits, the convention is to truncate the number by discarding the excessive \emph{high-order} bits, i.e. the leftmost bits.
+In our case, by discarding the excessive leftmost $1$-bit, we are left with $00000000_2=\texttt{0x00} = 0$.
+We see that the result \emph{overflows} the space allocated for it.
+
+Typically, the result of an integer overflow is \emph{wrap around} behaviour, which the next example demonstrates.
+However, there are implementations where overflow behaviour is undefined or ill-defined, or an exception is raised instead.
+
+If we try to add \texttt{0x80} and \texttt{0x81}, we have
+$128 + 129 = 257 = 255 + 2 = \texttt{0xFF} + \texttt{0x02}$:
+\begin{center}
+  \begin{tabular}{cccccccccc}
+    & & $1$ & $1$ & $1$ & $1$ & $1$ & $1$ & $1$ & $1$\\
+  + & & & & & & & & $1$ & $0$\\
+  \hline
+    & $1$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $1$\\
+  \end{tabular}
+\end{center}
+and after truncating, we are left with $00000001_2 = \texttt{0x01} = 1$.
+
+If we were to implement a loop in C with a counter variable of type \texttt{uint8\_t} and set the abort condition to be \texttt{i < 256}, we would have an infinite loop.
+Indeed, after reaching $255$ the variable will overflow and begin incrementing again from $0$.
+A good compiler should generate a warning should you attempt to compile such code.
+
+\textbf{Avoiding overflow}
+
+So what do we do when we want to represent numbers larger than a single byte?
+Modern CPUs typically have support for $64$-bit integers, occupying $8$ bytes.
+Some processors may even support $128$-bit integers.
+Of course, each wider type can support a narrower type, i.e. $32$-bit integers are implicitly supported if $64$-bit ones are, etc.
+
+For example, the largest $16$-bit integer is $\texttt{0xFFFF} = 65535$, and you can verify this for yourself using the decomposition:
+\[
+  1\cdot2^{15} + 1\cdot2^{14} + \dots + 1\cdot2^1 + 1\cdot2^0 = 65535\ .
+\]
+
+If we attempt to represent numbers larger than the maximum value representable by the amount of available bits we will still get overflow, and start again from $0$.
+The question then is: how are the huge numbers such as $3072$-bit RSA primes represented?
+
+While processors do not implement integer types this large, these can be implemented in code by constructing a custom data structure and custom operations.
+This is known as arbitrary-precision arithmetic or multiple-precision arithmetic.
+There are many ways to implement such logic, for example by using strings instead of numbers, representing numbers by arrays of bits, or even using arrays of numbers in some higher base.
+
+A well-known arbitrary-precision arithmetic library for C is GMP\footnotemark{}, but there are GMP bindings also for other languages.
+\footnotetext{GNU Multiple Precision library: \url{https://gmplib.org}}
+C\# and Java have MP classes as part of their standard libraries, and Python implements MP arithmetic under the hood.
+This is the reason why we can perform arithmetic with ridiculously large numbers in python by default, but not in strongly typed languages.
+Still, efficiency can become a concern, and so it may be wise to use a library with GMP bindings also in python, e.g. \texttt{gmpy2}\footnotemark{}.
+\footnotetext{\url{https://pypi.org/project/gmpy2/}}
+
+\end{document}
