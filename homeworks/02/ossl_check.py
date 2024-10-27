@@ -8,7 +8,8 @@ from Crypto.IO import PEM
 from Crypto.PublicKey import RSA
 from pyasn1.codec.der import decoder
 from pyasn1_modules.rfc5208 import EncryptedPrivateKeyInfo
-from pyasn1_modules.rfc8018 import id_PBES2, id_PBKDF2, id_hmacWithSHA512, \
+from pyasn1_modules.rfc8018 import id_PBES2, id_PBKDF2, \
+    id_hmacWithSHA256, id_hmacWithSHA512, \
     PBES2_params, PBKDF2_params, aes256_CBC_PAD
 
 PREFIX = ["python3", "ossl_rsa.py"]
@@ -78,19 +79,22 @@ def validate_sk_enc(f_sk: str) -> None:
     prf = pbkdf2_params.getComponentByName("prf")
     prf_oid = prf.getComponentByName("algorithm")
     if prf_oid != id_hmacWithSHA512:
-        print("[-] Wrong PRF algorithm for te private key PBKDF2")
+        if prf_oid == id_hmacWithSHA256:
+            print("[-] PRF is HMAC-SHA256 but should be HMAC-SHA512")
+        else:
+            print("[-] Wrong PRF algorithm for the encrypted private key")
         return
 
     # PBKDF2 iteration count must be as specified.
     iter_count = pbkdf2_params.getComponentByName("iterationCount")
     if iter_count != ITER_COUNT:
-        print("[-] Wrong PBKDF2 iteration count for encrypted private key:", iter_count)
+        print("[-] Wrong PBKDF2 iteration count for the encrypted private key:", iter_count)
         return
 
     # Private key must be encrypted with AES-256-CBC.
     enc_algorithm = enc_scheme.getComponentByName("algorithm")
     if enc_algorithm != aes256_CBC_PAD:
-        print("[-] Wrong encryption algorithm for encrypted private key")
+        print("[-] Wrong encryption algorithm for the encrypted private key")
 
 
 def read_sk(f_sk: str, pwd: str) -> RSA.RsaKey:
@@ -178,7 +182,14 @@ def dec_check(f_key: str, f_in: str, f_out: str) -> None:
     with open(f_in, "rb") as f:
         ct = f.read()
 
-    pt = cipher.decrypt(ct)
+    try:
+        pt = cipher.decrypt(ct)
+    except ValueError as e:
+        if str(e) == "Incorrect decryption.":
+            print("[-] OAEP decoding failed. Did you encrypt without OAEP?")
+        else:
+            print(e)
+        sys.exit(1)
 
     with open(f_out, "wb") as f:
         f.write(pt)
