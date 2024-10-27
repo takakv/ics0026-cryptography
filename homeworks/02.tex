@@ -4,23 +4,9 @@
 \author{Taaniel Kraavi}
 \date{\DTMdate{2024-10-25}}
 
-%\usepackage{etoolbox}
-%\makeatletter
-%\preto{\@verbatim}{\topsep=0pt \partopsep=-2\parsep }
-%\makeatother
-
 \usepackage{crysymb}
-
 \usepackage{fancyvrb}
 \fvset{listparameters=\setlength{\topsep}{0pt}\setlength{\partopsep}{0pt}}
-
-\usepackage{listings}
-
-\lstset{
-basicstyle=\small\ttfamily,
-columns=flexible,
-breaklines=true
-}
 
 \begin{document}
 \maketitle
@@ -292,11 +278,16 @@ CBSO7oyM87qHAgMBAAE=
   Show how you obtained the primes (preferably with a screenshot of reasonable resolution) and include any applicable links.
 \end{task}
 
+\newpage
+
 \begin{task}{Nifty homomorphism}
   Homework template file: \texttt{homomorphic\_template.py}
 
-  The template contains a hard-coded ElGamal public key, an ElGamal encryption function (\texttt{pk.encrypt()}) and a ciphertext product function (\texttt{pk.multiply()}).
-  Recall that an ElGamal ciphertext $c$ is comprised of two parts: $c = (u, v) = \bigl(g^r, m\cdot\PK^r\bigr)$.
+  The template contains a hard-coded ElGamal public key and an ElGamal encryption function (\texttt{pk.encrypt()}).
+  Recall that an ElGamal ciphertext $c$ is comprised of two parts:
+  \[
+    c = (u, v) = \bigl(g^r, m\cdot\PK^r\bigr).
+  \]
 
   The legendary cryptographer Mr. Cry has developed the following authentication protocol:
   \begin{itemize}
