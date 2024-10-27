@@ -109,8 +109,7 @@ if __name__ == "__main__":
                             action="store_true")
 
     parsed_args = parser.parse_args()
-    if parsed_args.action == "encrypt" and not \
-            parsed_args.encrypt and (parsed_args.pwd is None):
+    if not parsed_args.encrypt and parsed_args.pwd is None:
         sp_pkeyutl.error("password is required for decryption")
 
     main(parsed_args)
