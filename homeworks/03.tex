@@ -1,0 +1,288 @@
+\documentclass{homework}
+
+\title{03}
+\date{\DTMdate{2024-11-15}}
+
+\usepackage{crysymb}
+\usepackage{fancyvrb}
+\fvset{listparameters=\setlength{\topsep}{0pt}\setlength{\partopsep}{0pt}}
+
+\begin{document}
+\maketitle
+
+\textbf{Reminders}
+
+\begin{itemize}
+  \item Include in your report approximately how long the homework took for you.
+  \item Read through task descriptions carefully.
+  \item You may request deadline extensions until 12.11.24 23:59 EET.
+  \item Deadlines are strict: if you do not submit your assignment by the deadline, you fail it.
+  \item To pass the course you must pass all homework assignments.
+  \item Second chances:
+  \begin{itemize}
+    \item If I review your assignment before the deadline, I will \emph{always} give you a chance to fix it for the deadline (or with a slight extension).
+    Start early!
+    \item If I review your assignment after the deadline, I will give you an extension \emph{only} if you have explained what part of your code does not work, and what you did to attempt to fix it.
+    Ask questions when you are stuck to avoid risking it!
+    \item If I give you an extension, you must still fix your homework by the extended deadline to pass.
+    \item If your code does not work but you are not aware of it or have not explained your issues, you fail the homework (if I review it after the deadline).
+    Test your code!
+    \item If you fail your homework, you can appeal my decision within 3 days of receiving your grade (grade day + 3).
+    Write me an email or message me on Discord.
+    I will then organise an oral defence for you.
+  \end{itemize}
+  \item You may share hints with each-other, but no answers/code.
+  \item You may ask me questions (I prefer Discord to Moodle/email).
+  If your code does not work and you have not asked me any questions, you will have a hard time arguing that you actually tried solving it!
+  \item If I catch you plagiarising/copying, I will report you to the faculty and fail you for the course.
+\end{itemize}
+
+\newpage
+
+\begin{center}
+  Theory tasks
+\end{center}
+
+\textbf{Additional instructions}
+
+\begin{itemize}
+  \item Submit as a PDF file called \texttt{studentid-03.pdf} where \enquote{studentid} is your 6 letter student ID/username (\enquote{takraa} for me).
+  \item Submit it on Moodle as a standalone file (not as part of the code ZIP).
+\end{itemize}
+
+\begin{task}{GPG}
+  We briefly covered the web-of-trust approach and the existence of PGP, however, we did not go in depth on what PGP is.
+
+  PGP stands for \emph{Pretty Good Privacy} and is a cryptographic toolset which can be used for encryption and signing of data.
+  However, PGP is proprietary software (its history is quite complex) which therefore limits its use by the open source community and the general public.
+
+  Since the functionality provided by the PGP was useful however, eventually the \emph{OpenPGP standard} was developed (\href{https://datatracker.ietf.org/doc/html/rfc4880}{RFC 4880}).
+  In July of this year, \href{https://datatracker.ietf.org/doc/html/rfc9580}{RFC 9580} was published to supersede RFC 4880, but the state of implementations is muddy.
+  If you are interested in tech drama, see:
+  \begin{itemize}
+    \item \href{https://lwn.net/Articles/953797/}{A schism in the OpenPGP world},
+    \item \href{https://blog.pgpkeys.eu/critique-critique.html}{A Critique on \enquote{A Critique on the OpenPGP Updates}}.
+  \end{itemize}
+
+  A complete and free implementation of the OpenPGP standard is the \emph{GNU Privacy Guard}, abbreviated as GPG (or GnuPG, or GPG2).
+  GPG has many uses, but the most \enquote{mainstream}\footnote{This is from my own experience, and is likely not a global truth.} are email encryption and signing\footnote{A nice resource: \url{https://emailselfdefense.fsf.org/en/}}, SSH access (SSH can work with GPG, but should it?), and signing git commits\footnotemark{}.
+  \footnotetext{\url{https://docs.github.com/en/authentication/managing-commit-signature-verification/signing-commits}}
+
+  \begin{tcolorbox}
+    I believe, for various reasons, e.g. the lack of forward secrecy and allowing users and lack of sensible safeguards\footnote{It is particularly easy to do stupid things with PGP due to the abundance of settings.}, that GPG (and PGP) is legacy tooling and should be deprecated for most purposes.
+    While not all of the community would agree with me, I recommend that you avoid PGP unless there are no better alternatives for a specific purpose.
+  \end{tcolorbox}
+
+  \begin{tcolorbox}
+    Git commits can nowadays also be signed with SSH keys.
+    GitHub, GitLab and BitBucket all support it.
+    SSH signing was added to Git version 2.34.0 in 2021.
+    \href{https://github.com/git/git/blob/master/Documentation/RelNotes/2.34.0.txt}{(changelog)}
+  \end{tcolorbox}
+
+  GPG is a command-line tool, however different frontends exist\footnote{\url{https://gnupg.org/software/frontends.html}}.
+  The GUI which I have seen used the most is Kleopatra, which is available on Windows, macOS and Linux.
+  For Windows, the Kleopatra GUI comes with \href{https://gpg4win.org/index.html}{Gpg4win}.
+  Still, I typically use the CLI instead of a GUI (in the rare cases when I have to use GPG).
+
+  For this task, read through the following two articles:
+  \begin{itemize}
+    \item \href{https://www.digitalocean.com/community/tutorials/how-to-use-gpg-to-encrypt-and-sign-messages}{\textit{How To Use GPG to Encrypt and Sign Messages}} (DigitalOcean)
+    \begin{itemize}
+      \item Pay special attention to the \enquote{Create a Revocation Certificate} section!
+      \item Summarise in a few sentences how public keys are typically shared and made available to other parties.
+      
+      If you make your key available using this method, can you later \enquote{revoke} the availability?
+      (Requires a bit of online searching. Include at least two references!)
+    \end{itemize}
+    \item \href{https://www.gnupg.org/gph/en/manual/x135.html}{\textit{Making and verifying signatures}} (The GNU Privacy Handbook)
+    \begin{itemize}
+      \item For each of the different signature methods, come up with a use-case where that specific method is suitable.
+    \end{itemize}
+  \end{itemize}
+
+  Both articles will help you with the practical tasks.
+
+  \textit{Addendum.}
+  If you have to use GPG and want to use it with a YubiKey, check out the article \href{https://support.yubico.com/hc/en-us/articles/360013790259-Using-Your-YubiKey-with-OpenPGP}{\textit{Using Your YubiKey with OpenPGP}}.
+\end{task}
+
+\begin{task}{Certificate ToS}
+  Read through the short summary on \href{https://www.id.ee/en/article/compete-information-about-the-terms-of-use-of-certificates/\#what-you-need_2}{\textit{What you need to know about the terms and conditions for the use of ID-card certificates}}.
+
+  Then, answer the following questions:
+  \begin{itemize}
+    \item What must you do when you lose your document or it is stolen?
+    \item How can you prevent the unauthorised use of your document?
+    \item What is the difference between suspending certificates and declaring them invalid?
+    \item Can you anonymously use your document digitally?
+    \item Does the ID card serve any purpose after its certificates have been invalidated?
+  \end{itemize}
+\end{task}
+
+\begin{task}{ASiC-E containers}
+  Task file: \texttt{pubkey.asice}
+
+  Investigate the signature container, then answer the following questions:
+  \begin{itemize}
+    \item What was the time on my computer at the moment of singing (Estonian local time)?
+    \item What is the signing time reported by DigiDoc (Estonian local time)?
+    \item Do these times differ? Why yes/why not?
+    \item Did I issue the signature with my ID-card or Smart-ID?
+    How do you know which?
+  \end{itemize}
+\end{task}
+
+\newpage
+\setcounter{task}{0}
+
+\begin{center}
+  Practical tasks
+\end{center}
+
+\textbf{Additional instructions}
+
+\begin{itemize}
+  \item I must be able to run your program with GnuPG v2.4.5 and OpenSSL v3.3.2\footnotemark{}.
+  \footnotetext{You may use older versions of GnuPG and OpenSSL as long as you do not use deprecated functionality.}
+  \item You can use whichever tools or programming language to solve the following tasks.
+  However, you must provide code comments to explain what you are doing and why, and reference all used tools in your PDF.
+  \item ZIP all files (except for the report) in a zip called \texttt{data.zip}.
+  \item Your ZIP must have at least the following structure/contents:
+  \begin{Verbatim}
+data/
+├── revocation.cdoc
+├── studentid.asice
+├── spurious.asice
+├── ed25519.pub
+└── message.sig
+  \end{Verbatim}
+  where \enquote{studentid} is your student identifier (\enquote{takraa} for me).
+  Add your additional code files to the ZIP as well, if any.
+\end{itemize}
+
+\begin{task}{PGP keys}
+  Generate a PGP primary key that can only certify other keys, but not sign or encrypt, and which is valid for two months.
+  Then, generate a subkey for it which can only sign data, but not encrypt, and which is valid for one month.
+  Please do not publish your key to any keyserver online!
+
+  Both keys must use Ed25519.
+  For the key metadata, use your real name and your TalTech email.
+  For the comment, use \enquote{Homework 3}.
+  \autoref{fig:gpg} displays what your key should look like on the command line.
+  You can also find my PGP public key in \texttt{pubkey.asice}.
+  Pay attention to the \texttt{[C]} and \texttt{[S]} markers.
+
+  \begin{figure}[h!]
+    \center
+    \includegraphics[width=\textwidth]{../images/gpg_pubkey}
+    \caption{Example metadata for a key with the required parameters.}
+    \label{fig:gpg}
+  \end{figure}
+
+  Include a screenshot showing that the key is in your keyring in your PDF report (CLI and GUI are both fine).
+
+  Then, generate a revocation certificate for the primary key.
+
+  \begin{tcolorbox}
+    If you ever have to generate a PGP key, make sure to always also generate a revocation certificate!
+    Make sure to store this certificate in a safe but available (for you) manner.
+    This allows you to revoke a key should you lose it or should it become compromised.
+    \tcblower
+    Proper key management with GPG is quite complex, e.g. due to the subkey system and the usual complexity of rotating keys.
+    As such, revocation certificates become especially important for potential damage control.
+  \end{tcolorbox}
+
+  Encrypt the revocation certificate to my ID code using DigiDoc.
+  You can get my ID code from the signed container.
+  \begin{tcolorbox}
+    In practice, you should of course never leak your revocation certificate, as anyone can permanently revoke your key with it.
+  \end{tcolorbox}
+
+  Add the file as \texttt{revocation.cdoc} into the submission ZIP.
+\end{task}
+
+\begin{task}{Propagating trust}
+  Task file: \texttt{pubkey.asice}
+
+  Export your PGP public key from the previous task into a file in PEM format and sign it with an Estonian digital signature (ID-card, Mobile-ID, Smart-ID, digi-ID, \dots) with DigiDoc.
+  
+  Upload the file as \texttt{studentid.asice} into the submission ZIP, where \enquote{studentid} is your student identifier (\enquote{takraa} for me).
+  \begin{tcolorbox}
+    If you are living in Estonia, you are required by law to have either an Estonian ID card, an Estonian ID card for a EU citizen, or a residence permit card.
+    If you do not have one, I strongly suggest applying for one.
+    \tcblower
+    If you do not have such a document\footnote{I will not report you, do not worry. Also, do encrypt your message to my ID code using DigiDoc.}, or do not have any currently valid certificates, please write me an email.
+  \end{tcolorbox}
+
+  Then, import my public key from the \texttt{pubkey.asice} container into your keyring.
+  Assign it a trust level of 4, i.e. \enquote{I trust fully}.
+
+  Include a screenshot showing that the key is in your keyring with the appropriate trust level in your PDF report (CLI and GUI are both fine).
+\end{task}
+
+\newpage
+
+\begin{task}{Are we the bad guys?}
+  Task file: \texttt{pubkey.asice}
+
+  Your task is to modify the signature container in such a way that DigiDoc4 displays the string \enquote{Signature is not valid} (\autoref{fig:digidoc}).
+  Explain what you did to make it so and include commands/screenshots.
+
+  \begin{figure}[h!]
+    \center
+    \includegraphics[width=\textwidth]{../images/invalid_sig}
+    \caption{Expected signature status displayed by DigiDoc.}
+    \label{fig:digidoc}
+  \end{figure}
+
+  Upload the file as \texttt{spurious.asice} in the homework submission on Moodle.
+
+  \textit{Hint.}
+  The \href{https://www.id.ee/wp-content/uploads/2021/06/bdoc-spec212-eng.pdf}{BDOC 2.1} reference can help you if you are unable to re-assemble the container in a way such that DigiDoc actually opens it.
+  You can also compare the \href{https://man.freebsd.org/cgi/man.cgi?query=zipinfo}{\texttt{zipinfo}} output of the original container with the container you have assembled if you are having issues.
+\end{task}
+
+\begin{task}{\$\%@!}
+  Generate an Ed25519 signing key with OpenSSL.
+  Export the public key into a file called \texttt{ed25519.pub}.
+  Then, use it to sign the file \texttt{message.txt} and save the signature as \texttt{message.sig}.
+  Include the generation and signing commands in your report, and the two files in the submission ZIP.
+\end{task}
+
+\newpage
+
+\begin{task}{A bit of everything}
+  Homework challenge file: \texttt{challenges.txt}
+
+  In the homework challenge file, you will find two columns of data: the first column includes salted hashes of student usernames (e.g. takraa) while the second column includes SHA-256 hashes of registration codes of Estonian organisations.
+  Each student is assigned a different organisation.
+
+  Your task is then to:
+  \begin{enumerate}
+    \item Find which entry corresponds to you (i.e. hashes your student username).
+    \item Find the company your challenge is for (i.e. find the SHA-256 pre-image).
+    \item Find the certificate serial number of any e-Seal certificate of that company.
+    \begin{itemize}
+      \item Certificates are issued by SK ID Solutions.
+      \item I say \enquote{any}, since an organisation might have multiple e-Seal certificates.
+      \item NB! Not all certificates are for e-Seals (e.g. some are for encryption).
+      \item Do not confuse the certificate serial number with the subject serial (the subject serial is likely the same as the registry code).
+      \item The certificate serial has at least 20 decimal digits (in our case).
+    \end{itemize}
+  \end{enumerate}
+
+  Include the certificate serial in your PDF report.
+  Include any code you used to solve the task in the submission ZIP.
+  Provide commands and/or screenshots for any steps you performed manually, i.e. that was not solved by your code (if any).
+
+  Registration codes in Estonia are 8 decimal digits long.
+  The following should help you narrow the search space:
+  \begin{itemize}
+    \item Registry codes of companies (AS/OÜ) begin with a \enquote{1}.
+    \item Registry codes of public institutions begin with a \enquote{7}.
+    \item Registry codes of nonprofit organisations (MTÜ) begin with an \enquote{8}.
+    \item Registry codes of foundations (sihtasutus) begin with a \enquote{9}.
+  \end{itemize}
+\end{task}
+\end{document}

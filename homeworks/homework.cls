@@ -44,7 +44,7 @@
 \def\@maketitle{%
   \newpage
   \begin{center}%
-    {Homework~\@title{} --- Deadline:~\@date~23:59~EEST\par}%
+    {Homework~\@title{} --- Deadline:~\@date~23:59~EET\par}%
   \end{center}%
   \par}
 \makeatother
