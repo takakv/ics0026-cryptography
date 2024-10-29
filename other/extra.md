@@ -39,3 +39,9 @@ Week 8: Certificate validity, eIDAS & qualified signatures:
 - [EU digital signature service (DSS)](https://ec.europa.eu/digital-building-blocks/sites/x/84TXGw)
 - [DSS demonstration webapp](https://ec.europa.eu/digital-building-blocks/DSS/webapp-demo/sign-a-document)
 - [SK personal portal](https://myid.skidsolutions.eu/en)
+
+Week 9: TLS, CT, CAA:
+
+- [DV: president.ee](https://president.ee)
+- [OV: taltech.ee](https://taltech.ee)
+- [EV: digicert.com](https://digicert.com)
