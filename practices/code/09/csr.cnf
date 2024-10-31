@@ -1,0 +1,20 @@
+[ req ]
+distinguished_name  = req_distinguished_name
+utf8                = yes
+
+[ req_distinguished_name ]
+countryName                     = Country Name (2 letter code)
+countryName_default             = EE
+
+organizationName                = Organization Name (eg, company)
+organizationName_default        = TalTech
+
+organizationalUnitName          = Organizational Unit Name (eg, section)
+organizationalUnitName_default  = ICS0026
+
+commonName                      = Common Name (eg, YOUR name)
+commonName_min                  = 3
+
+emailAddress                    = Email Address
+emailAddress_min                = 17
+emailAddress_max                = 17
