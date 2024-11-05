@@ -48,8 +48,7 @@ Week 9: TLS, CT, CAA:
 
 Week 10: Hardware security & side channels
 
-- [The visual microphone](https://people.csail.mit.edu/mrub/VisualMic/)
-- [DJB on timing attacks](https://timing.attacks.cr.yp.to/programming.html)
-- [HDMI EMF leak](https://youtu.be/BpNP9b3aIfY)
-- [TPM sniffing](https://pulsesecurity.co.nz/articles/TPM-sniffing)
 - [Chip & PIN (EMV) relay attacks](https://www.cl.cam.ac.uk/research/security/banking/relay/)
+- [ID card documentation](https://www.id.ee/en/article/id-card-documentation-2/)
+- [Curated list of JavaCard applications](https://github.com/crocs-muni/javacard-curated-list)
+- [List of supported JavaCard algorithms](https://www.fi.muni.cz/~xsvenda/jcalgtest/table.html)
