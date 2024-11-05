@@ -24,11 +24,14 @@ Opener = namedtuple("Opener", ["c", "m", "r"])
 
 
 class Pedersen:
-    def __init__(self):
+    def __init__(self, pk: int = 0):
         self.p = int.from_bytes(bytes.fromhex(RFC3526_3072_HEX), "big")
         self.q = (self.p - 1) // 2
         self.g = 2
-        self.pk = gmpy2.powmod(self.g, secrets.randbelow(self.q), self.p)
+        if pk != 0:
+            self.pk = pk
+        else:
+            self.pk = gmpy2.powmod(self.g, secrets.randbelow(self.q), self.p)
 
     def commit(self, m: int) -> Opener:
         """Commit a message.
