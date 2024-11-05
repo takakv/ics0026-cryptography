@@ -45,3 +45,11 @@ Week 9: TLS, CT, CAA:
 - [DV: president.ee](https://president.ee)
 - [OV: taltech.ee](https://taltech.ee)
 - [EV: digicert.com](https://digicert.com)
+
+Week 10: Hardware security & side channels
+
+- [The visual microphone](https://people.csail.mit.edu/mrub/VisualMic/)
+- [DJB on timing attacks](https://timing.attacks.cr.yp.to/programming.html)
+- [HDMI EMF leak](https://youtu.be/BpNP9b3aIfY)
+- [TPM sniffing](https://pulsesecurity.co.nz/articles/TPM-sniffing)
+- [Chip & PIN (EMV) relay attacks](https://www.cl.cam.ac.uk/research/security/banking/relay/)
