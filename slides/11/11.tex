@@ -1,38 +1,9 @@
-\usetheme[numbering=fraction]{metropolis}
-
-\metroset{block=fill}
-
-\usepackage[dvipsnames]{xcolor}
-
-\usepackage{booktabs}
-
-\usepackage{fancyvrb}
-\fvset{listparameters=\setlength{\topsep}{0pt}\setlength{\partopsep}{0pt}}
-
-\usepackage{csquotes}
-\setquotestyle{british}
-
-\usepackage{graphicx}
-\graphicspath{ {../../images/} }
-
-\usepackage{pgfplots}
-\usetikzlibrary{positioning,calc,external}
-%\tikzexternalize[prefix=figures/] 
-
-\usepackage{crysymb}
-
-\renewcommand*{\arraystretch}{1.2}
-
-\usepackage{soul}
-\usepackage[en-GB]{datetime2}
-\DTMlangsetup[en-GB]{ord=omit}
-
 \usetikzlibrary{positioning,calc}
 \graphicspath{ {../../images/} }
 
 \title{ICS0026 Cryptography}
 \subtitle{Commitments \& identification}
-\date{\DTMdate{2024-04-09}}
+\date{\today}
 \author{Taaniel Kraavi}
 \institute%
 {%
@@ -147,7 +118,7 @@
   Equivocability
   \begin{itemize}[<+(1)->]
     \item \enquote{Fake} commitments are indistinguishable from real commitments
-    \item the fake commitments can be opened to arbitrary values
+    \item The fake commitments can be opened to arbitrary values
   \end{itemize}
 
   \vspace*{1em}
@@ -156,7 +127,7 @@
   Some commitments therefore require a trusted setup.
 \end{frame}
 
-\begin{frame}{Pedersen commitment}
+\begin{frame}{Pedersen commitments}
   Let $q$ be prime and let $\GG = \langle g \rangle$ be a $q$-element DL-group.\\
   Choose $h$ uniformly from $\GG\setminus\{1\}$ and set $\PK \gets (g, h)$.
 
@@ -177,33 +148,43 @@
   A tuple $(c, m, r)$ is a valid decommitment for $m$ if $c = g^m h^r$.
 \end{frame}
 
-\begin{frame}{Pedersen commitment}
+\begin{frame}{Pedersen commitments}
   Pedersen commitments are
   \begin{itemize}[<+(1)->]
     \item Perfectly hiding
+    \begin{itemize}
+      \item e.g. in $\ZZ_{23}$: $2^2 3^7 \equiv 8$, $2^3 3^0 \equiv 8$, $2^4 3^4 \equiv 8$, \dots
+    \end{itemize}
     \item Computationally binding
+    \begin{itemize}
+      \item Let $g^x \equiv h$ with $x$ unknown.
+      \item It is then hard to find distinct pairs $(m_1, r_1), (m_2, r_2)$ s.t. $g^{m_1} h^{r_1} \equiv g^{m_2} h^{r_2}$. 
+    \end{itemize}
     \item Equivocable
     \begin{itemize}
-      \item Hint: What happens if the relation between $g$ and $h$ is known?
+      \item If $x$ is known, breaking the binding property is trivial.
+      \item Generate $s \getsu \ZZ_{q}$, set $\hat{c} \gets g^s$.
+      \item To open $\hat{c}$, compute $r \gets (s-m)\cdot x^{-1}$.
     \end{itemize}
   \end{itemize}
+\end{frame}
 
-  \vspace*{1em}
-
-  \pause
+\begin{frame}{Homomorphic properties}
   Both Pedersen and ElGamal commitments are homomorphic.
-  \begin{itemize}
+  \begin{itemize}[<+(1)->]
     \item Only lifted ElGamal commitments are \enquote{interoperable} with Pedersen's.
+    \item Desirable property for their use in many protocols.
+    \item Not always desirable!
   \end{itemize}
 \end{frame}
 
 \begin{frame}{Why do we need commitments?}
   Commitments are an essential primitive in cryptography.
   \begin{itemize}[<+(1)->]
-    \item Typically they are not used on their own (although they can)
-    \item It is possible to prove relations over committed values
-    \item Commitments are essential to many zero-knowledge protocols
-    \item More generally, many secure protocols rely on commitments
+    \item Typically they are not used on their own (although they can).
+    \item It is possible to prove relations over committed values.
+    \item Commitments are essential to many zero-knowledge protocols.
+    \item More generally, many secure protocols rely on commitments.
   \end{itemize}
 
   \vspace*{1em}
@@ -221,8 +202,6 @@
     \item What you know
   \end{itemize}
 
-  \vspace*{1em}
-
   \pause
   Cryptography works with the latter two.
   \begin{itemize}[<+(1)->]
@@ -234,6 +213,9 @@
 
   \pause
   Identification requires \emph{freshness}, but does not require \emph{non-repudiation}.
+  \begin{itemize}[<+(1)->]
+    \item Security requirement: preventing \emph{impersonation} attacks
+  \end{itemize}
 \end{frame}
 
 \begin{frame}{Security assumptions}
@@ -247,9 +229,9 @@
   \vspace*{1em}
 
   \pause
-  We must assume an authenticated communication channel
+  We must prevent man-in-the-middle attacks
   \begin{itemize}[<+(1)->]
-    \item An adversary may otherwise MITM the protocol
+    \item e.g. chessmaster attack
   \end{itemize}
 
   \vspace*{1em}
@@ -274,11 +256,11 @@
       \begin{itemize}[<+(1)->]
         \item Symmetric encryption
         \begin{itemize}
-          \item KPA, CPA2
+          \item e: KPA-SEC, v: IND-CPA (adaptive)
         \end{itemize}
         \item Symmetric authentication (HMAC)
         \begin{itemize}
-          \item ROM
+          \item e, v: ROM
         \end{itemize}
       \end{itemize}
     \end{column}
@@ -286,11 +268,11 @@
       \begin{itemize}[<+(1)->]
         \item Asymmetric encryption
         \begin{itemize}
-          \item CPA, CCA2
+          \item e: IND-CPA, v: IND-CCA2
         \end{itemize}
         \item Asymmetric authentication
         \begin{itemize}
-          \item KMA, CCA2
+          \item e: KMA-SEC, v: CMA-SEC
         \end{itemize}
       \end{itemize}
     \end{column}
@@ -301,30 +283,35 @@
   \pause
   What about password-based authentication?
   \begin{itemize}[<+(1)->]
-    \item The symmetric versions are only practical with proofs of knowledge
-    \item For proof of possession, asymmetric versions must be used
+    \item Does not work over a cleartext channel.
   \end{itemize}
 \end{frame}
 
 \begin{frame}{Zero-knowledge identification}
-  IND-CCA2 is quite \enquote{expensive} in practice.
-  \begin{itemize}[<+(1)->]
-    \item Challenge-response protocols based on asymmetric schemes are therefore not necessarily efficient.
-  \end{itemize}
+  The asymmetric approaches presented previously can be quite \enquote{costly} in practice.
 
   \vspace*{1em}
 
   \pause
   How can we prevent cheating verifier attacks with an \enquote{efficient} scheme?
   \begin{itemize}[<+(1)->]
-    \item A cheating verifier must not get useful information from the prover
-    \item The protocol must be \emph{zero-knowledge}
-    \item The protocol must convince an honest verifier that an (honest) prover knows the secret
+    \item A cheating verifier must not get useful information from the prover.
+    \item The protocol must be \emph{zero-knowledge}.
+    \item The protocol must convince an honest verifier that an (honest) prover knows the secret.
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Schnorr protocol}
-  Schnorr's protocol allows proving knowledge of a discrete logarithm.
+\begin{frame}{Simulation}
+  Zero-knowledge is based on the principle of \emph{simulation}.
+  \begin{itemize}[<+(1)->]
+    \item Messages sent by the prover can be efficiently simulated.
+    \item These messages convince the verifier that the prover knows the secret.
+    \item I.e. an accepting transcript can be generated without involving the prover.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Schnorr's protocol}
+  Schnorr's protocol allows proving knowledge of a discrete logarithm without leaking it.
 
   \pause
   \begin{center}
@@ -361,12 +348,13 @@
   $\Sigma$-protocols are efficiently computable three-move protocols that must be (special) honest verifier zero-knowledge.
 
   \pause
-  \begin{center}
+  \begin{figure}
+    \centering
     \begin{tikzpicture}
       \node (alice) at (0,0) {\includegraphics[height=80px]{alice}};
       \node (bob)   at (6,0) {\includegraphics[height=80px]{bob}};
 
-      \node(rand) at (alice.north) [yshift=10px] {$r \getsu \RRR$};
+      %\node(rand) at (alice.north) [yshift=10px] {$r \getsu \RRR$};
       \node(chal) at (bob.north)   [yshift=10px] {$c \getsu \CCC$};
 
       \node (n1a) at (alice.east) [yshift=18px] {};
@@ -383,13 +371,13 @@
       \node at (alice.south) [yshift=-10px] {$\SK$};
       \node at (bob.south)   [yshift=-10px] {$\VVV_\PK(u, c, z)$};
     \end{tikzpicture}
-  \end{center}
+  \end{figure}
 
   \pause
   In the \emph{transcript} $(u, c, v)$, $u$ is a commitment, $c$ is a (varying) challenge, and $z$ is a (consistent) response.
 \end{frame}
 
-\begin{frame}{Danger zone}
+\begin{frame}{Danger zone!}
   Sigma protocols \& zero-knowledge schemes are advanced cryptography.
   \begin{itemize}[<+(1)->]
     \item You should know that they exist
@@ -400,10 +388,9 @@
       \item encryption \& signature schemes, KEMs, MACs, hash functions
     \end{itemize}
   \end{itemize}
+\end{frame}
 
-  \vspace*{1em}
-
-  \pause
+\begin{frame}{Danger zone!}
   These topics are a prime example of unknown unknowns.
   \begin{itemize}[<+(1)->]
     \item Reading a few blog posts to get an intuition to start using them is not enough
