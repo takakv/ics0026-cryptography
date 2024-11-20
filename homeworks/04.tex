@@ -1,0 +1,221 @@
+\documentclass{homework}
+
+\title{04}
+\date{\DTMdate{2024-12-06}}
+
+\usepackage{crysymb}
+
+\begin{document}
+\maketitle
+
+\textbf{Reminders}
+
+\begin{itemize}
+  \item Include in your report approximately how long the homework took for you.
+  \item Read through task descriptions carefully.
+  \item You may request deadline extensions until 03.12.24 23:59 EET.
+  \item Deadlines are strict: if you do not submit your assignment by the deadline, you fail it.
+  \item To pass the course you must pass all homework assignments.
+  \item Second chances:
+  \begin{itemize}
+    \item If I review your assignment before the deadline, I will \emph{always} give you a chance to fix it for the deadline (or with a slight extension).
+    Start early!
+    \item If I review your assignment after the deadline, I will give you an extension \emph{only} if you have explained what part of your code does not work, and what you did to attempt to fix it.
+    Ask questions when you are stuck to avoid risking it!
+    \item If I give you an extension, you must still fix your homework by the extended deadline to pass.
+    \item If your code does not work but you are not aware of it or have not explained your issues, you fail the homework (if I review it after the deadline).
+    Test your code!
+    \item If you fail your homework, you can appeal my decision within 3 days of receiving your grade (grade day + 3).
+    Write me an email or message me on Discord.
+    I will then organise an oral defence for you.
+  \end{itemize}
+  \item You may share hints with each-other, but no answers/code.
+  \item You may ask me questions (I prefer Discord to Moodle/email).
+  If your code does not work and you have not asked me any questions, you will have a hard time arguing that you actually tried solving it!
+  \item If I catch you plagiarising/copying, I will report you to the faculty and fail you for the course.
+\end{itemize}
+
+\newpage
+
+\begin{center}
+  Theory tasks
+\end{center}
+
+\textbf{Additional instructions}
+
+\begin{itemize}
+  \item Submit as a PDF file called \texttt{studentid-04.pdf} where \enquote{studentid} is your 6 letter student ID/username (\enquote{takraa} for me).
+  \item \textbf{Do not copy paste answers.}
+  I am not expecting perfect answers, rather I want to see your reasoning, and how you have understood these concepts.
+  As long as your answers show reasoning, I will accept them, even if they are not correct.
+  This applies to all of the theory tasks.
+\end{itemize}
+
+\begin{task}{Proof systems \& zero-knowledge}
+  For this task, answer the following questions using complete sentences:
+  \begin{itemize}
+    \item Why should a proof system be sound?
+
+    \item Are interactive proofs typically transferable?
+    That is, should an observer who observes an interactive proof but trusts neither the prover nor the verifier be convinced by the proof?
+
+    \item What mechanism can be used to transform an interactive proof into a non-interactive one?
+    Do the security guarantees remain the same?
+
+    \item Consider an interactive proof system that provides $256$ bits of security.
+    Could you maintain this security level by using SHA-256 in the non-interactive version of the proof?
+    Why yes/why not?
+  \end{itemize}
+
+  Then, describe a use case where a zero-knowledge proof would be useful in practice, which is not one of the examples discussed in class (age range, citizenship of member states, online voting).
+
+  If you used online materials to help you answer these questions, please include references in your answers.
+\end{task}
+
+\begin{task}{TLS}
+  For this task, answer the following questions:
+  \begin{itemize}
+    \item Describe three aspects in which TLS 1.3 improves on TLS 1.2.
+    Explain in your own words why you think these are important improvements.
+
+    \item Pick a website that uses HTTPS, and answer the following (include screenshots):
+    \begin{itemize}
+      \item What is the website link?
+      \item Is the certificate domain validated, organisation validated, or extended validated?
+      How do you know?
+      \item What is the validity period of the certificate?
+      \item Where is the OCSP responder or CRL?
+      \item What is the physical address of the root CA?
+    \end{itemize}
+
+    \item Why do we need certificate transparency?
+  \end{itemize}
+
+  If you used online materials to help you answer these questions, please include references in your answers.
+\end{task}
+
+\begin{task}{A taste of the exam}
+  For this task, answer at least 10 of following questions using complete sentences.
+  I encourage you to answer more, but 10 is the minimum.
+
+  Be succinct and precise: no word soup!
+  In the exam, if you are not able to give a clear answer, I will consider that you do not know the answer.
+
+  \begin{enumerate}
+    \item Does cryptography protect the availability of information?
+    Why yes/why not?
+    \item Why do we need encryption?
+    \item Why is IND-CPA important?
+    \item Why do MACs not offer non-repudiation?
+    \item Why is public key crypto not safe against unbounded adversaries?
+    \item Does second pre-image resistance imply collision resistance?
+    \item Why is using a cryptographic hash function for hashing passwords a bad idea?
+    \item What is important when protecting passwords?
+    \item What is one role of a key derivation function?
+    \item What are block cipher modes?
+    \item What is the advantage of AES-GCM over AES-CTR (or of ChaCha-Poly over ChaCha)?
+    \item What do digital signatures provide?
+    \item What is typically needed on top of digital signatures for trust?
+    \item Why do we need eIDAS?
+    \item How is the authenticity of a server checked when you visit a website?
+    \item How do devices/browsers trust root CAs?
+    \item What is the role of a CA?
+    \item What is needed for the OTP to be unconditionally secure?
+    \item Why is the OTP unconditionally secure?
+    \item What are some advantages of OCSP over CRLs?
+    \item What are the two core properties of a commitment scheme?
+    \item Why does an identification protocol require \enquote{freshness}?
+  \end{enumerate}
+
+  These questions you should be able to answer on your own.
+  If you need to look up the answers, then that is a good indicator that you will need to prepare for the exam and go through materials and/or recordings again.
+\end{task}
+
+\begin{task}{Your thoughts (optional)}
+  This is an \emph{optional} task, but I'd appreciate it if you at least answer the first question.
+  You can also choose to answer only some of the questions.
+  It's not anonymous (clearly) but this is because I might want to ask you questions if you say something particularly intriguing.
+  It's fine to say negative things about the course and/or me, I only ask for the answer to be constructive.
+
+  \begin{itemize}
+    \item What's your mood? (select up to 2)
+    \begin{enumerate}
+      \item You killed crypto for me, I hope to never deal with it!
+      \item I liked crypto more before this class.
+      \item It was ok, but that's the last I'll deal with it.
+      \item It was interesting, but that's the last I'll deal with it.
+      \item I like crypto more after this class.
+      \item It was interesting, I may pursue crypto in the future.
+      \item I aspire to be the next Daniel Bernstein.
+    \end{enumerate}
+    \item Do you feel like this course has been useful for you? (it's okay to say no)
+    \item Do you feel like this course has been fair? (again it's ok to say no)
+    \item What has/have been the hardest topic(s)?
+    \item What would you have liked to be different?
+    \item What would you have liked to see more/less of?
+    \item Any additional thoughts/suggestions for future iterations of this class?
+  \end{itemize}
+\end{task}
+
+\newpage
+\setcounter{task}{0}
+
+\begin{center}
+  Practical tasks
+\end{center}
+
+\begin{task}{Git}
+  For this task, you will need either a GitHub or a TalTech GitLab account\footnote{\url{http://gitlab.cs.taltech.ee}}.
+  Once you have set up an account, create a repository called \texttt{ics0026}, and make sure that it is publicly visible (GitHub) or internally visible (TalTech GitLab).
+  If you want to make it privately visible, you must add me to your repository (\texttt{@takakv} on GitHub, \texttt{@takraa} on TalTech GitLab).
+
+  Then, you must set up a commit signing key.
+  I recommend that you use an SSH key for signing commits, but you can also use GPG or S/MIME.
+  I will not include a reference here: you should be able to find one yourself (GitHub and GitLab both have their own articles for this).
+
+  For the task, you must push a signed commit into your \texttt{ics0026} repository.
+  This commit should include the public key of the key you use for signing: call it simply \texttt{key}.
+  The key should not be a binary blob: it should open in a text editor (e.g. PEM).
+  Your task is considered complete if the GUI shows that your commit is verified.
+
+  \begin{figure}[h!]
+    \center
+    \includegraphics[width=\textwidth]{../images/gitlab_verified.png}
+    \caption{Verified commit on GitLab.}
+  \end{figure}
+
+  \begin{figure}[h!]
+    \center
+    \includegraphics[width=\textwidth]{../images/github_verified.png}
+    \caption{Verified commit on GitHub.}
+  \end{figure}
+
+  Include the repository URL in your report.
+\end{task}
+
+\begin{task}{SSH \& SCP}
+  For this task, you must SSH into \texttt{enos.itcollege.ee} using an SSH key.
+
+  If you have not yet set up an SSH key, you will need to get it onto the server, e.g. with \texttt{ssh-copy-id}\footnote{\url{https://www.ssh.com/academy/ssh/copy-id\#copy-the-key-to-a-server}}.
+  The connection will ask you for your account password on your connection: this is your UniID password.
+
+  Once you can SSH into Enos using an SSH key, take a screenshot of the log in flow.
+  If your SSH connection does not prompt you for a password, explain in writing how you have protected your key (e.g. password in SSH agent, SSH key on Yubikey).
+  For example, my SSH key is a non-resident key on my Yubikey, and the SSH key password is automatically loaded by my SSH agent.
+
+  \begin{figure}[h!]
+    \center
+    \includegraphics[width=\textwidth]{../images/enos_ssh.png}
+  \end{figure}
+
+  Once in the server, create an empty directory called \texttt{ics0026} in your \texttt{public\_html} folder.
+  Then, close the connection with \texttt{exit}.
+
+  Upload the screenshot that you took fo the log in flow into the \texttt{\textasciitilde/public\_html/ics0026} folder on the server using SCP (secure copy)\footnotemark{}.
+  Take a screenshot of this process as well, and add it also to the folder on the server.
+  \footnotetext{\url{https://linuxize.com/post/how-to-use-scp-command-to-securely-transfer-files/}}
+
+  Finally, include \emph{both} screenshots also in your report.
+  To verify whether your screenshots are correctly on the server, visit \url{https://enos.itcollege.ee/~takraa/} but with your own student username instead of \texttt{takraa}.
+\end{task}
+\end{document}
