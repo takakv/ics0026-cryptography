@@ -1,38 +1,8 @@
-\usetheme[numbering=fraction]{metropolis}
-
-\metroset{block=fill}
-
-\usepackage[dvipsnames]{xcolor}
-
-\usepackage{booktabs}
-
-\usepackage{fancyvrb}
-\fvset{listparameters=\setlength{\topsep}{0pt}\setlength{\partopsep}{0pt}}
-
-\usepackage{csquotes}
-\setquotestyle{british}
-
-\usepackage{graphicx}
-\graphicspath{ {../../images/} }
-
-\usepackage{pgfplots}
-\usetikzlibrary{positioning,calc,external}
-%\tikzexternalize[prefix=figures/] 
-
-\usepackage{crysymb}
-
-\renewcommand*{\arraystretch}{1.2}
-
-\usepackage{soul}
-\usepackage[en-GB]{datetime2}
-\DTMlangsetup[en-GB]{ord=omit}
-
-\usetikzlibrary{positioning,calc}
 \graphicspath{ {../../images/} }
 
 \title{ICS0026 Cryptography}
 \subtitle{Proof systems \& zero-knowledge}
-\date{\DTMdate{2024-04-16}}
+\date{\today}
 \author{Taaniel Kraavi}
 \institute%
 {%
@@ -185,7 +155,7 @@
     \item Sound
     \item \emph{Zero-knowledge}
     \begin{itemize}
-      \item No verifier must learn anything other than the truth of what is being proven
+      \item No verifier must learn anything\textsuperscript{*} other than the truth of what is being proven
       \item The verifier needs not be honest
       \item The non-honesty is an important subtlety
     \end{itemize}
@@ -211,20 +181,20 @@
 \begin{frame}{Knowledge-soundness}
   The notion of \emph{knowledge-soundness} implies that a prover must know a witness.
   \begin{itemize}[<+(1)->]
-    \item We show the existence of an efficient extractor that can recover the witness except with some small probability
+    \item We show the existence of an efficient extractor that can recover the witness except with some small probability.
   \end{itemize}
 
   \vspace*{1em}
 
   \pause
-  Knowledge-soundness can be shown via \emph{special soundness}
+  Knowledge-soundness can be shown via \emph{special soundness}.
   \begin{itemize}[<+(1)->]
     \item Often used for $\Sigma$-protocols
-    \item We show that a witness can be extracted from two accepting transcripts with identical initial commitments, but differing challenges
+    \item We show that a witness can be extracted from two accepting transcripts with identical initial commitments, but differing challenges.
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Schnorr protocol}
+\begin{frame}{Schnorr's protocol}
   Schnorr's protocol allows proving knowledge of a discrete logarithm.
   \pause
   \begin{center}
@@ -256,12 +226,12 @@
   The group $\GG = \langle g\rangle$ must be a DL-group with a prime cardinality $q$.
 \end{frame}
 
-\begin{frame}{Schnorr protocol analysis}
+\begin{frame}{Schnorr's protocol analysis}
   The analysis is done in class.
 \end{frame}
 
 \begin{frame}{Transferability}
-  Interactive ZKPoKs are not \emph{transferable}
+  Interactive ZKPoKs are not \emph{transferable}.
   \begin{itemize}
     \item A verifier not involved in the interaction is not convinced given just the transcript
     \item This follows from the potential non-randomness of challenges
@@ -287,6 +257,24 @@
   \begin{itemize}[<+(1)->]
     \item Security becomes heuristic
   \end{itemize}
+\end{frame}
+
+\begin{frame}{Weak Fiat-Shamir}
+  What happens if the statement is not included in the hash?
+
+  \begin{enumerate}[<+(1)->]
+    \item Randomly select the commitment $A \getsu \GG$
+    \item Compute the challenge $c \gets \mathsf{H}(A)$
+    \item Randomly sample the response $z \getsu \ZZ_q$
+  \end{enumerate}
+
+  \pause
+  The proof verifies for $X = \bigl(g^z/A\bigr)^{1/c}$.
+
+  \vspace*{1em}
+
+  \pause
+  Many practical ZKP security flaws are related to the weak FS transform.
 \end{frame}
 
 \end{document}
