@@ -53,7 +53,10 @@ Week 10: Hardware security & side channels
 - [Curated list of JavaCard applications](https://github.com/crocs-muni/javacard-curated-list)
 - [List of supported JavaCard algorithms](https://www.fi.muni.cz/~xsvenda/jcalgtest/table.html)
 
+Week 11: Commitments & identification schemes
+
+- [Schoenmakers' lecture notes on cryptoprotocols](https://berry.win.tue.nl/CryptographicProtocols/LectureNotes.pdf)
+
 Week 12: Proof systems & zero-knowledge
 
-- [Lecture Notes by Berry Schoenmakers](https://berry.win.tue.nl/CryptographicProtocols/LectureNotes.pdf)
 - [ZKProof Community Reference](https://docs.zkproof.org/reference)
