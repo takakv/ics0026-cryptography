@@ -60,3 +60,4 @@ Week 11: Commitments & identification schemes
 Week 12: Proof systems & zero-knowledge
 
 - [ZKProof Community Reference](https://docs.zkproof.org/reference)
+- [Pitfalls of the Fiat-Shamir Heuristic](https://eprint.iacr.org/2016/771)
