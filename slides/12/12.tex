@@ -263,18 +263,21 @@
   What happens if the statement is not included in the hash?
 
   \begin{enumerate}[<+(1)->]
-    \item Randomly select the commitment $A \getsu \GG$
-    \item Compute the challenge $c \gets \mathsf{H}(A)$
+    \item Randomly select the commitment $u \getsu \GG$
+    \item Compute the challenge $c \gets \mathsf{H}(u)$
     \item Randomly sample the response $z \getsu \ZZ_q$
   \end{enumerate}
 
   \pause
-  The proof verifies for $X = \bigl(g^z/A\bigr)^{1/c}$.
+  The proof verifies for $h = \bigl(g^z/u\bigr)^{1/c}$.
 
   \vspace*{1em}
 
   \pause
   Many practical ZKP security flaws are related to the weak FS transform.
+  \begin{itemize}
+    \item Rule of thumb: include the statement also in the hash (strong FS).
+  \end{itemize}
 \end{frame}
 
 \end{document}
