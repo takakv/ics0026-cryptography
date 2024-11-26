@@ -1,38 +1,9 @@
-\usetheme[numbering=fraction]{metropolis}
-
-\metroset{block=fill}
-
-\usepackage[dvipsnames]{xcolor}
-
-\usepackage{booktabs}
-
-\usepackage{fancyvrb}
-\fvset{listparameters=\setlength{\topsep}{0pt}\setlength{\partopsep}{0pt}}
-
-\usepackage{csquotes}
-\setquotestyle{british}
-
-\usepackage{graphicx}
-\graphicspath{ {../../images/} }
-
-\usepackage{pgfplots}
-\usetikzlibrary{positioning,calc,external}
-%\tikzexternalize[prefix=figures/] 
-
-\usepackage{crysymb}
-
-\renewcommand*{\arraystretch}{1.2}
-
-\usepackage{soul}
-\usepackage[en-GB]{datetime2}
-\DTMlangsetup[en-GB]{ord=omit}
-
 \usetikzlibrary{positioning,calc}
 \graphicspath{ {../../images/} }
 
 \title{ICS0026 Cryptography}
 \subtitle{Secret sharing \& MPC}
-\date{\DTMdate{2024-04-30}}
+\date{\today}
 \author{Taaniel Kraavi}
 \institute%
 {%
@@ -67,13 +38,13 @@
 \end{frame}
 
 \begin{frame}{Secret sharing}
-  Split a secret into shares, and distribute them within a group
+  Split a secret into shares, and distribute them within a group.
   \begin{itemize}[<+(1)->]
-    \item Let's call the secret share holders \emph{players}
+    \item \emph{Players}: holders of the secret shares
     \begin{itemize}
-      \item A trusted \emph{dealer} generates the secret and splits it among players
+      \item A trusted \emph{dealer} generates the secret and splits it among the players
     \end{itemize}
-    \item A \emph{threshold} below which the secret cannot be reconstructed/used
+    \item \emph{Threshold}: minimum number of shares to reconstruct/use the secret
     \begin{itemize}
       \item e.g. nuclear launch codes/approval
     \end{itemize}
@@ -141,7 +112,7 @@
   \vspace*{1em}
 
   \pause
-  Suppose now that an efficient scheme for $1 < t < n$ exists
+  Suppose now that an efficient scheme for $1 < t < n$ exists.
   \begin{itemize}
     \pause \item How to have different decision \enquote{powers}?
     \begin{itemize}
@@ -327,7 +298,7 @@
   Secure multi-party computation (MPC) is needed to jointly compute a function over private inputs.
   \begin{itemize}[<+(1)->]
     \item Privacy between participants, and not just against outsiders
-    \item E.g. Yao's millionaire's problem
+    \item E.g. Yao's millionaires' problem
     \begin{itemize}
       \item Two millionaires attempt to determine which of the two is richer
       \item They do not want to reveal their wealth while doing so
@@ -359,7 +330,7 @@
   Some examples of MPC:
   \begin{itemize}[<+(1)->]
     \item Threshold signatures/threshold decryption
-    \item Private information retrieval
+    \item Private information retrieval (PIR) / oblivious transfer (OT)
     \item Private bidding (notable mention: Danish Sugar Beet auction of 2008)
   \end{itemize}
 \end{frame}
@@ -382,7 +353,7 @@
 \end{frame}
 
 \begin{frame}{Secret sharing (again)}
-  Let's secret share some integer $x$ between two parties $P_1, P_2$:
+  Let us secretly share some integer $x$ between two parties $P_1, P_2$:
   \begin{itemize}[<+(1)->]
     \item We pick $x_1 \getsu \ZZ_q$, compute $x_2 \gets x - x_1$ and send $x_i$ to $P_i$
     \item Neither party knows anything about $x$, and we write $[x]$
@@ -396,23 +367,25 @@
 \begin{frame}{Some computations}
   Let $[x]$ and $[y]$ be secret shared between $P_1, P_2$, and let $a$ be known to both.
   \begin{itemize}[<+(1)->]
-    \item $P_i$ computes $z_i \gets x_i + y_i$
+    \item $[x + y]$
     \begin{itemize}
+      \item $P_i$ computes $z_i \gets x_i + y_i$
       \item $P_1$ and $P_2$ can collaborate to get $z_1 + z_2 = x_1 + x_2 + y_1 + y_2 = x + y$
     \end{itemize}
-    \item $P_i$ computes $w_i \gets ax_i$
+    \item $[ax]$
     \begin{itemize}
+      \item $P_i$ computes $w_i \gets ax_i$
       \item $P_1$ and $P_2$ can collaborate to get $w_1 + w_2 = ax_1 + ax_2 = a(x_1 + x_2) = ax$
     \end{itemize}
-    \item $P_1$ computes $u_1 \gets x_1 + a$ and $P_2$ computes $u_2 \gets x_2$
+    \item $[x + a]$
     \begin{itemize}
+      \item $P_1$ computes $u_1 \gets x_1 + a$ and $P_2$ computes $u_2 \gets x_2$
       \item $P_1$ and $P_2$ can collaborate to get $u_1 + u_2 = x_1 + a + x_2 = x + a$
     \end{itemize}
   \end{itemize}
+\end{frame}
 
-  \vspace*{1em}
-
-  \pause
+\begin{frame}{Difficulty of multiplication}
   We have shown how to obtain $x + y$, $ax$ and $x + a$ with MPC.
   \begin{itemize}[<+(1)->]
     \item How can we compute $[xy]$?
@@ -421,7 +394,6 @@
 
 \begin{frame}{Beaver triples}
   Let a dealer pick $a, b \getsu \ZZ_q$ and secret share $[a], [b], [a \cdot b]$ with $P_1, P_2$.
-  $([a], [b], [a \cdot b])$ is a Beaver triple.
   \begin{enumerate}[<+(1)->]
     \item Both parties compute and open $[x + a]$ and $[y + b]$.
     \begin{itemize}
@@ -436,8 +408,9 @@
   \end{enumerate}
   \vspace*{-1em}
   \pause
-  A Beaver triple can only be used once, otherwise information is leaked.
-  \begin{itemize}
+  $([a], [b], [a \cdot b])$ is a Beaver triple.
+  \begin{itemize}[<+(1)->]
+    \item Can only be used once, otherwise information is leaked
     \item The triple is \emph{consumed} after use
   \end{itemize}
 \end{frame}
@@ -456,6 +429,21 @@
       \item No correlation was found
     \end{itemize}
   \end{itemize}
+\end{frame}
+
+\begin{frame}{Disclaimer}
+  MPC and its threat models can get very complicated!
+  \pause
+  \begin{itemize}
+    \item Active vs passive adversaries
+    \item Number of corrupted parties
+    \item Type of security guarantees (computational, statistical, perfect)
+    \item Output guarantees, e.g. fairness, security with aborts
+    \item \dots
+  \end{itemize}
+
+  \pause
+  We did not even scratch the surface.
 \end{frame}
 
 \end{document}
