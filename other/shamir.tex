@@ -167,4 +167,59 @@ Let us then try reconstructing the polynomial with different subsets:
   and we have not recovered the secret.
 \end{enumerate}
 
+\newpage
+
+\begin{center}
+  Demystifying the $\Pi$ notation
+\end{center}
+
+How do we interpret $\delta_j(x)=\prod_{k=1,k\neq j}^{t}\frac{x-x_k}{x_j-x_k}$?
+
+More generally, the $\prod_{i = 1}^n a_i$ notation signifies the product of elements $a_1, a_2, \dots, a_n$.
+That is,
+\[
+  \prod_{i = 1}^n a_i = a_1 \cdot a_2 \cdot a_3 \cdot \ldots \cdot a_t.
+\]
+
+What if we restrict the values that the iterator $i$ can take?
+For example, let $j$ be a value which $i$ cannot take.
+Then we have
+\[
+  \prod_{i = 1, i \neq j}^n a_i = a_1 \cdot a_2 \cdot \ldots \cdot a_{j-1} \cdot a_{j+1} \cdot \ldots \cdot a_t
+\]
+since we multiply together all values $a_i$ except for $a_j = a_{i = j}$.
+
+In the notation of $\delta_j(x)$, the $j$ in the subscript fixes the value of $j$.
+For example, for $\delta_3(x)$, we have $j = 3$.
+The $x$ which is given to the function $\delta_j$ is a variable, so its value is fixed by what is passed to the function.
+Thus, in the function
+\[
+  \delta_j(x)=\prod_{k=1,k\neq j}^{t}\frac{x-x_k}{x_j-x_k},
+\]
+we have that $x, j, t$ are fixed, since $t$ is fixed by the protocol setting.
+The only value which then \enquote{changes} when computing $\delta_j(x)$ with a particular input $x$ is the value $k$, since we consider $x_1, x_2, \dots, x_{j-1}, x_{j+1}, \dots, x_t$.
+Notice that we have excluded $x_j$.
+Indeed, if $j = k$ then $x_k = x_j$ and the denominator is $0$.
+Division by $0$ is not defined.
+
+If the reuse of the variable $x$ is confusing, we can also rename it as $x \to z$ to get
+\[
+  \delta_j(z)=\prod_{k=1,k\neq j}^{t}\frac{z-x_k}{x_j-x_k}.
+\]
+By unwrapping the product, we get
+\[
+  \delta_j(z)= \frac{z-x_1}{x_j - x_1} \cdot \frac{z-x_2}{x_j - x_2} \cdot
+  \dots
+  \cdot \frac{z-x_{j-1}}{x_j - x_{j-1}} \cdot \frac{z-x_{j+1}}{x_j - x_{j+1}} \cdot
+  \dots
+  \cdot \frac{z-x_t}{x_j - x_t}.
+\]
+
+For example, if $z = 0, t = 3$ and $j = 2$ we get
+\[
+  \delta_2(0) = \frac{0-x_1}{x_2 - x_1} \cdot \frac{0-x_3}{x_2 - x_3} =
+  \frac{x_1 \cdot x_3}{(x_2 - x_1)(x_2 - x_3)}.
+\]
+The values $x_1, x_2, x_3$ are then specific and distinct $x$ coordinates of points on the polynomial.
+
 \end{document}
