@@ -1,0 +1,397 @@
+\graphicspath{ {../../images/} }
+\usetikzlibrary{positioning,calc,external}
+
+\title{ICS0026 Cryptography}
+\subtitle{Online voting (a brief introduction)}
+\date{\today}
+\author{Taaniel Kraavi}
+\institute%
+{%
+  \textit{IT College}\\
+  \textit{Tallinn University of Technology}
+}
+
+\begin{document}
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{What's in a name}
+  Electronic voting, e-voting
+  \begin{itemize}[<+(1)->]
+    \item Use of electronic technologies for voting
+    \item e.g. electronic voting machine that prints a paper ballot
+  \end{itemize}
+
+  \pause
+  Online voting, internet voting
+  \begin{itemize}[<+(1)->]
+    \item Casting a digital vote (e.g. from home)
+    \item Some will say electronic voting = online voting (terminology is not standardised)
+  \end{itemize}
+
+  \pause
+  Estonian internet voting called \enquote{i-voting} in English.
+\end{frame}
+
+\begin{frame}{Examples}
+  I-voting at a national level:
+  \begin{itemize}[<+(1)->]
+    \item Estonia (longest running national i-voting system)
+    \item Switzerland (digital voting with a postal component)
+    \item France (i-voting for expats)
+    \item Norway (had trials but discontinued in 2014)
+    \item \dots
+  \end{itemize}
+
+  \pause
+  Tons of online voting companies and technologies exist
+  \begin{itemize}[<+(1)->]
+    \item various degrees of trust/reliability (not always cryptographic)
+    \item cryptographic systems (e.g. IVXV, CHVote, Belenios, Helios, Prêt à Voter, \dots)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Two paradigms}
+  We will focus on only two paradigms
+  \begin{itemize}[<+(1)->]
+    \item Schemes based on homomorphic tallying
+    \item Schemes based on cryptographic mixing
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  Why do we need these?
+  \begin{itemize}[<+(1)->]
+    \item Protect the secret of the ballot (ballot secrecy)
+    \item Your choice should remain a secret
+    \item A requirement in many democracies
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  In any voting scheme, IND-CPA is required for secrecy!
+\end{frame}
+
+\begin{frame}{Homomorphic tally}
+  Core idea:
+  \begin{itemize}[<+(1)->]
+    \item Encrypt \enquote{1} if you vote for the candidate, \enquote{0} otherwise
+    \item Aggregate encrypted votes (additively homomorphic scheme!)
+    \item Decrypt the aggregated result
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  Sounds good, so what are the caveats?
+  \begin{itemize}[<+(1)->]
+    \item No arbitrary ballot structure (no write-ins)
+    \item Must encrypt one vote for each candidate\textsuperscript{*}
+    \item Not practical for large numbers of candidates
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Casting a homomorphic ballot}
+  Zero-knowledge proof of vote validity:
+  \begin{itemize}[<+(1)->]
+    \item Prove that you gave only 1 vote for a candidate (not 5 or -1)
+    \item Prove that you did not give more than 1 vote in total (typically)
+  \end{itemize}
+
+  \pause
+  These proofs must be verified before aggregation!
+
+  \vspace*{1em}
+
+  \pause
+  Some remarks:
+  \begin{itemize}[<+(1)->]
+    \item Proving whether a vote is 0 or 1 is much easier than proving arbitrary ranges
+    \item Proof should be non-interactive (transferability needed for auditability)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Aggregation and tallying}
+  What should an empty ballot box look like?
+  \begin{itemize}[<+(1)->]
+    \item Either it is really empty\dots
+    \item \dots{}or it contains a deterministic \enquote{null-vote}
+  \end{itemize}
+
+  \pause
+  Decryption
+  \begin{itemize}[<+(1)->]
+    \item Verify ZKRPs
+    \item Aggregate all ciphertexts using the homomorphic property
+    \item Decrypt the final results
+  \end{itemize}
+
+  \pause
+  Aggregation could be done on the fly, but for auditing, the tally should later be independently re-aggregated.
+\end{frame}
+
+\begin{frame}{Privacy of aggregation}
+  By decrypting the aggregated result, we protect voter identities.
+  \begin{itemize}[<+(1)->]
+    \item Digital ballots must typically be digitally signed
+    \item Decrypting ballots independently breaks vote secrecy
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  How can we prevent the organiser from deciphering all individual ballots?
+  \begin{itemize}[<+(1)->]
+    \item Secret sharing
+    \item Distributed secret sharing on cryptographic HSMs (e.g. JavaCards)
+    \begin{itemize}
+      \item Key never exists in its entirety
+      \item Cards should be destroyed after election procedures end
+    \end{itemize}
+  \end{itemize} 
+\end{frame}
+
+\begin{frame}{(N)everlasting privacy}
+  What to do with the digital ballots after the election?
+  \begin{itemize}[<+(1)->]
+    \item Ballots should be destroyed after the election
+    \item In a post-quantum world, the privacy is lost
+    \item Organisational measures needed
+    \item Always a risk that someone exfiltrates the ballot box
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Internet voting in Estonia}
+  \begin{itemize}[<+(1)->]
+    \item Introduced in 2005
+    \item Used in every election since
+    \item No known security incidents
+    \item 2023: first year where $> 50\%$ of votes were i-votes
+    \item Current system called \enquote{IVXV} introduced in 2017
+    \item Not a homomorphic scheme: many candidates
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Trust in IVXV}
+  Controversy after every election but overall trust is actually quite good.
+  \begin{itemize}[<+(1)->]
+    \item Lots of misconceptions about how the system works
+    \item Good official materials are available but few check them out
+    \item Anyone can register to observe/audit some of the operations
+    \item Some checks only available to professional auditors due to PII
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Double envelope postal voting scheme}
+  Most i-voting systems are based on the double envelope voting scheme:
+  \begin{enumerate}[<+(1)->]
+    \item Get two envelopes + a ballot paper in the mail
+    \begin{itemize}
+      \item One envelope has printed voter identifiers
+      \item One envelope is blank
+    \end{itemize}
+    \item Fill the ballot paper, include it in the unmarked envelope and seal it
+    \begin{itemize}
+      \item Protects confidentiality
+    \end{itemize}
+    \item Put the unmarked envelope in the marked envelope, seal it, and sign it
+    \begin{itemize}
+      \item Provides identification
+      \item Signature is supposed to provide some form of authentication (dubious)
+    \end{itemize}
+  \end{enumerate}
+
+  \pause
+  When the envelopes are received, the outer envelope is discarded after verification.
+\end{frame}
+
+\begin{frame}{Double envelope in IVXV}
+  \begin{enumerate}[<+(1)->]
+    \item Make your choice with the voting application
+    \item Voting application encrypts the vote (inner envelope)
+    \begin{itemize}
+      \item A public key is specific for every election
+      \item The keypair is generated before the election in a public ceremony
+    \end{itemize}
+    \item Voting application enables you to sign the vote (identification + authenticity)
+  \end{enumerate}
+
+  \vspace*{1em}
+
+  \pause
+  Is removing the digital signature enough?
+  \begin{itemize}[<+(1)->]
+    \item It depends
+    \item For homomorphic aggregation? yes
+    \item For individual decryption? no
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Digital signatures in IVXV}
+  IVXV's security relies on the security of the Estonian PKI and eID.
+  \begin{itemize}[<+(1)->]
+    \item eID exists: authentication is convenient
+    \item eID is used for way more than just i-voting
+    \begin{itemize}
+      \item People trust it because they use it all the time
+      \item Electoral organiser does not control the CA or the signing devices
+    \end{itemize}
+    \item The key distribution problem is solved
+    \begin{itemize}
+      \item Keys are presumed to be safe
+      \item Do not share your PINs!
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Coercion and vote selling}
+  Voting from home, coercion and vote selling?
+  \begin{itemize}[<+(1)->]
+    \item Coercion: forced to vote in a specific way or disclose your vote
+    \item Vote selling: rewarded for voting in a specific way
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  When voting in person, you should be alone in a voting booth.
+  \begin{itemize}[<+(1)->]
+    \item Still possible to prove who you voted for (e.g. hidden wearable camera)
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  When voting form home, risks are higher, e.g. shoulder surfing.
+  \begin{itemize}[<+(1)->]
+    \item The Swiss say that they do not have this problem\dots{} go figure
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{On mitigating coercion}
+  To prevent this, voters can override their vote in two ways in Estonia:
+  \begin{itemize}[<+(1)->]
+    \item Voters can vote multiple time online
+    \begin{itemize}
+      \item Only the last received i-vote counts (superseding previous votes)
+      \item If someone watches you vote one time, just vote again later
+    \end{itemize}
+    \item Voters can still go and vote in person
+    \begin{itemize}
+      \item The physical vote will override the i-vote
+    \end{itemize}
+    \item Individual attacks possible, but not scalable
+  \end{itemize}
+
+  \pause
+  This is also the reason why i-voting ends before physical voting ends.
+\end{frame}
+
+\begin{frame}{Defining verifiability}
+  Verifiability definitions by Kremer et al.
+  \begin{itemize}[<+(1)->]
+    \item \emph{Individual verifiability}: a voter should be able to check that his vote belongs to the ballot box.
+    \item \emph{Universal verifiability}: anyone should be able to check that the result corresponds to the content of the ballot box.
+    \item \emph{Eligibility verifiability}: only eligible voters may vote.
+  \end{itemize}
+
+  \pause
+  \emph{End-to-end} (E2E) verifiable: individually and universally verifiable.
+  \begin{itemize}
+    \item Not the only E2E definition, but it is the one used in IVXV.
+  \end{itemize}
+
+  \pause
+  Seemingly, E2E verifiability is mutually exclusive with coercion resistance.
+\end{frame}
+
+\begin{frame}{Election keypair}
+  Before every election, and election specific keypair is generated.
+  \begin{itemize}[<+(1)->]
+    \item ElGamal cryptosystem
+    \item The \emph{key application} is used to generate the key
+    \begin{itemize}
+      \item Also used to decrypt votes later
+    \end{itemize}
+    \item Key is generated in a threshold manner (Shamir)
+    \begin{itemize}
+      \item The key application is the trusted dealer
+      \item Approach with reconstruction needed for performance
+      \item Currently, $n = 9$, $t = 5$
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Election keyholders}
+  The key-shares are written to JavaCards.
+  \begin{itemize}[<+(1)->]
+    \item Members of the State's Electoral Office and of the National Electoral Committee
+    \item Shares are also written on backup cards
+    \item Cards are sealed with a tamper evident tape and signed by members present
+    \item Backups are stored in a safe by the SEO
+  \end{itemize}
+
+  \vspace*{1em}
+
+  \pause
+  You can register as an observer to be there (or watch a stream) when this is done
+\end{frame}
+
+\begin{frame}{Parties involved}
+  Main parties:
+  \begin{itemize}[<+(1)->]
+    \item The voter (with the voting client)
+    \item The collector
+    \begin{itemize}
+      \item Receives ballots form voters
+      \item Provides the configuration to the voting client
+    \end{itemize}
+    \item The organiser
+    \begin{itemize}
+      \item Role of the processor
+      \item Role of the tallying party
+    \end{itemize}
+  \end{itemize}
+
+  \pause
+  Additional \enquote{tools}:
+  \begin{itemize}[<+(1)->]
+    \item Verification application
+    \item Registration service 
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Main processes}
+  Drawn and explained on the whiteboard.
+
+  \vspace*{1em}
+
+  \pause
+  For students only reading slides but not watching lectures:
+  \begin{itemize}[<+(1)->]
+    \item This is on the exam
+    \item More generally, you are either very good at self study\dots
+    \item \dots{}or you will have a big problem in 2 weeks.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Conclusion}
+  \begin{itemize}[<+(1)->]
+    \item Voting is complicated (not just online voting)
+    \item Highly regulated and requirements vary
+    \item Definitions vary
+    \item Many trade-offs (e.g. privacy vs transparency)
+    \item Trust is hard
+    \item We barely scratched the surface of online voting
+    \begin{itemize}
+      \item Different authentication tech
+      \item Different verifiability tech (bulletin boards, \dots)
+      \item More esoteric schemes (e.g. blockchain voting)
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\end{document}
