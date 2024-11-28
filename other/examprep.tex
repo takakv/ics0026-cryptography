@@ -1,0 +1,183 @@
+\documentclass[usegeometry,parskip=half]{scrartcl}
+
+\usepackage[
+  a4paper,
+  top=25mm,
+  bottom=25mm,
+  left=30mm,
+  right=30mm,
+  footskip=10mm
+]{geometry}
+
+\usepackage[hidelinks]{hyperref}
+
+\usepackage{csquotes}
+\setquotestyle{british}
+
+\usepackage{microtype}
+\usepackage{fontspec}
+\usepackage{unicode-math}
+
+\setmainfont{Stix Two Text}
+\setsansfont{TeX Gyre Heros}
+\setmathfont{Stix Two Math} 
+
+\begin{document}
+
+\begin{center}
+  \textbf{Exam study guide --- Autumn 2024}
+
+  ICS0026 Cryptography
+
+  ver 0.1
+\end{center}
+
+Unless stated otherwise, knowing something also means being able to explain it.
+If you only need to explain something, you do not need to necessarily recall the thing itself.
+For example, you should be able to list the extended CIA triad, on top of simply being able to answer what confidentiality is (knowing \& explaining).
+Conversely, you should know what RSA-OAEP is, but you do not need to recall the term yourself (explaining only).
+
+You should be able to\dots{}
+\begin{itemize}
+  \item \dots{}know the extended CIA triad and be able to explain for each element how cryptography relates to it.
+  \item \dots{}know Kerckhoff's principle.
+  \item \dots{}distinguish between provable and heuristic security and explain some of their pros and cons.
+  \item \dots{}know what confusion and diffusion are and be able to explain them.
+  \item \dots{}explain the differences between conditional and unconditional security.
+  \item \dots{}explain the differences between a bounded and an unbounded adversary.
+  \item \dots{}know the requirements for a One Time Pad.
+  \item \dots{}explain what perfect secrecy is and what disadvantages are unavoidable for schemes with perfect secrecy.
+  \item \dots{}know the 4 main types of attacks against encryption schemes.
+  \item \dots{}explain what is \enquote{true} randomness.
+  \item \dots{}explain the importance of high quality randomness in cryptography.
+  \item \dots{}know the differences between a TRNG and a PRNG.
+  \item \dots{}know explain the differences between deterministic and non-deterministic algorithms.
+  \item \dots{}know the basic requirements for a symmetric cryptosystem.
+  \item \dots{}know and be able to explain IND-CPA.
+  \item \dots{}explain at a high level how stream ciphers work.
+  \item \dots{}know that the ChaCha20 stream cipher exists.
+  \item \dots{}know the difference between stream and block ciphers.
+  \item \dots{}know what modes of operations are and to give two examples.
+  \item \dots{}know that the AES block cipher exists.
+  \item \dots{}explain why the ECB mode is insecure (Tux!).
+  \item \dots{}explain at a high level how it is possible to construct a stream cipher out of a block cipher.
+  \item \dots{}know the role of an initialisation vector (IV).
+  \item \dots{}explain why authenticated encryption is necessary.
+  \item \dots{}know how typically the security level of symmetric ciphers is determined.
+  \item \dots{}explain why in disk encryption the password can be changed without having to re-encrypt the entire disk.
+  \item \dots{}explain the importance of randomised encryption in public key cryptosystems.
+  \item \dots{}know that RSA exists and explain which security assumption is needed for its security (RSA trapdoor).
+  \item \dots{}know the discrete logarithm problem (DLP).
+  \item \dots{}explain why getting a number in a range with modulo can be insecure, and how to overcome the issue.
+  \item \dots{}explain why the two RSA primes must be kept secret.
+  \item \dots{}explain why RSA-OAEP should be used over textbook RSA or PKCS\#1 v1.5 padding.
+  \item \dots{}know the recommended minimum key-length for 128 bits of security for public key schemes in finite fields.
+  \item \dots{}know what a safe prime is.
+  \item \dots{}explain why hybrid encryption is useful.
+  \item \dots{}explain the Diffie Hellman key-exchange and why it is secure (does not need to be a mathematical explanation).
+  \item \dots{}know what ASN.1, DER and PEM are.
+  \item \dots{}know what a homomorphic cryptosystem/primitive is.
+  \item \dots{}know what a malleable primitive is.
+  \item \dots{}explain the difference between a partially and fully homomorphic cryptosystem.
+  \item \dots{}explain the re-randomisation property of ElGamal.
+  \item \dots{}know the recommended minimum key-length for 128 bits of security for public key schemes on elliptic curves.
+  \item \dots{}explain the importance of \enquote{nothing up my sleeve} numbers.
+  \item \dots{}explain the importance of knowing how EC parameters have been generated.
+  \item \dots{}give one example of a secure elliptic curve.
+  \item \dots{}know what NIST, ANSSI, BSI, \dots{} are (no need to know the acronyms stand for).
+  \item \dots{}explain the importance of a KDF.
+  \item \dots{}explain what hash functions are.
+  \item \dots{}know the requirements for a secure cryptographic hash function.
+  \item \dots{}explain collision resistance, first pre-image resistance, and second pre-image resistance.
+  \item \dots{}given a target security goal, explain which hash function property is needed to achieve it.
+  \item \dots{}give three examples of the utility of cryptographic hash functions.
+  \item \dots{}know how typically the security level for a hash function is determined.
+  \item \dots{}explain why the drunken bishops algorithm is useful.
+  \item \dots{}explain the avalanche effect.
+  \item \dots{}explain the difference between hashing and encryption.
+  \item \dots{}know MD5, SHA1, SHA2, SHA3 and explain which of them are safe to use.
+  \item \dots{}explain the usefulness of the SHAKE functions.
+  \item \dots{}explain what a length extension attack is.
+  \item \dots{}explain what a hash chain is.
+  \item \dots{}explain why a cryptographic hash function is not good for password storage.
+  \item \dots{}explain what salting is.
+  \item \dots{}explain what peppering is.
+  \item \dots{}know a secure function for password hashing.
+  \item \dots{}explain what a message authentication code is, and why MACs are useful.
+  \item \dots{}explain why a dedicated MAC should be used over a regular cryptographic hash function.
+  \item \dots{}explain why we need digital signatures.
+  \item \dots{}explain the difference between a digital signature and a MAC.
+  \item \dots{}explain why MACs do not provide non-repudiation.
+  \item \dots{}explain why digital signatures are \emph{transferable} (in the sense that they can be verified by third parties).
+  \item \dots{}explain why in many cases, digital signatures alone are not \enquote{enough}.
+  \item \dots{}explain the difference between existential forgery and universal forgery (you will get a hint if you do not remember the terms).
+  \item \dots{}explain the common approach for signing some data.
+  \item \dots{}give two examples of secure signature schemes.
+  \item \dots{}explain why nondeterminism is not necessarily a requirement for a signature scheme.
+  \item \dots{}know what the DSS (digital signature standard) is.
+  \item \dots{}describe an approach for long term validity of digital signatures.
+  \item \dots{}explain the issue with long term authenticity.
+  \item \dots{}explain the issue with long term confidentiality.
+  \item \dots{}know the two constructions on which post-quantum signature schemes are based on.
+  \item \dots{}explain at a high level what a group/ring signature scheme is.
+  \item \dots{}explain at a high level what a blind signature is.
+  \item \dots{}describe some approach to how digital trust can be achieved.
+  \item \dots{}explain what the public key infrastructure is.
+  \item \dots{}explain what the web of trust is.
+  \item \dots{}explain what a digital certificate is and why it is needed.
+  \item \dots{}describe what should typically be part of a digital certificate.
+  \item \dots{}describe the importance and role of a certification authority.
+  \item \dots{}know what X.509 is.
+  \item \dots{}explain how certificate revocation lists work.
+  \item \dots{}explain how OCSP works.
+  \item \dots{}argue for/against CRLs and OCSP.
+  \item \dots{}explain what OCSP stapling is and to argue why it is a good thing.
+  \item \dots{}know what eIDAS is (no need to know what the acronym stands for).
+  \item \dots{}know what an eID is.
+  \item \dots{}know the signature levels of eIDAS.
+  \item \dots{}explain the general differences between the three signature levels.
+  \item \dots{}explain why qualified signature creation devices are important.
+  \item \dots{}explain the importance of trusted timestamping.
+  \item \dots{}know the difference between a digital signature and an electronic signature.
+  \item \dots{}know what ASiC-E is (what it is used for).
+  \item \dots{}know what is SSL/TLS.
+  \item \dots{}give a general overview of the TLS handshake.
+  \item \dots{}give an example of why TLS1.3 is a good upgrade over TLS1.2.
+  \item \dots{}know that you should not use TLS less than v1.2.
+  \item \dots{}explain the need for perfect forward secrecy.
+  \item \dots{}explain how root certificates get their trust.
+  \item \dots{}know what Let's Encrypt is.
+  \item \dots{}explain what a secure cryptoprocessor is.
+  \item \dots{}explain what a TPM is.
+  \item \dots{}explain what a HSM is.
+  \item \dots{}explain what a SmartCard/JavaCard is.
+  \item \dots{}explain what side channels are.
+  \item \dots{}give two examples of side channels (categories).
+  \item \dots{}give two examples on how to mitigate side channels.
+  \item \dots{}explain the role of commitment schemes.
+  \item \dots{}explain the two main requirements that commitment schemes should satisfy.
+  \item \dots{}explain why a commitment scheme cannot be perfectly hiding and perfectly binding.
+  \item \dots{}describe the secure coin flip over the telephone.
+  \item \dots{}explain how can a cryptosystem be turned into a commitment scheme.
+  \item \dots{}explain the importance of having verifiable parameter generation for commitment schemes.
+  \item \dots{}explain the difference between a proof of knowledge and a proof of possession.
+  \item \dots{}explain what a sigma protocol is.
+  \item \dots{}explain what a proof system is.
+  \item \dots{}explain the difference between an interactive and non-interactive proof and what ramifications this has.
+  \item \dots{}explain the principle of zero knowledge.
+  \item \dots{}explain the Fiat-Shamir heuristic.
+  \item \dots{}explain what secret sharing is.
+  \item \dots{}know the meaning of $(t, n)$-threshold schemes and to reason about different $t$ and $n$ values.
+  \item \dots{}know what Shamir's scheme is and what technique it relies upon.
+  \item \dots{}know some limitations of the \enquote{textbook} Shamir scheme.
+  \item \dots{}explain what secure multiparty computation is.
+  \item \dots{}give examples of the use of MPC.
+  \item \dots{}know what a beaver triple is used for.
+  \item \dots{}know the principles behind homomorphic tally cryptosystems.
+  \item \dots{}know the digital double envelope voting scheme.
+  \item \dots{}know what role the different parties/components play in IVXV.
+  \item \dots{}know why re-voting digitally in IVXV does not break the principle of \enquote{one voter, one vote}.
+  \item \dots{}know the purpose of cryptographic mixing.
+  \item \dots{}know why malformed ciphertexts pose a threat in online voting schemes.
+\end{itemize}
+\end{document}
