@@ -79,3 +79,13 @@ slides/12:
 slides/13:
 	latexmk -lualatex -cd -c slides/13/13_handout.tex
 	latexmk -lualatex -cd -c slides/13/13_presentation.tex
+
+.PHONY: slides/14
+slides/14:
+	latexmk -lualatex -cd -c slides/14/14_handout.tex
+	latexmk -lualatex -cd -c slides/14/14_presentation.tex
+
+.PHONY: slides/15
+slides/13:
+	latexmk -lualatex -cd -c slides/15/15_handout.tex
+	latexmk -lualatex -cd -c slides/15/15_presentation.tex
